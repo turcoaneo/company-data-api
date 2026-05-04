@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+aiohttp
+selectolax
+pydantic
+pytest
+httpx
