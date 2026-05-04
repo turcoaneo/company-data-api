@@ -1,5 +1,6 @@
 import aiohttp
 
+
 class Fetcher:
     def __init__(self, timeout: int = 10):
         self.timeout = timeout
