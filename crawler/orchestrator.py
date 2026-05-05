@@ -1,16 +1,19 @@
 import asyncio
 from urllib.parse import urljoin, urlparse
 import aiohttp
+import logging
+
 from typing import List, Dict, Optional, Set
 
 from .fetcher import Fetcher
 from .parser import parse_contacts
 from .pipeline import normalize_record
 
+logger = logging.getLogger(__name__)
 
 PRIORITY_PATHS = [
-    "/", "/about", "/about-us", "/aboutus",
-    "/contact", "/contact-us", "/contactus",
+    "/", "/about", "/about-us", "/about us",
+    "/contact", "/contact-us", "/contact us",
 ]
 
 
@@ -25,11 +28,16 @@ class CrawlerOrchestrator:
             html = await self.fetcher.fetch(session, url)
             parsed = parse_contacts(html)
             return {"url": url, **parsed}
-        except Exception:
+        except Exception as e:
+            logging.error(f"Error fetching {url}: {e}")
             return None
 
     async def crawl_domain(self, session, domain: str) -> Optional[Dict]:
-        base = f"https://{domain}".rstrip("/")
+        logger.info(f"Starting crawl for domain: {domain}")
+        if domain.startswith("http://") or domain.startswith("https://"):
+            base = domain.rstrip("/")
+        else:
+            base = f"https://{domain}".rstrip("/")
 
         # -------------------------
         # Phase 1: priority pages
@@ -39,6 +47,8 @@ class CrawlerOrchestrator:
             result = await self.fetch_and_parse(session, priority_url)
             if result and (result["phones"] or result["socials"]):
                 return normalize_record(result)
+            else:
+                logger.warning(f"No contacts found in priority pages for {domain}")
 
         # -------------------------
         # Phase 2: full crawl
@@ -67,7 +77,8 @@ class CrawlerOrchestrator:
 
                 try:
                     html = await self.fetcher.fetch(session, url)
-                except Exception:
+                except Exception as e:
+                    logging.error(f"Error fetching page {url}", exc_info=e)
                     to_visit.task_done()
                     continue
 

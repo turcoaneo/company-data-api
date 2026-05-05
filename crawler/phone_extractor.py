@@ -1,7 +1,9 @@
 import re
+import logging
 from typing import List
 
-# Very permissive, then filtered by length and digit count
+logger = logging.getLogger(__name__)
+
 PHONE_CANDIDATE_RE = re.compile(
     r"""
     (?:
@@ -22,17 +24,25 @@ def normalize_phone(raw: str) -> str:
 
 def is_plausible_phone(raw: str) -> bool:
     digits = [c for c in raw if c.isdigit()]
-    return MIN_DIGITS <= len(digits) <= MAX_DIGITS
+    ok = MIN_DIGITS <= len(digits) <= MAX_DIGITS
+    if not ok:
+        logger.debug(f"Rejected phone candidate '{raw}' (digit count={len(digits)})")
+    return ok
 
 
 def extract_phones(text: str) -> List[str]:
     candidates = [m.group(0) for m in PHONE_CANDIDATE_RE.finditer(text)]
+    logger.debug(f"Phone candidates found: {candidates}")
+
     phones = [normalize_phone(c) for c in candidates if is_plausible_phone(c)]
-    # Deduplicate preserving order
+    logger.debug(f"Plausible phones after filtering: {phones}")
+
     seen = set()
     result = []
     for p in phones:
         if p not in seen:
             seen.add(p)
             result.append(p)
+
+    logger.debug(f"Final extracted phones: {result}")
     return result
