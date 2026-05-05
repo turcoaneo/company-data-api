@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 aiohttp==3.13.4
 pytest-asyncio
+pytest-aiohttp
 selectolax
 pydantic
 pytest

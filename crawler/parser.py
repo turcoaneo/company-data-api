@@ -1,19 +1,42 @@
-import re
 from selectolax.parser import HTMLParser
-
-PHONE_RE = re.compile(r"tel:([+0-9\- ]+)", re.I)
-EMAIL_RE = re.compile(r"mailto:([^\"'>]+)", re.I)
-SOCIAL_RE = re.compile(r"(facebook|linkedin|instagram|twitter|x\.com)", re.I)
+from .phone_extractor import extract_phones
+from .socials import extract_social_links
 
 
 def parse_contacts(html: str) -> dict:
     tree = HTMLParser(html)
 
-    links = [n.attributes.get("href", "") for n in tree.css("a")]
+    # Collect all hrefs
+    hrefs = [n.attributes.get("href", "") for n in tree.css("a")]
 
-    phones = [m.group(1).strip() for href in links if (m := PHONE_RE.search(href))]
-    emails = [m.group(1).strip() for href in links if (m := EMAIL_RE.search(href))]
-    socials = [href for href in links if SOCIAL_RE.search(href)]
+    # Phones from tel: links
+    tel_phones = []
+    for href in hrefs:
+        if href.lower().startswith("tel:"):
+            tel_phones.append(href.split(":", 1)[1].strip())
+
+    # Phones from plain text
+    text_content = tree.text(separator=" ")
+    text_phones = extract_phones(text_content)
+
+    # Merge phones (tel: + text)
+    phones = []
+    seen = set()
+    for p in tel_phones + text_phones:
+        if p not in seen:
+            seen.add(p)
+            phones.append(p)
+
+    # Emails (still useful even if not required now)
+    emails = []
+    for href in hrefs:
+        if href.lower().startswith("mailto:"):
+            email = href.split(":", 1)[1].strip()
+            if email and email not in emails:
+                emails.append(email)
+
+    # Social links
+    socials = extract_social_links(hrefs)
 
     return {
         "phones": phones,
