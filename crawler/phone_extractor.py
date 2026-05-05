@@ -5,7 +5,8 @@ from typing import List
 PHONE_CANDIDATE_RE = re.compile(
     r"""
     (?:
-        \+?\d[\d\-\.\s\(\)]{5,}   # +40 123 456 789, (021)5553333, 021-555-3333
+        (?:\+|\(|\d)            # allow +, (, or digit at start
+        [\d\-\.\s\(\)]{5,}      # rest of the number
     )
     """,
     re.VERBOSE,
