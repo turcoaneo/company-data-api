@@ -7,3 +7,5 @@ selectolax
 pydantic
 pytest
 httpx
+python-dotenv
+psutil
