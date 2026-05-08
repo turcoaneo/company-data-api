@@ -23,6 +23,7 @@ class TestEnvVars:
         # Create .env.local
         (tmp_path / ".env.local").write_text(
             "LOG_LEVEL=debug\n"
+            "SCRAPER_SYNC_SAVING=False\n"
             "SCRAPER_JOB_LOOPED=True\n"
             "SCRAPER_SLEEPING_TIME=10\n"
             "SCRAPER_INTERVAL_SECONDS=5\n"
@@ -47,6 +48,7 @@ class TestEnvVars:
         assert env_vars.APP_ENV == "local"
         assert env_vars.LOG_LEVEL == "debug"  # from .env.local
         assert env_vars.SCRAPER_CONFIG["looped"] is True
+        assert env_vars.SCRAPER_CONFIG["sync_saving"] is False
         assert env_vars.SCRAPER_CONFIG["sleep_time"] == 10
         assert env_vars.SCRAPER_CONFIG["interval"] == 5
 

@@ -6,7 +6,6 @@ from app.utils.loader import load_sites_from_config
 from app.utils.logger_util import get_logger
 from app.utils.path_util import get_project_root
 from app.utils.timing_util import elapsed_time, log_thread_id
-from crawler.merge_results import merge_scraper_results
 from crawler.orchestrator import CrawlerOrchestrator
 
 logger = get_logger()
@@ -33,5 +32,13 @@ async def run_scraper():
     logger.info(f"Scraper finished. Found {len(results)} valid sites.")
 
     # Merge with original CSV
-    output_path = merge_scraper_results(str(input_csv), results)
+    from app.utils.env_vars import SCRAPER_CONFIG
+    is_sync_saving = SCRAPER_CONFIG["sync_saving"]
+    if is_sync_saving:
+        from crawler.merge_results import merge_scraper_results
+        output_path = merge_scraper_results(str(input_csv), results)
+    else:
+        from crawler.merge_results import async_merge_scraper_results
+        output_path = await async_merge_scraper_results(str(input_csv), results)
+
     logger.info(f"Merged results saved to {output_path}")

@@ -5,7 +5,7 @@ import json
 import pandas as pd
 
 from crawler.merge_results import merge_dataframes
-from crawler.util.async_save import save_jsonl
+from crawler.util.save_output_helper import save_jsonl
 
 
 class TestSaveJsonl:

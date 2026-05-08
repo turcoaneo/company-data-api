@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 
 from crawler.pipeline import normalize_domain
-from crawler.util.async_save import save_jsonl
+from crawler.util.save_output_helper import save_jsonl
 
 
 # ---------------------------------------------------------
