@@ -4,10 +4,10 @@ import threading
 
 from app.utils.loader import load_sites_from_config
 from app.utils.logger_util import get_logger
-from app.utils.timing_util import elapsed_time, log_thread_id
-from crawler.orchestrator import CrawlerOrchestrator
-from crawler.merge_results import merge_scraper_results
 from app.utils.path_util import get_project_root
+from app.utils.timing_util import elapsed_time, log_thread_id
+from crawler.merge_results import merge_scraper_results
+from crawler.orchestrator import CrawlerOrchestrator
 
 logger = get_logger()
 

@@ -1,4 +1,3 @@
-# noinspection PyPackageRequirements
 import pandas as pd
 import pytest
 

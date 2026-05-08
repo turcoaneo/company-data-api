@@ -120,7 +120,7 @@ class TestCrawlerOrchestrator:
             raise RuntimeError("boom")
 
         from crawler.fetcher import Fetcher
-        monkeypatch.setattr(Fetcher, "fetch", fake_fetch)
+        monkeypatch.setattr(Fetcher, "fetch_url", fake_fetch)
 
         orch = CrawlerOrchestrator(concurrency=2, timeout=5)
         domain = str(server.make_url(""))
