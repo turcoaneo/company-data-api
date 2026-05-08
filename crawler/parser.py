@@ -64,12 +64,12 @@ def parse_contacts(html: str) -> dict:
     text_phones = Parser.parse_text_phones(html)
     phones = Parser.merge_unique(tel_phones + text_phones)
 
-    emails = Parser.parse_emails(hrefs)
+    # emails = Parser.parse_emails(hrefs)
     socials = Parser.parse_socials(hrefs)
 
     result = {
         "phones": phones,
-        "emails": emails,
+        # "emails": emails,
         "socials": socials,
     }
 

@@ -10,7 +10,7 @@ class TestCrawler:
     async def test_fetcher_fetches_html(self):
         fetcher = Fetcher(timeout=5)
         async with aiohttp.ClientSession() as session:
-            html = await fetcher.fetch(session, "https://example.com")
+            html = await fetcher.fetch_url(session, "https://example.com")
         assert "<html" in html.lower()
 
     # -----------------------------

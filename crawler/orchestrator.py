@@ -1,19 +1,20 @@
 import asyncio
-from urllib.parse import urljoin, urlparse
-import aiohttp
 import logging
-
 from typing import List, Dict, Optional, Set
+from urllib.parse import urljoin, urlparse
 
+import aiohttp
+
+from app.utils.logger_util import get_logger
 from .fetcher import Fetcher
 from .parser import parse_contacts
 from .pipeline import normalize_record
 
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 PRIORITY_PATHS = [
-    "/", "/about", "/about-us", "/about us",
-    "/contact", "/contact-us", "/contact us",
+    "/", "/about", "/about-us", "/about_us", "/aboutus",
+    "/contact", "/contact-us", "/contact_us", "/contactus",
 ]
 
 
@@ -25,7 +26,7 @@ class CrawlerOrchestrator:
 
     async def fetch_and_parse(self, session, url: str) -> Optional[Dict]:
         try:
-            html = await self.fetcher.fetch(session, url)
+            html = await self.fetcher.fetch_url(session, url)
             parsed = parse_contacts(html)
             return {"url": url, **parsed}
         except Exception as e:
@@ -76,7 +77,7 @@ class CrawlerOrchestrator:
                 visited.add(url)
 
                 try:
-                    html = await self.fetcher.fetch(session, url)
+                    html = await self.fetcher.fetch_url(session, url)
                 except Exception as e:
                     logging.error(f"Error fetching page {url}", exc_info=e)
                     to_visit.task_done()

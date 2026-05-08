@@ -3,20 +3,23 @@
 import threading
 import time
 
-from app.utils.env_vars import SCRAPER_CONFIG
+from app.utils.env_vars import SCRAPER_CONFIG, APP_ENV
 from app.utils.logger_util import get_logger
+from crawler.scraper_runner import run_scraper
 
 logger = get_logger('scraper_job')
 
 
 def run_job():
+    import asyncio
     logger.info('Scraping')
-    # print("Scraping")
+    asyncio.run(run_scraper())
+    if APP_ENV == 'local_debug':
+        exit(0)
 
 
 def start_scraper_loop(interval_sec: int = 1200, is_looped: bool = True):
     logger.info(f"Starting scraper - looped: {is_looped}")
-    print(f"Starting scraper - looped: {is_looped}")
 
     def loop_cron_job():
         while True:
@@ -43,4 +46,4 @@ if __name__ == "__main__":
             if not looped:
                 break
     except KeyboardInterrupt:
-        print("Scraper loop stopped.")
+        logger.info("Scraper loop stopped.")

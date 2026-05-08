@@ -44,7 +44,7 @@ class TestCrawlerFunctional:
         fetcher = Fetcher(timeout=5)
 
         async with aiohttp.ClientSession() as session:
-            html = await fetcher.fetch(session, url)
+            html = await fetcher.fetch_url(session, url)
 
         result = parse_contacts(html)
 
