@@ -10,10 +10,10 @@ class Fetcher:
         self.timeout = timeout
 
     async def fetch_url(self, session: aiohttp.ClientSession, url: str) -> str:
-        async with session.get(url, timeout=self.timeout) as resp:
-            try:
+        try:
+            async with session.get(url, timeout=self.timeout) as resp:
                 resp.raise_for_status()
-            except Exception as e:
-                logger.error(f"Error fetching url {e}")
-
-            return await resp.text()
+                return await resp.text()
+        except Exception as e:
+            logger.error(f"Fetcher error for {url}: {e}")
+            return ""  # <--- SOLID fallback

@@ -138,7 +138,7 @@ class TestCrawlerOrchestrator:
         # Good domain
         async def handler_contact(request):
             return web.Response(text="""
-                <a href="tel:+401234">Call</a>
+                <a href="tel:+401234567">Call</a>
             """)
 
         app = web.Application()
@@ -155,7 +155,7 @@ class TestCrawlerOrchestrator:
 
         # Validate good result
         assert len(results) == 1
-        assert "+401234" in results[0]["phones"]
+        assert "+401234567" in results[0]["phones"]
 
         # Validate bad_urls.txt
         bad_file = tmp_path / "bad_urls.txt"
