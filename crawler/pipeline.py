@@ -2,17 +2,27 @@
 
 from urllib.parse import urlparse
 
+from crawler.util.phone_normalizer import dedupe_and_normalize_phones
 
-def normalize_record(record: dict) -> dict:
+
+def normalize_record(record):
     """
-    Ensure scraper output always contains phones, emails, socials as lists.
+    Ensure phones, emails, socials are normalized and always lists.
     """
-    return {
-        "url": record.get("url"),
-        "phones": record.get("phones") or [],
-        "emails": record.get("emails") or [],
-        "socials": record.get("socials") or [],
-    }
+
+    # Phones
+    raw_phones = record.get("phones") or []
+    record["phones"] = dedupe_and_normalize_phones(raw_phones, default_country="+1")
+
+    # Emails
+    raw_emails = record.get("emails") or []
+    record["emails"] = list({e.lower().strip() for e in raw_emails})
+
+    # Socials
+    raw_socials = record.get("socials") or []
+    record["socials"] = list({s.strip() for s in raw_socials})
+
+    return record
 
 
 def normalize_domain(url: str) -> str:
