@@ -1,3 +1,5 @@
+# crawler/orchestrator.py
+
 import asyncio
 import logging
 from typing import List, Dict, Optional, Set
@@ -27,11 +29,34 @@ class CrawlerOrchestrator:
     async def fetch_and_parse(self, session, url: str) -> Optional[Dict]:
         try:
             html = await self.fetcher.fetch_url(session, url)
+
+            # If fetch failed → html = "" → safe fallback
+            if not html:
+                return {
+                    "url": url,
+                    "phones": [],
+                    "emails": [],
+                    "socials": [],
+                }
+
             parsed = parse_contacts(html)
-            return {"url": url, **parsed}
+
+            # Ensure parsed fields exist and are lists
+            return {
+                "url": url,
+                "phones": parsed.get("phones") or [],
+                "emails": parsed.get("emails") or [],
+                "socials": parsed.get("socials") or [],
+            }
+
         except Exception as e:
-            logging.error(f"Error fetching {url}: {e}")
-            return None
+            logger.error(f"Error fetching {url}: {e}")
+            return {
+                "url": url,
+                "phones": [],
+                "emails": [],
+                "socials": [],
+            }
 
     async def crawl_domain(self, session, domain: str) -> Optional[Dict]:
         logger.info(f"Starting crawl for domain: {domain}")
@@ -76,32 +101,72 @@ class CrawlerOrchestrator:
 
                 visited.add(url)
 
-                try:
-                    html = await self.fetcher.fetch_url(session, url)
-                except Exception as e:
-                    logging.error(f"Error fetching page {url}", exc_info=e)
-                    to_visit.task_done()
-                    continue
+                # Fetch HTML safely
+                html = await self.fetcher.fetch_url(session, url)
 
-                parsed = parse_contacts(html)
-                record = normalize_record({"url": url, **parsed})
+                if not html:
+                    record = normalize_record({"url": url, "phones": [], "emails": [], "socials": []})
+                else:
+                    parsed = parse_contacts(html)
+                    record = normalize_record({
+                        "url": url,
+                        "phones": parsed.get("phones") or [],
+                        "emails": parsed.get("emails") or [],
+                        "socials": parsed.get("socials") or [],
+                    })
+
                 results.append(record)
 
+                # EARLY STOP: if we found contacts, stop all workers
                 if record["phones"] or record["socials"]:
                     to_visit.task_done()
+                    # Clear queue so join() finishes immediately
+                    while not to_visit.empty():
+                        try:
+                            to_visit.get_nowait()
+                            to_visit.task_done()
+                        except Exception as e:
+                            logger.debug(e)
+                            break
                     return
 
-                # extract internal links
-                from selectolax.parser import HTMLParser
-                tree = HTMLParser(html)
-                for a in tree.css("a"):
-                    href = a.attributes.get("href", "")
-                    if not href:
-                        continue
-                    full = urljoin(url, href)
-                    if urlparse(full).netloc == urlparse(base).netloc:
+                # No contacts → extract internal links (filtered)
+                if html:
+                    from selectolax.parser import HTMLParser
+                    tree = HTMLParser(html)
+
+                    links_added = 0
+                    for a in tree.css("a"):
+                        if links_added >= 10:  # limit links per page
+                            break
+
+                        href = a.attributes.get("href", "")
+                        if not href:
+                            continue
+
+                        # FILTER GARBAGE LINKS
+                        if any(href.lower().endswith(ext) for ext in [
+                            ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".svg",
+                            ".zip", ".rar", ".mp4", ".avi", ".mov", ".docx", ".xlsx"
+                        ]):
+                            continue
+
+                        if any(bad in href.lower() for bad in [
+                            "calendar", "events", "blog", "news", "feed",
+                            "wp-json", "tag", "category", "product", "shop",
+                            "portfolio", "gallery", "media", "uploads"
+                        ]):
+                            continue
+
+                        full = urljoin(url, href)
+
+                        # Only internal links
+                        if urlparse(full).netloc != urlparse(base).netloc:
+                            continue
+
                         if full not in visited and len(visited) < self.max_pages:
                             await to_visit.put(full)
+                            links_added += 1
 
                 to_visit.task_done()
 
