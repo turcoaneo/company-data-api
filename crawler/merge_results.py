@@ -1,3 +1,5 @@
+# /crawler/merge_results.py
+
 import pandas as pd
 from pathlib import Path
 
@@ -52,6 +54,10 @@ def merge_dataframes(df_input: pd.DataFrame, df_results: pd.DataFrame) -> pd.Dat
 # 4. Pure function: convert merged DF → JSONL string list
 # ---------------------------------------------------------
 def dataframe_to_jsonl_lines(df: pd.DataFrame) -> list[str]:
+    # Remove unwanted columns before serialization
+    drop_cols = ["url"]
+    df = df.drop(columns=[c for c in drop_cols if c in df.columns])
+
     lines = []
     for _, row in df.iterrows():
         lines.append(row.to_json())
