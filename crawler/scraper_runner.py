@@ -20,7 +20,7 @@ async def run_scraper():
     sites = load_sites_from_config(str(input_csv))
     logger.info(f"Loaded {len(sites)} sites")
 
-    orch = CrawlerOrchestrator(concurrency=4, timeout=10)
+    orch = CrawlerOrchestrator(per_domain_concurrency=4, timeout=10)
 
     try:
         results = await orch.crawl(sites)
