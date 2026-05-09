@@ -1,42 +1,45 @@
 # crawler/util/url_normalizer.py
 
+from typing import Optional, Tuple
+
 from app.utils.logger_util import get_logger
+from crawler.util.fetch_fast import fetch_fast
+from crawler.util.fetch_with_retries import fetch_with_retries
 
 logger = get_logger()
 
 
-async def resolve_homepage(session, base: str):
+async def resolve_homepage(session, base: str, timeout: int) -> Optional[Tuple[str, str]]:
     """
-    Returns (html, working_base_url) or None.
-    Tries HTTPS → HTTP.
+    Try HTTPS fast, retry on 403, then HTTP fast, retry on 403.
+    Returns (html, working_base) or None.
     """
+
     domain = base.replace("https://", "").replace("http://", "").rstrip("/")
 
     https_url = f"https://{domain}"
     http_url = f"http://{domain}"
 
-    # Try HTTPS first
-    html = await _fetch(session, https_url)
-    if html:
-        return html, https_url
+    # --- Try HTTPS fast ---
+    ok, status, html = await fetch_fast(session, https_url, timeout)
+    if ok and status < 400:
+        return html or "", https_url
 
-    # Log the fallback
-    logger.warning(f"HTTPS failed for {domain}, retrying with HTTP: {http_url}")
+    # --- Retry HTTPS only if 403 ---
+    if status == 403:
+        retry = await fetch_with_retries(session, https_url, timeout)
+        if retry["ok"]:
+            return retry["html"] or "", https_url
 
-    html = await _fetch(session, http_url)
-    if html:
-        logger.info(f"Using HTTP for crawling: {http_url}")
-        return html, http_url
+    # --- Try HTTP fast ---
+    ok, status, html = await fetch_fast(session, http_url, timeout)
+    if ok and status < 400:
+        return html or "", http_url
+
+    # --- Retry HTTP only if 403 ---
+    if status == 403:
+        retry = await fetch_with_retries(session, http_url, timeout)
+        if retry["ok"]:
+            return retry["html"] or "", http_url
 
     return None
-
-
-async def _fetch(session, url: str):
-    try:
-        async with session.get(url, ssl=False) as resp:
-            if resp.status < 400:
-                return await resp.text(errors="ignore")
-    except Exception as e:
-        logger.debug(f"Errors occurred while fetching {url}: {e.__cause__}")
-        return ""
-    return ""

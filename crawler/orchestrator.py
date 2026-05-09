@@ -41,7 +41,7 @@ class CrawlerOrchestrator:
         base = domain.rstrip("/") if domain.startswith(("http://", "https://")) else f"https://{domain}".rstrip("/")
 
         # Phase 0: homepage must be reachable (with fallback)
-        homepage_info = await resolve_homepage(session, base)
+        homepage_info = await resolve_homepage(session, base, self.timeout)
         if homepage_info is None:
             return {"result": None, "homepage_ok": False}
 
