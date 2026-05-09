@@ -6,11 +6,9 @@ import os
 from crawler.orchestrator import CrawlerOrchestrator
 
 
+# noinspection PyUnusedLocal
 class TestCrawlerOrchestrator:
 
-    # ---------------------------------------------------------
-    # Fixture: local aiohttp server factory
-    # ---------------------------------------------------------
     @pytest.fixture
     def server_factory(self, aiohttp_server):
         async def create(app):
@@ -36,7 +34,7 @@ class TestCrawlerOrchestrator:
             """)
 
         app = web.Application()
-        app.router.add_get("/", handler_home)  # ← REQUIRED
+        app.router.add_get("/", handler_home)
         app.router.add_get("/about", handler_about)
         server = await server_factory(app)
 
@@ -44,7 +42,9 @@ class TestCrawlerOrchestrator:
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
-            result = await orch.crawl_domain(session, domain)
+            info = await orch.crawl_domain(session, domain)
+
+        result = info["result"]
 
         assert result is not None
         assert "+40123456789" in result["phones"]
@@ -82,7 +82,9 @@ class TestCrawlerOrchestrator:
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
-            result = await orch.crawl_domain(session, domain)
+            info = await orch.crawl_domain(session, domain)
+
+        result = info["result"]
 
         assert result is not None
         assert "+40222222222" in result["phones"]
@@ -103,9 +105,10 @@ class TestCrawlerOrchestrator:
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
-            result = await orch.crawl_domain(session, domain)
+            info = await orch.crawl_domain(session, domain)
 
-        assert result is None
+        assert info["result"] is None
+        assert info["homepage_ok"] is True
 
     # ---------------------------------------------------------
     # Test 4: fetch exceptions are handled gracefully
@@ -119,7 +122,6 @@ class TestCrawlerOrchestrator:
         app.router.add_get("/", handler_home)
         server = await server_factory(app)
 
-        # Force fetcher.fetch to raise
         async def fake_fetch(*args, **kwargs):
             raise RuntimeError("boom")
 
@@ -130,16 +132,16 @@ class TestCrawlerOrchestrator:
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
-            result = await orch.crawl_domain(session, domain)
+            info = await orch.crawl_domain(session, domain)
 
-        assert result is None
+        assert info["result"] is None
+        assert info["homepage_ok"] is False
 
     # ---------------------------------------------------------
     # Test 5: crawl() writes bad_urls.txt
     # ---------------------------------------------------------
     @pytest.mark.asyncio
     async def test_bad_urls_written(self, server_factory, tmp_path):
-        # Good domain
         async def handler_contact(request):
             return web.Response(text="""
                 <a href="tel:+401234567">Call</a>
@@ -154,19 +156,14 @@ class TestCrawlerOrchestrator:
 
         orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
 
-        # Run crawl
-        results = await orch.crawl([good_domain, bad_domain])
-
-        # Validate good result
-        assert len(results) == 1
-        assert "+401234567" in results[0]["phones"]
-
-        # Validate bad_urls.txt
-        bad_file = tmp_path / "bad_urls.txt"
         # Monkeypatch working directory
         os.chdir(tmp_path)
 
-        await orch.crawl([good_domain, bad_domain])
+        results = await orch.crawl([good_domain, bad_domain])
 
+        assert len(results) == 1
+        assert "+401234567" in results[0]["phones"]
+
+        bad_file = tmp_path / "bad_urls.txt"
         assert bad_file.exists()
         assert bad_domain in bad_file.read_text()
