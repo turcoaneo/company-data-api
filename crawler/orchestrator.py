@@ -97,14 +97,28 @@ class CrawlerOrchestrator:
         return self.parse_html(url, html)
 
     # -------------------------
-    # Phase 0: homepage check
+    # Phase 0: homepage check (NOW WITH HTTP FALLBACK)
     # -------------------------
     async def ensure_homepage(self, session: aiohttp.ClientSession, base: str) -> Optional[str]:
-        html = await self.fetch_html(session, base)
-        if not html:
-            logger.error(f"Homepage unreachable, skipping domain: {base}")
-            return None
-        return html
+        # Normalize domain
+        domain = base.replace("https://", "").replace("http://", "").rstrip("/")
+
+        https_url = f"https://{domain}"
+        http_url = f"http://{domain}"
+
+        # Try HTTPS first
+        html = await self.fetch_html(session, https_url)
+        if html:
+            return html
+
+        # Fallback to HTTP
+        logger.warning(f"HTTPS failed for {domain}, retrying with HTTP: {http_url}")
+        html = await self.fetch_html(session, http_url)
+        if html:
+            return html
+
+        logger.error(f"Homepage unreachable via HTTPS and HTTP: {domain}")
+        return None
 
     # -------------------------
     # Phase 1: priority pages
