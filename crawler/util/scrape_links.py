@@ -1,8 +1,10 @@
 # crawler/util/scrape_links.py
 
 import asyncio
+
 from crawler.parser import parse_contacts
 from crawler.pipeline import normalize_record
+
 
 async def scrape_links(session, links, timeout, concurrency):
     if not links:
@@ -15,7 +17,10 @@ async def scrape_links(session, links, timeout, concurrency):
             try:
                 async with session.get(url, ssl=False, timeout=timeout) as resp:
                     html = await resp.text(errors="ignore")
-            except:
+            except Exception as e:
+                from app.utils.logger_util import get_logger
+                logger = get_logger()
+                logger.debug(f"Errors occurred while fetching and parse {url}: {e.__cause__}")
                 return None
 
             parsed = parse_contacts(html)
