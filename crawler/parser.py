@@ -12,10 +12,11 @@ class Parser:
     def parse_tel_links(hrefs):
         phones = []
         for href in hrefs:
-            if href.lower().startswith("tel:"):
-                number = href.split(":", 1)[1].strip()
-                phones.append(number)
-        logger.debug(f"TEL phones extracted: {phones}")
+            if not href:
+                continue
+            h = href.lower()
+            if h.startswith("tel:"):
+                phones.append(h.split(":", 1)[1].strip())
         return phones
 
     @staticmethod
@@ -56,7 +57,12 @@ class Parser:
 
 def parse_contacts(html: str) -> dict:
     tree = HTMLParser(html)
-    hrefs = [n.attributes.get("href", "") for n in tree.css("a")]
+
+    hrefs = [
+        (n.attributes.get("href") or "").strip()
+        for n in tree.css("a")
+        if n.attributes.get("href") is not None
+    ]
 
     logger.debug(f"Found {len(hrefs)} hrefs")
 
@@ -64,12 +70,10 @@ def parse_contacts(html: str) -> dict:
     text_phones = Parser.parse_text_phones(html)
     phones = Parser.merge_unique(tel_phones + text_phones)
 
-    # emails = Parser.parse_emails(hrefs)
     socials = Parser.parse_socials(hrefs)
 
     result = {
         "phones": phones,
-        # "emails": emails,
         "socials": socials,
     }
 

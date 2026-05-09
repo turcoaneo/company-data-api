@@ -5,13 +5,12 @@ import threading
 from app.utils.loader import load_sites_from_config
 from app.utils.logger_util import get_logger
 from app.utils.path_util import get_project_root
-from app.utils.timing_util import elapsed_time, log_thread_id
+from app.utils.timing_util import log_thread_id
 from crawler.orchestrator import CrawlerOrchestrator
 
 logger = get_logger()
 
 
-@elapsed_time("run_scraper")
 async def run_scraper():
     logger.info("*" * 100)
     logger.info(f"Running {log_thread_id(threading.get_ident(), 'scraper')}")

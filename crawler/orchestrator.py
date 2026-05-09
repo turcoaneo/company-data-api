@@ -1,189 +1,188 @@
 # crawler/orchestrator.py
 
 import asyncio
-import logging
-from typing import List, Dict, Optional, Set
+from typing import List, Dict, Optional
 from urllib.parse import urljoin, urlparse
 
 import aiohttp
 
+from app.utils.env_vars import SCRAPER_CONFIG
 from app.utils.logger_util import get_logger
+from app.utils.timing_util import elapsed_time
 from .fetcher import Fetcher
 from .parser import parse_contacts
 from .pipeline import normalize_record
 
 logger = get_logger()
+has_shallow_crawl = SCRAPER_CONFIG["shallow_crawl"]
 
 PRIORITY_PATHS = [
     "/", "/about", "/about-us", "/about_us", "/aboutus",
     "/contact", "/contact-us", "/contact_us", "/contactus",
 ]
 
+SEMANTIC_KEYWORDS = [
+    "about", "contact", "team", "leadership", "staff",
+    "who-we-are", "company", "info", "support",
+]
+
+GARBAGE_EXT = [
+    ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".svg",
+    ".zip", ".rar", ".mp4", ".avi", ".mov", ".docx", ".xlsx"
+]
+
+LOW_SIGNAL = [
+    "calendar", "events", "blog", "news", "feed",
+    "wp-json", "tag", "category", "product", "shop",
+    "portfolio", "gallery", "media", "uploads"
+]
+
+
+def is_semantic_link(href: str) -> bool:
+    href_lower = href.lower()
+    return any(key in href_lower for key in SEMANTIC_KEYWORDS)
+
+
+def is_garbage(href: str) -> bool:
+    href_lower = href.lower()
+    return any(href_lower.endswith(ext) for ext in GARBAGE_EXT)
+
+
+def is_low_signal(href: str) -> bool:
+    href_lower = href.lower()
+    return any(bad in href_lower for bad in LOW_SIGNAL)
+
 
 class CrawlerOrchestrator:
-    def __init__(self, concurrency: int = 10, timeout: int = 10, max_pages: int = 30):
+    def __init__(self, concurrency: int = 10, timeout: int = 10):
         self.concurrency = concurrency
         self.fetcher = Fetcher(timeout=timeout)
-        self.max_pages = max_pages
 
-    async def fetch_and_parse(self, session, url: str) -> Optional[Dict]:
+    # -------------------------
+    # Fetch only
+    # -------------------------
+    async def fetch_html(self, session: aiohttp.ClientSession, url: str) -> str:
         try:
             html = await self.fetcher.fetch_url(session, url)
-
-            # If fetch failed → html = "" → safe fallback
-            if not html:
-                return {
-                    "url": url,
-                    "phones": [],
-                    "emails": [],
-                    "socials": [],
-                }
-
-            parsed = parse_contacts(html)
-
-            # Ensure parsed fields exist and are lists
-            return {
-                "url": url,
-                "phones": parsed.get("phones") or [],
-                "emails": parsed.get("emails") or [],
-                "socials": parsed.get("socials") or [],
-            }
-
+            return html or ""
         except Exception as e:
-            logger.error(f"Error fetching {url}: {e}")
-            return {
-                "url": url,
-                "phones": [],
-                "emails": [],
-                "socials": [],
-            }
+            logger.error(f"Fetch error for {url}: {e}")
+            return ""
 
-    async def crawl_domain(self, session, domain: str) -> Optional[Dict]:
-        logger.info(f"Starting crawl for domain: {domain}")
-        if domain.startswith("http://") or domain.startswith("https://"):
-            base = domain.rstrip("/")
-        else:
-            base = f"https://{domain}".rstrip("/")
+    # -------------------------
+    # Parse only
+    # -------------------------
+    @staticmethod
+    def parse_html(url: str, html: str) -> Dict:
+        if not html:
+            return {"url": url, "phones": [], "emails": [], "socials": []}
 
-        # -------------------------
-        # Phase 1: priority pages
-        # -------------------------
-        for path in PRIORITY_PATHS:
-            priority_url = urljoin(base, path)
-            result = await self.fetch_and_parse(session, priority_url)
-            if result and (result["phones"] or result["socials"]):
+        parsed = parse_contacts(html)
+        return {
+            "url": url,
+            "phones": parsed.get("phones") or [],
+            "emails": parsed.get("emails") or [],
+            "socials": parsed.get("socials") or [],
+        }
+
+    # -------------------------
+    # Fetch + parse
+    # -------------------------
+    async def fetch_and_parse(self, session: aiohttp.ClientSession, url: str) -> Dict:
+        html = await self.fetch_html(session, url)
+        return self.parse_html(url, html)
+
+    # -------------------------
+    # Phase 1: priority pages (parallel)
+    # -------------------------
+    @elapsed_time("priority-pages")
+    async def try_priority_pages(self, session, base: str) -> Optional[Dict]:
+        tasks = [self.fetch_and_parse(session, urljoin(base, p)) for p in PRIORITY_PATHS]
+
+        for coro in asyncio.as_completed(tasks):
+            result = await coro
+            if result["phones"] or result["socials"]:
                 return normalize_record(result)
-            else:
-                logger.warning(f"No contacts found in priority pages for {domain}")
-
-        # -------------------------
-        # Phase 2: full crawl
-        # -------------------------
-        to_visit: asyncio.Queue[str] = asyncio.Queue()
-        visited: Set[str] = set()
-
-        # seed with homepage
-        await to_visit.put(base)
-
-        results = []
-
-        # FIX: we need HTML to extract links
-        async def worker_with_links():
-            while True:
-                try:
-                    url = await to_visit.get()
-                except asyncio.CancelledError:
-                    return
-
-                if url in visited:
-                    to_visit.task_done()
-                    continue
-
-                visited.add(url)
-
-                # Fetch HTML safely
-                html = await self.fetcher.fetch_url(session, url)
-
-                if not html:
-                    record = normalize_record({"url": url, "phones": [], "emails": [], "socials": []})
-                else:
-                    parsed = parse_contacts(html)
-                    record = normalize_record({
-                        "url": url,
-                        "phones": parsed.get("phones") or [],
-                        "emails": parsed.get("emails") or [],
-                        "socials": parsed.get("socials") or [],
-                    })
-
-                results.append(record)
-
-                # EARLY STOP: if we found contacts, stop all workers
-                if record["phones"] or record["socials"]:
-                    to_visit.task_done()
-                    # Clear queue so join() finishes immediately
-                    while not to_visit.empty():
-                        try:
-                            to_visit.get_nowait()
-                            to_visit.task_done()
-                        except Exception as e:
-                            logger.debug(e)
-                            break
-                    return
-
-                # No contacts → extract internal links (filtered)
-                if html:
-                    from selectolax.parser import HTMLParser
-                    tree = HTMLParser(html)
-
-                    links_added = 0
-                    for a in tree.css("a"):
-                        if links_added >= 10:  # limit links per page
-                            break
-
-                        href = a.attributes.get("href", "")
-                        if not href:
-                            continue
-
-                        # FILTER GARBAGE LINKS
-                        if any(href.lower().endswith(ext) for ext in [
-                            ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".svg",
-                            ".zip", ".rar", ".mp4", ".avi", ".mov", ".docx", ".xlsx"
-                        ]):
-                            continue
-
-                        if any(bad in href.lower() for bad in [
-                            "calendar", "events", "blog", "news", "feed",
-                            "wp-json", "tag", "category", "product", "shop",
-                            "portfolio", "gallery", "media", "uploads"
-                        ]):
-                            continue
-
-                        full = urljoin(url, href)
-
-                        # Only internal links
-                        if urlparse(full).netloc != urlparse(base).netloc:
-                            continue
-
-                        if full not in visited and len(visited) < self.max_pages:
-                            await to_visit.put(full)
-                            links_added += 1
-
-                to_visit.task_done()
-
-        workers = [asyncio.create_task(worker_with_links()) for _ in range(self.concurrency)]
-
-        await to_visit.join()
-
-        for w in workers:
-            w.cancel()
-
-        # return first good result
-        for r in results:
-            if r["phones"] or r["socials"]:
-                return r
 
         return None
 
+    # -------------------------
+    # Phase 2: semantic link discovery
+    # -------------------------
+    @elapsed_time("semantic_discovery")
+    async def discover_semantic_links(self, session, base: str) -> List[str]:
+        html = await self.fetch_html(session, base)
+        if not html:
+            return []
+
+        from selectolax.parser import HTMLParser
+        tree = HTMLParser(html)
+
+        links = set()
+
+        for a in tree.css("a"):
+            href = a.attributes.get("href", "")
+            if not href:
+                continue
+
+            full = urljoin(base, href)
+
+            # internal only
+            if urlparse(full).netloc != urlparse(base).netloc:
+                continue
+
+            if is_garbage(full):
+                continue
+
+            if is_low_signal(full):
+                continue
+
+            if is_semantic_link(full):
+                links.add(full)
+
+        return list(links)
+
+    # -------------------------
+    # Phase 3: scrape semantic links (parallel)
+    # -------------------------
+    async def scrape_semantic_links(self, session, links: List[str]) -> Optional[Dict]:
+        tasks = [self.fetch_and_parse(session, url) for url in links]
+
+        for coro in asyncio.as_completed(tasks):
+            result = await coro
+            if result["phones"] or result["socials"]:
+                return normalize_record(result)
+
+        return None
+
+    # -------------------------
+    # Crawl a single domain
+    # -------------------------
+    async def crawl_domain(self, session, domain: str) -> Optional[Dict]:
+        logger.info(f"Starting crawl for domain: {domain}")
+
+        base = domain.rstrip("/") if domain.startswith(("http://", "https://")) else f"https://{domain}".rstrip("/")
+
+        # Phase 1: priority pages
+        result = await self.try_priority_pages(session, base)
+        if result:
+            return result
+
+        # Phase 2: semantic link discovery
+        if has_shallow_crawl:
+            semantic_links = await self.discover_semantic_links(session, base)
+
+            # Phase 3: scrape semantic links
+            if semantic_links:
+                result = await self.scrape_semantic_links(session, semantic_links)
+                if result:
+                    return result
+
+        return None
+
+    # -------------------------
+    # Crawl many domains
+    # -------------------------
     async def crawl(self, domains: List[str]) -> List[Dict]:
         good = []
         bad = []
@@ -196,7 +195,6 @@ class CrawlerOrchestrator:
                 else:
                     bad.append(domain)
 
-        # write bad URLs
         if bad:
             with open("bad_urls.txt", "w", encoding="utf-8") as f:
                 for b in bad:

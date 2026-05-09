@@ -5,11 +5,13 @@ import time
 
 from app.utils.env_vars import SCRAPER_CONFIG, APP_ENV
 from app.utils.logger_util import get_logger
+from app.utils.timing_util import elapsed_time
 from crawler.scraper_runner import run_scraper
 
 logger = get_logger('scraper_job')
 
 
+@elapsed_time("run_scraper")
 def run_job():
     import asyncio
     logger.info('Scraping')
