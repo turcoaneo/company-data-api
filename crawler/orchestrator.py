@@ -18,6 +18,7 @@ logger = get_logger()
 PRIORITY_PATHS = [
     "/", "/about", "/about-us", "/about_us", "/aboutus",
     "/contact", "/contact-us", "/contact_us", "/contactus",
+    "/about.html", "/contact.html", "/contact_us.html", "/contactus.html",
 ]
 
 SEMANTIC_KEYWORDS = [
@@ -97,10 +98,9 @@ class CrawlerOrchestrator:
         return self.parse_html(url, html)
 
     # -------------------------
-    # Phase 0: homepage check (NOW WITH HTTP FALLBACK)
+    # Phase 0: homepage check WITH HTTP FALLBACK
     # -------------------------
-    async def ensure_homepage(self, session: aiohttp.ClientSession, base: str) -> Optional[str]:
-        # Normalize domain
+    async def ensure_homepage(self, session: aiohttp.ClientSession, base: str) -> Optional[tuple]:
         domain = base.replace("https://", "").replace("http://", "").rstrip("/")
 
         https_url = f"https://{domain}"
@@ -109,21 +109,22 @@ class CrawlerOrchestrator:
         # Try HTTPS first
         html = await self.fetch_html(session, https_url)
         if html:
-            return html
+            return html, https_url
 
         # Fallback to HTTP
         logger.warning(f"HTTPS failed for {domain}, retrying with HTTP: {http_url}")
         html = await self.fetch_html(session, http_url)
         if html:
-            return html
+            return html, http_url
 
         logger.error(f"Homepage unreachable via HTTPS and HTTP: {domain}")
         return None
 
     # -------------------------
-    # Phase 1: priority pages
+    # Phase 1: priority pages WITH HTTP FALLBACK
     # -------------------------
     async def try_priority_pages(self, session: aiohttp.ClientSession, base: str) -> Optional[Dict]:
+        # Try HTTPS/HTTP based on base
         tasks = [self.fetch_and_parse(session, urljoin(base, p)) for p in PRIORITY_PATHS]
 
         for coro in asyncio.as_completed(tasks):
@@ -167,7 +168,7 @@ class CrawlerOrchestrator:
         return list(links)
 
     # -------------------------
-    # Phase 3: scrape semantic links
+    # Phase 3: scrape semantic links WITH HTTP FALLBACK
     # -------------------------
     async def scrape_semantic_links(
         self,
@@ -206,20 +207,22 @@ class CrawlerOrchestrator:
 
         base = domain.rstrip("/") if domain.startswith(("http://", "https://")) else f"https://{domain}".rstrip("/")
 
-        # Phase 0: homepage must be reachable
-        homepage_html = await self.ensure_homepage(session, base)
-        homepage_ok = homepage_html is not None
+        # Phase 0: homepage must be reachable (with fallback)
+        homepage_info = await self.ensure_homepage(session, base)
+        homepage_ok = homepage_info is not None
 
         if not homepage_ok:
             return {"result": None, "homepage_ok": False}
 
-        # Phase 1: priority pages
-        result = await self.try_priority_pages(session, base)
+        homepage_html, working_base = homepage_info
+
+        # Phase 1: priority pages (using working_base)
+        result = await self.try_priority_pages(session, working_base)
         if result:
             return {"result": result, "homepage_ok": True}
 
         # Phase 2: semantic links
-        semantic_links = await self.discover_semantic_links(base, homepage_html)
+        semantic_links = await self.discover_semantic_links(working_base, homepage_html)
 
         # Phase 3: scrape semantic links
         if SCRAPER_CONFIG["shallow_crawl"]:
