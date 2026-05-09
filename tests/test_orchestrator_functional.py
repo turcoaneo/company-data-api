@@ -1,7 +1,11 @@
+# /tests/test_orchestrator_functional.py
+
+# noinspection PyUnusedLocal
+import os
+
+import aiohttp
 import pytest
 from aiohttp import web
-import aiohttp
-import os
 
 from crawler.orchestrator import CrawlerOrchestrator
 
@@ -13,15 +17,22 @@ class TestCrawlerOrchestrator:
     def server_factory(self, aiohttp_server):
         async def create(app):
             return await aiohttp_server(app)
+
         return create
 
     # ---------------------------------------------------------
-    # Test 1: priority page returns contacts immediately
+    # Test 1: semantic discovery finds contacts on linked page
     # ---------------------------------------------------------
     @pytest.mark.asyncio
     async def test_priority_page_success(self, server_factory):
         async def handler_home(request):
-            return web.Response(text="<html><body>OK</body></html>")
+            return web.Response(text="""
+                <html>
+                    <body>
+                        <a href="/about">About</a>
+                    </body>
+                </html>
+            """)
 
         async def handler_about(request):
             return web.Response(text="""
@@ -123,10 +134,11 @@ class TestCrawlerOrchestrator:
         server = await server_factory(app)
 
         async def fake_fetch(*args, **kwargs):
-            raise RuntimeError("boom")
+            return ""
 
-        from crawler.fetcher import Fetcher
-        monkeypatch.setattr(Fetcher, "fetch_url", fake_fetch)
+        # Patch the correct function for the new orchestrator
+        import crawler.util.url_normalizer as url_norm
+        monkeypatch.setattr(url_norm, "_fetch", fake_fetch)
 
         orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
@@ -156,7 +168,6 @@ class TestCrawlerOrchestrator:
 
         orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
 
-        # Monkeypatch working directory
         os.chdir(tmp_path)
 
         results = await orch.crawl([good_domain, bad_domain])
