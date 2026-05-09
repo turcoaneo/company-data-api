@@ -15,22 +15,20 @@ from .pipeline import normalize_record
 
 logger = get_logger()
 
-PRIORITY_PATHS = [
-    "/", "/about", "/about-us", "/about_us", "/aboutus",
-    "/contact", "/contact-us", "/contact_us", "/contactus",
-    "/about.html", "/contact.html", "/contact_us.html", "/contactus.html",
-]
-
+# Unified semantic keywords
 SEMANTIC_KEYWORDS = [
-    "about", "contact", "team", "leadership", "staff",
-    "who-we-are", "company", "info", "support",
+    "about", "contact", "support", "team", "staff",
+    "leadership", "company", "info", "who-we-are",
+    "whoweare", "help", "customer-service", "customer",
 ]
 
+# Garbage extensions
 GARBAGE_EXT = [
     ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".svg",
     ".zip", ".rar", ".mp4", ".avi", ".mov", ".docx", ".xlsx",
 ]
 
+# Low-signal paths
 LOW_SIGNAL = [
     "calendar", "events", "blog", "news", "feed",
     "wp-json", "tag", "category", "product", "shop",
@@ -38,7 +36,7 @@ LOW_SIGNAL = [
 ]
 
 
-def is_semantic_link(href: str) -> bool:
+def is_semantic_candidate(href: str) -> bool:
     href_lower = href.lower()
     return any(key in href_lower for key in SEMANTIC_KEYWORDS)
 
@@ -121,22 +119,7 @@ class CrawlerOrchestrator:
         return None
 
     # -------------------------
-    # Phase 1: priority pages WITH HTTP FALLBACK
-    # -------------------------
-    async def try_priority_pages(self, session: aiohttp.ClientSession, base: str) -> Optional[Dict]:
-        # Try HTTPS/HTTP based on base
-        tasks = [self.fetch_and_parse(session, urljoin(base, p)) for p in PRIORITY_PATHS]
-
-        for coro in asyncio.as_completed(tasks):
-            result = await coro
-            if result["phones"] or result["socials"]:
-                logger.debug(f"Contacts found on PRIORITY page: {result['url']}")
-                return normalize_record(result)
-
-        return None
-
-    # -------------------------
-    # Phase 2: semantic link discovery
+    # Unified semantic link discovery
     # -------------------------
     @elapsed_time("semantic_discovery")
     async def discover_semantic_links(
@@ -156,19 +139,26 @@ class CrawlerOrchestrator:
 
             full = urljoin(base, href)
 
+            # Internal only
             if urlparse(full).netloc != urlparse(base).netloc:
                 continue
+
+            # Skip garbage
             if is_garbage(full):
                 continue
+
+            # Skip low-signal
             if is_low_signal(full):
                 continue
-            if is_semantic_link(full):
+
+            # Semantic match
+            if is_semantic_candidate(full):
                 links.add(full)
 
         return list(links)
 
     # -------------------------
-    # Phase 3: scrape semantic links WITH HTTP FALLBACK
+    # Scrape semantic links
     # -------------------------
     async def scrape_semantic_links(
         self,
@@ -215,20 +205,19 @@ class CrawlerOrchestrator:
             return {"result": None, "homepage_ok": False}
 
         homepage_html, working_base = homepage_info
+        # parse homepage itself
+        homepage_result = self.parse_html(working_base, homepage_html)
+        if homepage_result["phones"] or homepage_result["socials"]:
+            logger.debug(f"Contacts found on HOMEPAGE: {working_base}")
+            return {"result": normalize_record(homepage_result), "homepage_ok": True}
 
-        # Phase 1: priority pages (using working_base)
-        result = await self.try_priority_pages(session, working_base)
-        if result:
-            return {"result": result, "homepage_ok": True}
-
-        # Phase 2: semantic links
+        # Unified semantic discovery
         semantic_links = await self.discover_semantic_links(working_base, homepage_html)
 
-        # Phase 3: scrape semantic links
-        if SCRAPER_CONFIG["shallow_crawl"]:
-            result = await self.scrape_semantic_links(session, semantic_links)
-            if result:
-                return {"result": result, "homepage_ok": True}
+        # Scrape semantic links
+        result = await self.scrape_semantic_links(session, semantic_links)
+        if result:
+            return {"result": result, "homepage_ok": True}
 
         return {"result": None, "homepage_ok": True}
 
