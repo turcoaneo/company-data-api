@@ -54,10 +54,10 @@ def is_low_signal(href: str) -> bool:
 
 class CrawlerOrchestrator:
     def __init__(
-            self,
-            per_domain_concurrency: int = 5,
-            timeout: int = 10,
-            max_domains_in_parallel: int = 20,
+        self,
+        per_domain_concurrency: int = 5,
+        timeout: int = 10,
+        max_domains_in_parallel: int = 20,
     ):
         self.per_domain_concurrency = per_domain_concurrency
         self.max_domains_in_parallel = max_domains_in_parallel
@@ -71,18 +71,17 @@ class CrawlerOrchestrator:
         return html or ""
 
     # -------------------------
-    # Parse only
+    # Parse only (emails removed)
     # -------------------------
     @staticmethod
     def parse_html(url: str, html: str) -> Dict:
         if not html:
-            return {"url": url, "phones": [], "emails": [], "socials": []}
+            return {"url": url, "phones": [], "socials": []}
 
         parsed = parse_contacts(html)
         return {
             "url": url,
             "phones": parsed.get("phones") or [],
-            "emails": parsed.get("emails") or [],
             "socials": parsed.get("socials") or [],
         }
 
@@ -112,6 +111,7 @@ class CrawlerOrchestrator:
         for coro in asyncio.as_completed(tasks):
             result = await coro
             if result["phones"] or result["socials"]:
+                logger.debug(f"Contacts found on PRIORITY page: {result['url']}")
                 return normalize_record(result)
 
         return None
@@ -121,9 +121,9 @@ class CrawlerOrchestrator:
     # -------------------------
     @elapsed_time("semantic_discovery")
     async def discover_semantic_links(
-            self,
-            base: str,
-            homepage_html: str,
+        self,
+        base: str,
+        homepage_html: str,
     ) -> List[str]:
         from selectolax.parser import HTMLParser
 
@@ -153,17 +153,16 @@ class CrawlerOrchestrator:
         return list(links)
 
     # -------------------------
-    # Phase 3: scrape semantic links (parallel, per-domain limited)
+    # Phase 3: scrape semantic links (parallel)
     # -------------------------
     async def scrape_semantic_links(
-            self,
-            session: aiohttp.ClientSession,
-            links: List[str],
+        self,
+        session: aiohttp.ClientSession,
+        links: List[str],
     ) -> Optional[Dict]:
         if not links:
             return None
 
-        # limit per-domain concurrency
         sem = asyncio.Semaphore(self.per_domain_concurrency)
 
         async def guarded_fetch(url: str) -> Dict:
@@ -175,6 +174,7 @@ class CrawlerOrchestrator:
         for coro in asyncio.as_completed(tasks):
             result = await coro
             if result["phones"] or result["socials"]:
+                logger.debug(f"Contacts found on SEMANTIC link: {result['url']}")
                 return normalize_record(result)
 
         return None
@@ -200,9 +200,8 @@ class CrawlerOrchestrator:
         # Phase 2: semantic links from homepage
         semantic_links = await self.discover_semantic_links(base, homepage_html)
 
-        # Phase 3: scrape semantic links
-        has_shallow_crawl = SCRAPER_CONFIG["shallow_crawl"]
-        if has_shallow_crawl:
+        # Phase 3: scrape semantic links (only if shallow_crawl enabled)
+        if SCRAPER_CONFIG["shallow_crawl"]:
             result = await self.scrape_semantic_links(session, semantic_links)
             if result:
                 return result
