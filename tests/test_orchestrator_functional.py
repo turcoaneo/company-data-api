@@ -134,11 +134,11 @@ class TestCrawlerOrchestrator:
         server = await server_factory(app)
 
         async def fake_fetch(*args, **kwargs):
-            return ""
+            return None
 
-        # Patch the correct function for the new orchestrator
-        import crawler.util.url_normalizer as url_norm
-        monkeypatch.setattr(url_norm, "_fetch", fake_fetch)
+        # Patch resolve_homepage INSIDE the orchestrator module
+        import crawler.orchestrator as orch_mod
+        monkeypatch.setattr(orch_mod, "resolve_homepage", fake_fetch)
 
         orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))

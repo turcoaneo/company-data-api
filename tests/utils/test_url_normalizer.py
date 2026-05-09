@@ -11,6 +11,7 @@ class TestUrlNormalizer:
 
     @pytest.mark.asyncio
     async def test_resolve_homepage_http_fallback(self, aiohttp_server):
+        # noinspection PyUnusedLocal
         async def handler(request):
             return web.Response(text="OK")
 
@@ -25,8 +26,7 @@ class TestUrlNormalizer:
         domain = base_url.replace("http://", "").rstrip("/")
 
         async with aiohttp.ClientSession() as session:
-            html, resolved_base = await resolve_homepage(session, f"https://{domain}")
+            html, resolved_base = await resolve_homepage(session, f"https://{domain}", 5)
 
         assert html == "OK"
         assert resolved_base.startswith("http://")
-

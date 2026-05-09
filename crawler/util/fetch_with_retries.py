@@ -23,6 +23,7 @@ BROWSER_HEADERS = {
 }
 
 
+# noinspection DuplicatedCode
 async def fetch_with_retries(session, url, timeout):
     """
     Multi-strategy fetch to bypass non-Cloudflare 403 bot blocks.
@@ -35,14 +36,15 @@ async def fetch_with_retries(session, url, timeout):
     """
 
     # Strategy 1: GET with browser headers
+    browser_header = "Browser-header"
     try:
         async with session.get(url, ssl=False, timeout=timeout, headers=BROWSER_HEADERS) as resp:
             html = await resp.text(errors="ignore")
             if resp.status < 400:
                 return {"ok": True, "status": resp.status, "html": html}
-            logger.debug(f"Browser-header GET failed for {url}: {resp.status}")
+            logger.debug(f"{browser_header} GET failed for {url}: {resp.status}")
     except Exception as e:
-        logger.debug(f"Browser-header GET exception for {url}: {e}")
+        logger.debug(f"{browser_header} GET exception for {url}: {e}")
 
     # Strategy 2: HEAD request
     try:
@@ -54,6 +56,7 @@ async def fetch_with_retries(session, url, timeout):
         logger.debug(f"HEAD exception for {url}: {e}")
 
     # Strategy 3: GET with cookie jar
+    cookie_jar = "Cookie-jar"
     try:
         jar = aiohttp.CookieJar()
         async with aiohttp.ClientSession(cookie_jar=jar) as s2:
@@ -61,9 +64,9 @@ async def fetch_with_retries(session, url, timeout):
                 html = await resp.text(errors="ignore")
                 if resp.status < 400:
                     return {"ok": True, "status": resp.status, "html": html}
-                logger.debug(f"Cookie-jar GET failed for {url}: {resp.status}")
+                logger.debug(f"{cookie_jar} GET failed for {url}: {resp.status}")
     except Exception as e:
-        logger.debug(f"Cookie-jar GET exception for {url}: {e}")
+        logger.debug(f"cookie_jar GET exception for {url}: {e}")
 
     # Strategy 4: POST fallback
     try:

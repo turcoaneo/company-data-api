@@ -9,6 +9,7 @@ from crawler.util.fetch_with_retries import fetch_with_retries
 logger = get_logger()
 
 
+# noinspection DuplicatedCode
 async def resolve_homepage(session, base: str, timeout: int) -> Optional[Tuple[str, str]]:
     """
     Try HTTPS fast, retry on 403, then HTTP fast, retry on 403.
