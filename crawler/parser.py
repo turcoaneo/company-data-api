@@ -1,3 +1,5 @@
+# /crawler/parser.py
+
 import logging
 from selectolax.parser import HTMLParser
 from .phone_extractor import extract_phones
@@ -67,7 +69,8 @@ def parse_contacts(html: str) -> dict:
     logger.debug(f"Found {len(hrefs)} hrefs")
 
     tel_phones = Parser.parse_tel_links(hrefs)
-    text_phones = Parser.parse_text_phones(html)
+    # text_phones = Parser.parse_text_phones(html)
+    text_phones = []
     phones = Parser.merge_unique(tel_phones + text_phones)
 
     socials = Parser.parse_socials(hrefs)

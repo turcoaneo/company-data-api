@@ -1,14 +1,22 @@
+# /crawler/phone_extractor.py
+
 import re
 import logging
 from typing import List
 
 logger = logging.getLogger(__name__)
 
-PHONE_CANDIDATE_RE = re.compile(
+# Realistic phone number pattern
+PHONE_RE = re.compile(
     r"""
     (?:
-        (?:\+|\(|\d)            # allow +, (, or digit at start
-        [\d\-\.\s\(\)]{5,}      # rest of the number
+        (?:\+?\d{1,3}[\s\-.]?)?
+        (?:\(\d{2,4}\)|\d{2,4})
+        [\s\-.]?
+        \d{2,4}
+        [\s\-.]?
+        \d{2,4}
+        (?:\s*(?:ext|x|\#)\s*\d{1,5})?
     )
     """,
     re.VERBOSE,
@@ -19,11 +27,19 @@ MAX_DIGITS = 16
 
 
 def normalize_phone(raw: str) -> str:
+    """Normalize whitespace and remove double spaces."""
     return " ".join(raw.split()).strip()
 
 
 def is_plausible_phone(raw: str) -> bool:
+    """Reject long digit-only sequences and enforce digit count."""
     digits = [c for c in raw if c.isdigit()]
+
+    # Reject Squarespace/YUI IDs, timestamps, etc.
+    if raw.isdigit() and len(digits) > 10:
+        logger.debug(f"Rejected long digit-only sequence: {raw}")
+        return False
+
     ok = MIN_DIGITS <= len(digits) <= MAX_DIGITS
     if not ok:
         logger.debug(f"Rejected phone candidate '{raw}' (digit count={len(digits)})")
@@ -31,12 +47,16 @@ def is_plausible_phone(raw: str) -> bool:
 
 
 def extract_phones(text: str) -> List[str]:
-    candidates = [m.group(0) for m in PHONE_CANDIDATE_RE.finditer(text)]
+    """Extract realistic phone numbers from visible text."""
+    candidates = PHONE_RE.findall(text)
     logger.debug(f"Phone candidates found: {candidates}")
 
-    phones = [normalize_phone(c) for c in candidates if is_plausible_phone(c)]
-    logger.debug(f"Plausible phones after filtering: {phones}")
+    phones = []
+    for c in candidates:
+        if is_plausible_phone(c):
+            phones.append(normalize_phone(c))
 
+    # Deduplicate
     seen = set()
     result = []
     for p in phones:
