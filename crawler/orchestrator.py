@@ -67,8 +67,12 @@ class CrawlerOrchestrator:
     # Fetch only
     # -------------------------
     async def fetch_html(self, session: aiohttp.ClientSession, url: str) -> str:
-        html = await self.fetcher.fetch_url(session, url)
-        return html or ""
+        try:
+            html = await self.fetcher.fetch_url(session, url)
+            return html or ""
+        except Exception as e:
+            logger.error(f"Fetch error for {url}: {e}")
+            return ""
 
     # -------------------------
     # Parse only (emails removed)
@@ -103,7 +107,7 @@ class CrawlerOrchestrator:
         return html
 
     # -------------------------
-    # Phase 1: priority pages (parallel)
+    # Phase 1: priority pages
     # -------------------------
     async def try_priority_pages(self, session: aiohttp.ClientSession, base: str) -> Optional[Dict]:
         tasks = [self.fetch_and_parse(session, urljoin(base, p)) for p in PRIORITY_PATHS]
@@ -117,7 +121,7 @@ class CrawlerOrchestrator:
         return None
 
     # -------------------------
-    # Phase 2: semantic link discovery (homepage only)
+    # Phase 2: semantic link discovery
     # -------------------------
     @elapsed_time("semantic_discovery")
     async def discover_semantic_links(
@@ -137,23 +141,19 @@ class CrawlerOrchestrator:
 
             full = urljoin(base, href)
 
-            # internal only
             if urlparse(full).netloc != urlparse(base).netloc:
                 continue
-
             if is_garbage(full):
                 continue
-
             if is_low_signal(full):
                 continue
-
             if is_semantic_link(full):
                 links.add(full)
 
         return list(links)
 
     # -------------------------
-    # Phase 3: scrape semantic links (parallel)
+    # Phase 3: scrape semantic links
     # -------------------------
     async def scrape_semantic_links(
         self,
@@ -182,63 +182,80 @@ class CrawlerOrchestrator:
     # -------------------------
     # Crawl a single domain
     # -------------------------
-    async def crawl_domain(self, session: aiohttp.ClientSession, domain: str) -> Optional[Dict]:
+    async def crawl_domain(
+        self,
+        session: aiohttp.ClientSession,
+        domain: str
+    ) -> Dict:
+
         logger.info(f"Starting crawl for domain: {domain}")
 
         base = domain.rstrip("/") if domain.startswith(("http://", "https://")) else f"https://{domain}".rstrip("/")
 
         # Phase 0: homepage must be reachable
         homepage_html = await self.ensure_homepage(session, base)
-        if homepage_html is None:
-            return None
+        homepage_ok = homepage_html is not None
+
+        if not homepage_ok:
+            return {"result": None, "homepage_ok": False}
 
         # Phase 1: priority pages
         result = await self.try_priority_pages(session, base)
         if result:
-            return result
+            return {"result": result, "homepage_ok": True}
 
-        # Phase 2: semantic links from homepage
+        # Phase 2: semantic links
         semantic_links = await self.discover_semantic_links(base, homepage_html)
 
-        # Phase 3: scrape semantic links (only if shallow_crawl enabled)
+        # Phase 3: scrape semantic links
         if SCRAPER_CONFIG["shallow_crawl"]:
             result = await self.scrape_semantic_links(session, semantic_links)
             if result:
-                return result
+                return {"result": result, "homepage_ok": True}
 
-        return None
+        return {"result": None, "homepage_ok": True}
 
     # -------------------------
     # Crawl many domains (parallel)
     # -------------------------
     async def crawl(self, domains: List[str]) -> List[Dict]:
         good: List[Dict] = []
-        bad: List[str] = []
+        unreachable: List[str] = []
+        missing_contacts: List[str] = []
 
         sem = asyncio.Semaphore(self.max_domains_in_parallel)
 
-        async def crawl_guarded(domain: str) -> Optional[Dict]:
+        async def crawl_guarded(domain: str):
             async with sem:
                 async with aiohttp.ClientSession() as session:
-                    return await self.crawl_domain(session, domain)
+                    return domain, await self.crawl_domain(session, domain)
 
-        tasks = {domain: asyncio.create_task(crawl_guarded(domain)) for domain in domains}
+        tasks = [asyncio.create_task(crawl_guarded(domain)) for domain in domains]
 
-        for domain, task in tasks.items():
-            try:
-                result = await task
-            except Exception as e:
-                logger.error(f"Unhandled error while crawling {domain}: {e}")
-                result = None
+        for task in tasks:
+            domain, info = await task
+            result = info["result"]
+            homepage_ok = info["homepage_ok"]
 
             if result:
                 good.append(result)
             else:
-                bad.append(domain)
+                if not homepage_ok:
+                    unreachable.append(domain)
+                else:
+                    missing_contacts.append(domain)
 
-        if bad:
+        # Write unreachable domains
+        is_writable = SCRAPER_CONFIG["write_files"]
+        if is_writable and unreachable:
             with open("bad_urls.txt", "w", encoding="utf-8") as f:
-                for b in bad:
+                for b in unreachable:
+                    f.write(b + "\n")
+
+        # Write reachable but missing contacts
+        if is_writable and missing_contacts:
+            with open("missing_contacts.txt", "w", encoding="utf-8") as f:
+                for b in missing_contacts:
                     f.write(b + "\n")
 
         return good

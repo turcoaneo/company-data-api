@@ -22,6 +22,9 @@ class TestCrawlerOrchestrator:
     # ---------------------------------------------------------
     @pytest.mark.asyncio
     async def test_priority_page_success(self, server_factory):
+        async def handler_home(request):
+            return web.Response(text="<html><body>OK</body></html>")
+
         async def handler_about(request):
             return web.Response(text="""
                 <html>
@@ -33,10 +36,11 @@ class TestCrawlerOrchestrator:
             """)
 
         app = web.Application()
+        app.router.add_get("/", handler_home)  # ← REQUIRED
         app.router.add_get("/about", handler_about)
         server = await server_factory(app)
 
-        orch = CrawlerOrchestrator(concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -74,7 +78,7 @@ class TestCrawlerOrchestrator:
         app.router.add_get("/contact", handler_contact)
         server = await server_factory(app)
 
-        orch = CrawlerOrchestrator(concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -95,7 +99,7 @@ class TestCrawlerOrchestrator:
         app.router.add_get("/", handler_home)
         server = await server_factory(app)
 
-        orch = CrawlerOrchestrator(concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -122,7 +126,7 @@ class TestCrawlerOrchestrator:
         from crawler.fetcher import Fetcher
         monkeypatch.setattr(Fetcher, "fetch_url", fake_fetch)
 
-        orch = CrawlerOrchestrator(concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -148,7 +152,7 @@ class TestCrawlerOrchestrator:
         good_domain = str(server.make_url(""))
         bad_domain = "nonexistent-domain-xyz123.com"
 
-        orch = CrawlerOrchestrator(concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
 
         # Run crawl
         results = await orch.crawl([good_domain, bad_domain])

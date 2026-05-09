@@ -14,6 +14,7 @@ APP_ENV = merged.get("APP_ENV", "test")
 LOG_LEVEL = merged.get("LOG_LEVEL", "warning")
 
 SCRAPER_CONFIG = {
+    "write_files": merged.get("SCRAPER_WRITE_FILES", "True") == "True",
     "shallow_crawl": merged.get("SCRAPER_SHALLOW_CRAWL", "True") == "True",
     "sync_saving": merged.get("SCRAPER_SYNC_SAVING", "True") == "True",
     "looped": merged.get("SCRAPER_JOB_LOOPED", "True") == "True",
