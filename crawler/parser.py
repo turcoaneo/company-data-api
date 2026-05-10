@@ -4,6 +4,7 @@ import logging
 from selectolax.parser import HTMLParser
 from .phone_extractor import extract_phones
 from .socials import extract_social_links
+from .util.phone_normalizer import dedupe_and_normalize_phones
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class Parser:
             h = href.lower()
             if h.startswith("tel:"):
                 phones.append(h.split(":", 1)[1].strip())
-        return phones
+        return dedupe_and_normalize_phones(phones)
 
     @staticmethod
     def parse_text_phones(html: str):

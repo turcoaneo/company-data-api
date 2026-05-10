@@ -12,7 +12,7 @@ def normalize_record(record):
 
     # Phones
     raw_phones = record.get("phones") or []
-    record["phones"] = dedupe_and_normalize_phones(raw_phones, default_country="+1")
+    record["phones"] = dedupe_and_normalize_phones(raw_phones)
 
     # Socials
     raw_socials = record.get("socials") or []

@@ -12,6 +12,7 @@ class TestPhoneNormalizer:
     def test_digits_only(self):
         assert digits_only("(415) 626-4474") == "4156264474"
         assert digits_only("+44 20 7946 0958") == "442079460958"
+        assert digits_only("818.422.3831") == "8184223831"
 
     def test_normalize_prefix(self):
         assert normalize_prefix("0044123456789") == "+44123456789"
@@ -57,4 +58,3 @@ class TestPhoneNormalizer:
         assert "+493012345678" in result
         assert "03012345678" in result
         assert len(result) == 2
-
