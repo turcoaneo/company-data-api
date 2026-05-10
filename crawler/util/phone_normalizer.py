@@ -1,15 +1,11 @@
-import re
+import logging
+from crawler.util.country_codes import VALID_COUNTRY_CODES
+
+logger = logging.getLogger(__name__)
 
 MIN_DIGITS = 7
 MAX_DIGITS = 16
-MAX_PLAUSIBLE = 13  # your rule
-
-PHONE_CANDIDATE_RE = re.compile(
-    r"""
-    \+?\d[\d\-.\s()]{6,}
-    """,
-    re.VERBOSE,
-)
+MAX_PLAUSIBLE = 13
 
 
 def digits_only(s: str) -> str:
@@ -23,85 +19,70 @@ def normalize_prefix(raw: str) -> str:
     return s
 
 
-def is_plausible_phone(digits: str) -> bool:
-    return MIN_DIGITS <= len(digits) <= MAX_DIGITS
+def is_valid_plus_number(raw: str) -> bool:
+    if not raw.startswith("+"):
+        return False
+
+    digits = digits_only(raw[1:])
+
+    # Try 1–3 digit country codes
+    for length in (1, 2, 3):
+        prefix = digits[:length]
+        if prefix in VALID_COUNTRY_CODES:
+            return True
+
+    logger.debug(f"Ignoring invalid international prefix: {raw}")
+    return False
 
 
-def normalize_e164(digits: str, default_country="+1") -> str:
-    country_digits = default_country.lstrip("+")
+def normalize_one(raw: str):
+    """
+    Normalize a single phone number.
+    Returns None if invalid or should be ignored.
+    """
+    raw = normalize_prefix(raw)
 
-    # Already includes country code
-    if digits.startswith(country_digits):
+    # Case 1: valid international
+    if raw.startswith("+"):
+        if not is_valid_plus_number(raw):
+            return None
+        digits = digits_only(raw)
         return "+" + digits
 
-    # US 10-digit
-    if len(digits) == 10:
-        return default_country + digits
+    # Case 2: local number
+    digits = digits_only(raw)
+    if not (MIN_DIGITS <= len(digits) <= MAX_DIGITS):
+        return None
 
-    # Local trunk prefix (030..., 021..., etc.)
-    if digits.startswith("0") and not digits.startswith(country_digits):
-        return digits
-
-    # 7-digit local
-    if len(digits) == 7:
-        return digits
-
-    # International
-    return "+" + digits
+    return digits
 
 
-def dedupe_and_normalize_phones(candidates, default_country="+1"):
-    result = []  # list of (digits, normalized)
-
+def dedupe_and_normalize_phones(candidates):
+    # STEP 1 — Normalize all valid numbers
+    normalized = []
     for raw in candidates:
-        raw = normalize_prefix(raw)
-        digits = digits_only(raw)
+        norm = normalize_one(raw)
+        if norm:
+            normalized.append(norm)
 
-        if not is_plausible_phone(digits):
-            continue
+    # STEP 2 — Sort by length DESC (longest first)
+    normalized.sort(key=len, reverse=True)
 
-        # Track what to do
-        skip_candidate = False
-        replace_index = None
+    # STEP 3 — Keep only numbers not suffixes of previously kept ones
+    result = []
+    for num in normalized:
+        digits = digits_only(num)
 
-        for i, (existing_digits, _) in enumerate(result):
+        keep = True
+        for existing in result:
+            existing_digits = digits_only(existing)
 
-            # --- CASE A: candidate ends with existing (ZIP prefix garbage)
-            if digits.endswith(existing_digits):
-                # Example: 941244156264474 endswith 14156264474
-                skip_candidate = True
-                break
-
-            # --- CASE B: existing ends with candidate (candidate is better)
+            # If this number is a suffix of an already kept number → skip
             if existing_digits.endswith(digits):
-                # Example: existing=4156264474, candidate=14156264474
-                if len(digits) <= MAX_PLAUSIBLE:
-                    replace_index = i
-                skip_candidate = True
+                keep = False
                 break
 
-            # --- CASE C: shared suffix → keep longest plausible
-            # Example: digits=14156264474, existing=4156264474
-            if digits.endswith(existing_digits[-7:]) or existing_digits.endswith(digits[-7:]):
-                # choose longest ≤ MAX_PLAUSIBLE
-                if len(existing_digits) < len(digits) <= MAX_PLAUSIBLE:
-                    replace_index = i
-                skip_candidate = True
-                break
+        if keep:
+            result.append(num)
 
-        # Apply replacement
-        if replace_index is not None:
-            result[replace_index] = (
-                digits,
-                normalize_e164(digits, default_country)
-            )
-            continue
-
-        # Skip candidate entirely
-        if skip_candidate:
-            continue
-
-        # Otherwise add new entry
-        result.append((digits, normalize_e164(digits, default_country)))
-
-    return [norm for _, norm in result]
+    return result

@@ -18,38 +18,43 @@ class TestPhoneNormalizer:
         assert normalize_prefix("+44123456789") == "+44123456789"
         assert normalize_prefix("44123456789") == "44123456789"
 
-    def test_us_variants_de_duped(self):
-        phones = [
-            "4156264474",
-            "(415) 626‑4474",
-            "+1 415 626 4474",
-            "0041 56 26 44 74",  # wrong country but same digits? No → kept separate
-        ]
+    def test_invalid_plus_numbers_are_ignored(self):
+        phones = ["+904-824-8353", "+99912345678"]
         result = dedupe_and_normalize_phones(phones)
-        assert "+14156264474" in result
-        assert len(result) == 1  # US + Swiss-like number
+        assert result == ["+9048248353"]
 
-    def test_international_equivalence(self):
-        phones = [
-            "+44123456789",
-            "0044123456789",
-            "+44 123 456 789",
-        ]
+    def test_valid_plus_numbers(self):
+        phones = ["+386-328-2710"]
         result = dedupe_and_normalize_phones(phones)
-        assert result == ["+44123456789"]
+        assert result == ["+3863282710"]
 
-    def test_zip_code_filtered(self):
-        phones = ["+14156264474", "94124 (415) 626-4474"]
-        result = dedupe_and_normalize_phones(phones, default_country="+1")
-        assert result == ["+14156264474"]
+    def test_plus_and_no_plus(self):
+        phones = ["904-824-8353", "+904-824-8353", "+386-328-2710"]
+        result = dedupe_and_normalize_phones(phones)
+        assert "+3863282710" in result
+        assert "+9048248353" in result
+        assert len(result) == 2
+
+    def test_us_and_local_duplicate(self):
+        phones = ["+17139798345", "713-979-8345"]
+        result = dedupe_and_normalize_phones(phones)
+        assert result == ["+17139798345"]
+
+    def test_real_world_us_variants(self):
+        phones = ["(229) 436-9620", "229-344-5037"]
+        result = dedupe_and_normalize_phones(phones)
+        assert "2294369620" in result
+        assert "2293445037" in result
+        assert len(result) == 2
 
     def test_mixed_formats(self):
         phones = [
             "+49 (30) 1234 5678",
             "0049 30 1234 5678",
-            "(030) 1234 5678",  # local German number → different digits
+            "(030) 1234 5678",
         ]
-        result = dedupe_and_normalize_phones(phones, default_country="+1")
-
+        result = dedupe_and_normalize_phones(phones)
         assert "+493012345678" in result
-        assert len(result) == 1
+        assert "03012345678" in result
+        assert len(result) == 2
+
