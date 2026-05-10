@@ -42,13 +42,13 @@ class TestParserUnit:
         <html>
             <body>
             <div class="sqs-block-button-container">
-                    <a href='https://facebook.com/company'>Facebook</a>
+                <a href='https://facebook.com/company'>Facebook</a>
             </div>
             <div class="social">
-                    <a href='https://linkedin.com/company/test'>LinkedIn</a>
+                <a href='https://linkedin.com/company/test'>LinkedIn</a>
             </div>
             <div class="social-unknown">
-                    <a href='https://example.com'>LinkedIn</a>
+                <a href='https://example.com'>LinkedIn</a>
             </div>
             </body>
         </html>
