@@ -39,7 +39,7 @@ def merge_dataframes(df_input: pd.DataFrame, df_results: pd.DataFrame) -> pd.Dat
     merged = df_input.merge(df_results, on="domain", how="left")
 
     # Normalize missing fields
-    for col in ["phones", "emails", "socials"]:
+    for col in ["phones", "socials"]:
         if col not in merged.columns:
             merged[col] = [[] for _ in range(len(merged))]
         else:

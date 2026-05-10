@@ -10,7 +10,6 @@ class TestNormalizeRecord:
         record = {
             "url": "example.com",
             "phones": ["123 456 789"],
-            "emails": ["a@example.com"],
             "socials": ["https://facebook.com/example"]
         }
 
@@ -18,7 +17,6 @@ class TestNormalizeRecord:
 
         assert out["url"] == "example.com"
         assert out["phones"] == ["+123456789"]
-        assert out["emails"] == ["a@example.com"]
         assert out["socials"] == ["https://facebook.com/example"]
 
     # ---------------------------------------------------------
@@ -30,7 +28,6 @@ class TestNormalizeRecord:
         out = normalize_record(record)
 
         assert out["phones"] == []
-        assert out["emails"] == []
         assert out["socials"] == []
 
     # ---------------------------------------------------------
@@ -40,14 +37,12 @@ class TestNormalizeRecord:
         record = {
             "url": "example.com",
             "phones": None,
-            "emails": None,
             "socials": None
         }
 
         out = normalize_record(record)
 
         assert out["phones"] == []
-        assert out["emails"] == []
         assert out["socials"] == []
 
     # ---------------------------------------------------------
@@ -57,14 +52,12 @@ class TestNormalizeRecord:
         record = {
             "url": "example.com",
             "phones": [],
-            "emails": [],
             "socials": []
         }
 
         out = normalize_record(record)
 
         assert out["phones"] == []
-        assert out["emails"] == []
         assert out["socials"] == []
 
     # ---------------------------------------------------------
@@ -74,14 +67,12 @@ class TestNormalizeRecord:
         record = {
             "url": "example.com",
             "phones": ["123"],
-            "emails": None,
             # socials missing
         }
 
         out = normalize_record(record)
 
         assert out["phones"] == []
-        assert out["emails"] == []
         assert out["socials"] == []
 
     # ---------------------------------------------------------
@@ -90,7 +81,6 @@ class TestNormalizeRecord:
     def test_missing_url(self):
         record = {
             "phones": ["(123)-456-789"],
-            "emails": ["a@example.com"],
             "socials": []
         }
 
@@ -98,5 +88,4 @@ class TestNormalizeRecord:
 
         assert out.get("url") is None
         assert out["phones"] == ["+123456789"]
-        assert out["emails"] == ["a@example.com"]
         assert out["socials"] == []

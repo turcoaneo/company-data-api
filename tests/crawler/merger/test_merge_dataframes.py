@@ -17,14 +17,12 @@ class TestMergeDataframes:
         df_results = pd.DataFrame({
             "domain": ["example.com"],
             "phones": [["123"]],
-            "emails": [["a@example.com"]],
             "socials": [["fb.com/example"]]
         })
 
         merged = merge_dataframes(df_input, df_results)
 
         assert merged.loc[0, "phones"] == ["123"]
-        assert merged.loc[0, "emails"] == ["a@example.com"]
         assert merged.loc[0, "socials"] == ["fb.com/example"]
 
     def test_missing_fields_become_empty_lists(self):
@@ -34,5 +32,4 @@ class TestMergeDataframes:
         merged = merge_dataframes(df_input, df_results)
 
         assert merged.loc[0, "phones"] == []
-        assert merged.loc[0, "emails"] == []
         assert merged.loc[0, "socials"] == []

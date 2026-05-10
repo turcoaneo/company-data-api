@@ -14,7 +14,6 @@ class TestDataframeToJsonlLines:
         df = pd.DataFrame({
             "domain": ["example.com"],
             "phones": [["123"]],
-            "emails": [[]],
             "socials": [[]]
         })
 

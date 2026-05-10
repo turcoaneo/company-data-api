@@ -26,13 +26,6 @@ class TestParserUnit:
         for phone in expected:
             assert phone in result
 
-    # -----------------------------
-    # Emails
-    # -----------------------------
-    def test_parse_emails(self):
-        hrefs = ["mailto:test@example.com", "mailto:info@site.com"]
-        result = Parser.parse_emails(hrefs)
-        assert result == ["test@example.com", "info@site.com"]
 
     # -----------------------------
     # Social links

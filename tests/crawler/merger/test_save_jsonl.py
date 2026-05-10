@@ -32,5 +32,4 @@ class TestSaveJsonl:
         merged = merge_dataframes(df_input, df_results)
 
         assert merged.loc[0, "phones"] == []
-        assert merged.loc[0, "emails"] == []
         assert merged.loc[0, "socials"] == []

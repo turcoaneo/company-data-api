@@ -7,16 +7,12 @@ from crawler.util.phone_normalizer import dedupe_and_normalize_phones
 
 def normalize_record(record):
     """
-    Ensure phones, emails, socials are normalized and always lists.
+    Ensure phones, socials are normalized and always lists.
     """
 
     # Phones
     raw_phones = record.get("phones") or []
     record["phones"] = dedupe_and_normalize_phones(raw_phones, default_country="+1")
-
-    # Emails
-    raw_emails = record.get("emails") or []
-    record["emails"] = list({e.lower().strip() for e in raw_emails})
 
     # Socials
     raw_socials = record.get("socials") or []

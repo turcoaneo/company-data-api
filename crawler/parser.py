@@ -30,17 +30,6 @@ class Parser:
         return phones
 
     @staticmethod
-    def parse_emails(hrefs):
-        emails = []
-        for href in hrefs:
-            if href.lower().startswith("mailto:"):
-                email = href.split(":", 1)[1].strip()
-                if email and email not in emails:
-                    emails.append(email)
-        logger.debug(f"Emails extracted: {emails}")
-        return emails
-
-    @staticmethod
     def parse_socials(tree):
         socials = extract_social_links(tree)
         logger.debug(f"Social links extracted: {socials}")

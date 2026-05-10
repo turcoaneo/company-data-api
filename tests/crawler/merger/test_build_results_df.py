@@ -7,12 +7,12 @@ class TestBuildResultsDf:
     def test_build_results_df_basic(self):
         results = [
             {"url": "https://example.com", "phones": ["123"]},
-            {"url": "test.com", "emails": ["a@test.com"]},
+            {"url": "test.com"},
         ]
 
         df = build_results_df(results)
 
-        assert list(df.columns) == ["url", "phones", "emails", "domain"]
+        assert list(df.columns) == ["url", "phones", "domain"]
         assert df.loc[0, "domain"] == "example.com"
         assert df.loc[1, "domain"] == "test.com"
 

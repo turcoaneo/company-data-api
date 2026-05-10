@@ -51,13 +51,11 @@ class TestMergeScraperResults:
             {
                 "url": "bostonzen.org",
                 "phones": ["+1 234 567 890"],
-                "emails": ["info@bostonzen.org"],
                 "socials": ["https://facebook.com/bostonzen"],
             },
             {
                 "url": "top-salon-hair-salon.business.site",
                 "phones": [],
-                "emails": [],
                 "socials": ["https://instagram.com/top_salon"],
             },
         ]
@@ -89,20 +87,17 @@ class TestMergeScraperResults:
         # Row 1: bostonzen.org
         r1 = next(r for r in rows if r["domain"] == "bostonzen.org")
         assert r1["phones"] == ["+1 234 567 890"]
-        assert r1["emails"] == ["info@bostonzen.org"]
         assert r1["socials"] == ["https://facebook.com/bostonzen"]
         assert r1["company_commercial_name"] == "Greater Boston Zen Center"
 
         # Row 2: mazautoglass.com (no scraper result)
         r2 = next(r for r in rows if r["domain"] == "mazautoglass.com")
         assert r2["phones"] == []
-        assert r2["emails"] == []
         assert r2["socials"] == []
 
         # Row 3: top-salon-hair-salon.business.site
         r3 = next(r for r in rows if r["domain"] == "top-salon-hair-salon.business.site")
         assert r3["phones"] == []
-        assert r3["emails"] == []
         assert r3["socials"] == ["https://instagram.com/top_salon"]
 
     # ---------------------------------------------------------
@@ -119,5 +114,4 @@ class TestMergeScraperResults:
 
         r1 = next(r for r in rows if r["domain"] == "bostonzen.org")
         assert r1["phones"] == []
-        assert r1["emails"] == []
         assert r1["socials"] == []
