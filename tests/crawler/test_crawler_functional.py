@@ -13,14 +13,33 @@ class TestCrawlerFunctional:
     # ---------------------------------------------------------
     @pytest.fixture
     def test_server(self, aiohttp_server):
+        # noinspection PyUnusedLocal
         async def handler_contact(request):
             html = """
             <html>
               <body>
-                <p>Call us at +40 123 456 789</p>
+                <!--p>Call us at +40 123 456 789</p--!>
+                <a href="tel:+40 123 456 789">Phone</a>
+
                 <a href="tel:+40222222222">Phone</a>
-                <a href="https://facebook.com/company">FB</a>
-                <a href="https://linkedin.com/company/test">LI</a>
+
+                <!-- Valid social button container -->
+                <div class="sqs-block-button-container">
+                    <a href="https://facebook.com/company"
+                       class="sqs-block-button-element"
+                       target="_blank">
+                       Follow us on Facebook
+                    </a>
+                </div>
+
+                <!-- Valid social container -->
+                <div class="social-links">
+                    <a href="https://linkedin.com/company/test"
+                       class="social-link"
+                       target="_blank">
+                       LinkedIn
+                    </a>
+                </div>
               </body>
             </html>
             """

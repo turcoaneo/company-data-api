@@ -6,7 +6,10 @@ HTML = """
 <html>
   <body>
     <a href="tel:+123456789">Call</a>
-    <a href="https://facebook.com/test">FB</a>
+    <p>+134567890"</p>
+    <div class="sqs-block-button-container">
+        <a href='https://facebook.com/company'>Facebook</a>
+    </div>
   </body>
 </html>
 """

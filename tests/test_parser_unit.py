@@ -38,12 +38,24 @@ class TestParserUnit:
     # Social links
     # -----------------------------
     def test_parse_socials(self):
-        hrefs = [
-            "https://facebook.com/company",
-            "https://linkedin.com/company/test",
-            "https://example.com"
-        ]
-        result = Parser.parse_socials(hrefs)
+        html = """
+        <html>
+            <body>
+            <div class="sqs-block-button-container">
+                    <a href='https://facebook.com/company'>Facebook</a>
+            </div>
+            <div class="social">
+                    <a href='https://linkedin.com/company/test'>LinkedIn</a>
+            </div>
+            <div class="social-unknown">
+                    <a href='https://example.com'>LinkedIn</a>
+            </div>
+            </body>
+        </html>
+        """
+        from selectolax.parser import HTMLParser
+        tree = HTMLParser(html)
+        result = Parser.parse_socials(tree)
         assert any("facebook.com" in s for s in result)
         assert any("linkedin.com" in s for s in result)
 

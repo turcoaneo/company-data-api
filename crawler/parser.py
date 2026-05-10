@@ -41,8 +41,8 @@ class Parser:
         return emails
 
     @staticmethod
-    def parse_socials(hrefs):
-        socials = extract_social_links(hrefs)
+    def parse_socials(tree):
+        socials = extract_social_links(tree)
         logger.debug(f"Social links extracted: {socials}")
         return socials
 
@@ -73,7 +73,7 @@ def parse_contacts(html: str) -> dict:
     text_phones = []
     phones = Parser.merge_unique(tel_phones + text_phones)
 
-    socials = Parser.parse_socials(hrefs)
+    socials = Parser.parse_socials(tree)
 
     result = {
         "phones": phones,

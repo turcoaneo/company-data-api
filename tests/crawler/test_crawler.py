@@ -38,20 +38,30 @@ class TestCrawler:
     # -----------------------------
     @pytest.mark.parametrize("html,expected_substrings", [
         (
-            "<a href='https://facebook.com/company'></a>"
-            "<a href='https://linkedin.com/company/test'></a>",
-            ["facebook.com", "linkedin.com"]
+                """
+                <div class="sqs-block-button-container">
+                    <a href='https://facebook.com/company'>Facebook</a>
+                </div>
+                <div class="social">
+                    <a href='https://linkedin.com/company/test'>LinkedIn</a>
+                </div>
+                """,
+                ["facebook.com", "linkedin.com"]
         ),
         (
-            "<a href='https://instagram.com/test'></a>"
-            "<a href='https://x.com/test'></a>",
-            ["instagram.com", "x.com"]
+                """
+                <div class="social-links">
+                    <a href='https://instagram.com/test'>Instagram</a>
+                </div>
+                <a href='https://x.com/test' aria-label="Social media link to X"></a>
+                """,
+                ["instagram.com", "x.com"]
         ),
     ])
     def test_parser_multiple_socials(self, html, expected_substrings):
         result = parse_contacts(html)
         socials = result["socials"]
 
-        # Ensure each expected substring appears in at least one extracted link
         for expected in expected_substrings:
             assert any(expected in s for s in socials)
+

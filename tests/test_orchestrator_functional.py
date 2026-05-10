@@ -39,7 +39,9 @@ class TestCrawlerOrchestrator:
                 <html>
                     <body>
                         <a href="tel:+40123456789">Call</a>
-                        <a href="https://facebook.com/test">FB</a>
+                        <div class="sqs-block-button-element">
+                            <a href='https://facebook.com/company'>Facebook</a>
+                         </div>
                     </body>
                 </html>
             """)
