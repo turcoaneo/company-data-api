@@ -26,7 +26,6 @@ class TestParserUnit:
         for phone in expected:
             assert phone in result
 
-
     # -----------------------------
     # Social links
     # -----------------------------
