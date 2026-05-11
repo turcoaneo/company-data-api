@@ -1,10 +1,12 @@
 # /crawler/parser.py
 
 import logging
+
 from selectolax.parser import HTMLParser
-from .phone_extractor import extract_phones
+
 from .socials import extract_social_links
 from .util.phone_normalizer import dedupe_and_normalize_phones
+from .util.text_phone_extractor import extract_text_phones
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +27,9 @@ class Parser:
     @staticmethod
     def parse_text_phones(html: str):
         tree = HTMLParser(html)
-        text = tree.text(separator=" ")
-        phones = extract_phones(text)
+        phones = extract_text_phones(tree)
         logger.debug(f"Text phones extracted: {phones}")
-        return phones
+        return dedupe_and_normalize_phones(phones)
 
     @staticmethod
     def parse_socials(tree):
@@ -59,8 +60,9 @@ def parse_contacts(html: str) -> dict:
     logger.debug(f"Found {len(hrefs)} hrefs")
 
     tel_phones = Parser.parse_tel_links(hrefs)
-    # text_phones = Parser.parse_text_phones(html)
     text_phones = []
+    if not tel_phones:
+        text_phones = Parser.parse_text_phones(html)
     phones = Parser.merge_unique(tel_phones + text_phones)
 
     socials = Parser.parse_socials(tree)

@@ -1,26 +1,11 @@
 # /crawler/phone_extractor.py
 
-import re
 import logging
 from typing import List
 
-logger = logging.getLogger(__name__)
+from crawler.util.phone_re import PHONE_RE
 
-# Realistic phone number pattern
-PHONE_RE = re.compile(
-    r"""
-    (?:
-        (?:\+?\d{1,3}[\s\-.]?)?
-        (?:\(\d{2,4}\)|\d{2,4})
-        [\s\-.]?
-        \d{2,4}
-        [\s\-.]?
-        \d{2,4}
-        (?:\s*(?:ext|x|\#)\s*\d{1,5})?
-    )
-    """,
-    re.VERBOSE,
-)
+logger = logging.getLogger(__name__)
 
 MIN_DIGITS = 9
 MAX_DIGITS = 16
@@ -44,25 +29,3 @@ def is_plausible_phone(raw: str) -> bool:
     if not ok:
         logger.debug(f"Rejected phone candidate '{raw}' (digit count={len(digits)})")
     return ok
-
-
-def extract_phones(text: str) -> List[str]:
-    """Extract realistic phone numbers from visible text."""
-    candidates = PHONE_RE.findall(text)
-    logger.debug(f"Phone candidates found: {candidates}")
-
-    phones = []
-    for c in candidates:
-        if is_plausible_phone(c):
-            phones.append(normalize_phone(c))
-
-    # Deduplicate
-    seen = set()
-    result = []
-    for p in phones:
-        if p not in seen:
-            seen.add(p)
-            result.append(p)
-
-    logger.debug(f"Final extracted phones: {result}")
-    return result
