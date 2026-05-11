@@ -6,6 +6,7 @@ from selectolax.parser import HTMLParser
 
 from .socials import extract_social_links
 from .util.phone_normalizer import dedupe_and_normalize_phones
+from .util.semantic_filter import semantic_filter_tel
 from .util.text_phone_extractor import extract_text_phones
 
 logger = logging.getLogger(__name__)
@@ -59,10 +60,13 @@ def parse_contacts(html: str) -> dict:
 
     logger.debug(f"Found {len(hrefs)} hrefs")
 
-    tel_phones = Parser.parse_tel_links(hrefs)
+    tel_nodes = semantic_filter_tel(tree)
+    tel_phones = dedupe_and_normalize_phones(tel_nodes)
+
     text_phones = []
     if not tel_phones:
         text_phones = Parser.parse_text_phones(html)
+
     phones = Parser.merge_unique(tel_phones + text_phones)
 
     socials = Parser.parse_socials(tree)
