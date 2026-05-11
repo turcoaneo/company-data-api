@@ -1,3 +1,5 @@
+# qa/qa_bad_urls.py
+
 import asyncio
 import aiohttp
 import csv
@@ -94,7 +96,7 @@ async def run_bad_urls_check(path="../bad_urls.txt", csv_out="bad_urls_report.cs
     results = await asyncio.gather(*tasks)
 
     # CSV export
-    with open(csv_out, "w", newline="", encoding="utf-8") as f:
+    with open(csv_out, "w+", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["domain", "status", "protocol", "reason"])
         writer.writeheader()
         for r in results:

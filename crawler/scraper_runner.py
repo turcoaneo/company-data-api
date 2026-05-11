@@ -16,7 +16,7 @@ async def run_scraper():
     logger.info(f"Running {log_thread_id(threading.get_ident(), 'scraper')}")
 
     # Phase 0: Load sites
-    input_csv = get_project_root() / "data" / "small-sample-websites-company-names.csv"
+    input_csv = get_project_root() / "data" / "sample-websites-company-names.csv"
     sites = load_sites_from_config(str(input_csv))
     logger.info(f"Loaded {len(sites)} sites")
 
@@ -41,3 +41,30 @@ async def run_scraper():
         output_path = await async_merge_scraper_results(str(input_csv), results)
 
     logger.info(f"Merged results saved to {output_path}")
+
+    # ---------------------------------------------------------
+    # Run QA unreachable-domain analysis
+    # ---------------------------------------------------------
+    logger.info("Running QA unreachable-domain analysis...")
+
+    from qa.qa_bad_urls import run_bad_urls_check
+    await run_bad_urls_check(
+        path="./bad_urls.txt",
+        csv_out="./bad_urls_report.csv"
+    )
+
+    logger.info("QA unreachable-domain report saved to bad_urls_report.csv")
+
+    # ---------------------------------------------------------
+    # Run unreachable classifier to produce JSON
+    # ---------------------------------------------------------
+    logger.info("Classifying unreachable domains...")
+
+    from qa.unreachable_classifier import classify_csv_to_json
+    await classify_csv_to_json(
+        csv_path="./bad_urls_report.csv",
+        json_out="./bad_urls_report.json")
+
+    logger.info("Unreachable-domain classification saved to bad_urls_report.json")
+
+    logger.info("Scraper runner finished successfully")
