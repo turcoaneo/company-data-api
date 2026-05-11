@@ -28,7 +28,7 @@ async def run_scraper():
         logger.error(f"Scraper crashed: {e}", exc_info=True)
         return
 
-    logger.info(f"Scraper finished. Found {len(results)} valid sites.")
+    logger.info(f"Scraper finished. Found {len(results)} sites with extracted contacts.")
 
     # Merge with original CSV
     from app.utils.env_vars import SCRAPER_CONFIG

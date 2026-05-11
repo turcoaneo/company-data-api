@@ -18,15 +18,15 @@ class TestCrawler:
     # -----------------------------
     @pytest.mark.parametrize("html,expected", [
         (
-            "<a href='tel:+40123456789'></a>"
-            "<a href='tel:+40222222222'></a>",
-            ["+40123456789", "+40222222222"]
+                "<a href='tel:+40123456789'></a>"
+                "<a href='tel:+40222222222'></a>",
+                ["+40123456789", "+40222222222"]
         ),
         (
-            "<a href='tel:123'></a>"
-            "<a href='tel:456'></a>"
-            "<a href='tel:789'></a>",
-            ["123", "456", "789"]
+                "<a href='tel:(+40) 123 - 456 789'></a>"
+                "<a href='tel:(+40)-123-456 789'></a>"
+                "<a href='tel:0722 456 789''></a>",
+                ["+40123456789", "0722456789"]
         ),
     ])
     def test_parser_multiple_phones(self, html, expected):
@@ -64,4 +64,3 @@ class TestCrawler:
 
         for expected in expected_substrings:
             assert any(expected in s for s in socials)
-
