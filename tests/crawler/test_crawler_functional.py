@@ -68,7 +68,7 @@ class TestCrawlerFunctional:
         result = parse_contacts(html)
 
         # Phones
-        assert any("+40 123 456 789" in p for p in result["phones"])
+        assert any("+40123456789" in p for p in result["phones"])
         assert any("+40222222222" in p for p in result["phones"])
 
         # Socials

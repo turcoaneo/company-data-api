@@ -9,9 +9,9 @@ class TestParserUnit:
     # TEL: links
     # -----------------------------
     def test_parse_tel_links(self):
-        hrefs = ["tel:+401234", "https://x.com", "tel:12345"]
+        hrefs = ["tel:+401234567", "https://x.com", "tel:12345"]
         result = Parser.parse_tel_links(hrefs)
-        assert result == ["+401234", "12345"]
+        assert result == ["+401234567"]
 
     # -----------------------------
     # Plain text phones

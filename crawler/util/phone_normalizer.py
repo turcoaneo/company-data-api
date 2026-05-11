@@ -2,6 +2,7 @@ import logging
 import re
 from typing import Optional
 
+from crawler.phone_extractor import is_plausible_phone
 from crawler.util.country_codes import VALID_COUNTRY_CODES
 
 logger = logging.getLogger(__name__)
@@ -141,6 +142,8 @@ def dedupe_and_normalize_phones(candidates):
     # STEP 1 — Normalize all valid numbers
     normalized = []
     for raw in candidates:
+        if not is_plausible_phone(raw):
+            continue
         raw = normalize_parenthesized_plus_prefix(raw)
         raw = reject_invalid_delimited_plus(raw)
         if raw is None:

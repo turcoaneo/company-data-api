@@ -22,7 +22,7 @@ PHONE_RE = re.compile(
     re.VERBOSE,
 )
 
-MIN_DIGITS = 7
+MIN_DIGITS = 9
 MAX_DIGITS = 16
 
 

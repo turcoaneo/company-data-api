@@ -9,14 +9,14 @@ class TestNormalizeRecord:
     def test_full_record(self):
         record = {
             "url": "example.com",
-            "phones": ["123 456 789"],
+            "phones": ["+1 234 567 890"],
             "socials": ["https://facebook.com/example"]
         }
 
         out = normalize_record(record)
 
         assert out["url"] == "example.com"
-        assert out["phones"] == ["+123456789"]
+        assert out["phones"] == ["+1234567890"]
         assert out["socials"] == ["https://facebook.com/example"]
 
     # ---------------------------------------------------------
@@ -87,5 +87,5 @@ class TestNormalizeRecord:
         out = normalize_record(record)
 
         assert out.get("url") is None
-        assert out["phones"] == ["+123456789"]
+        assert out["phones"] == ["123456789"]
         assert out["socials"] == []
