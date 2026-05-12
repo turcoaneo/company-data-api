@@ -1,14 +1,18 @@
 # qa/qa_bad_urls.py
 
 import asyncio
-import aiohttp
 import csv
 import socket
+
+import aiohttp
 from aiohttp import ClientConnectorError, ClientSSLError
 
+from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 
-PARALLEL_LIMIT = 50   # good for 1000+ domains
+PARALLEL_LIMIT = 50  # good for 1000+ domains
+
+logger = get_logger()
 
 
 async def try_fetch(session, url, timeout=8):
@@ -85,11 +89,16 @@ async def domain_test(domain: str, sem: asyncio.Semaphore):
 
 
 @elapsed_time("qa_bad_urls")
-async def run_bad_urls_check(path="../bad_urls.txt", csv_out="bad_urls_report.csv"):
+def job_wrapper():
+    logger.info("Running Bad URLs as standalone script")
+    asyncio.run(run_bad_urls_check())
+
+
+async def run_bad_urls_check(path="./bad_urls.txt", csv_out="qa_bad_urls_report.csv"):
     with open(path, "r", encoding="utf-8") as f:
         domains = [line.strip() for line in f if line.strip()]
 
-    print(f"\nTesting {len(domains)} domains from bad_urls.txt...\n")
+    logger.info(f"Testing {len(domains)} domains from bad_urls.txt...")
 
     sem = asyncio.Semaphore(PARALLEL_LIMIT)
     tasks = [domain_test(d, sem) for d in domains]
@@ -107,10 +116,10 @@ async def run_bad_urls_check(path="../bad_urls.txt", csv_out="bad_urls_report.cs
                 "reason": r["reason"],
             })
 
-    print(f"CSV report written to {csv_out}")
+    logger.info(f"CSV report written to {csv_out}")
 
     return results
 
 
 if __name__ == "__main__":
-    asyncio.run(run_bad_urls_check())
+    job_wrapper()
