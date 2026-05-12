@@ -94,7 +94,7 @@ def job_wrapper():
     asyncio.run(run_bad_urls_check())
 
 
-async def run_bad_urls_check(path="./bad_urls.txt", csv_out="qa_bad_urls_report.csv"):
+async def run_bad_urls_check(path="./bad_urls.txt", csv_out="qa/qa_bad_urls_report.csv"):
     with open(path, "r", encoding="utf-8") as f:
         domains = [line.strip() for line in f if line.strip()]
 
