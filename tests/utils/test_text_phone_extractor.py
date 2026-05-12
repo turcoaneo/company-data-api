@@ -7,6 +7,11 @@ from crawler.util.text_phone_extractor import extract_text_phones
 
 class TestTextPhoneExtractor:
 
+    def test_simple_call_us_number(self):
+        dom = HTMLParser("<span class=\"backcolor_16 wixui-rich-text__text\">Call 315-339-9038 or email&nbsp;</span>")
+        result = extract_text_phones(dom)
+        assert result == ["3153399038"]
+
     def test_simple_us_number(self):
         dom = HTMLParser("<p>Call us at (202) 714-2785</p>")
         result = extract_text_phones(dom)

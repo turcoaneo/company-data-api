@@ -18,6 +18,16 @@ LOW_SIGNAL = [
 ]
 
 
+def is_semantic_by_ancestry(a_node):
+    parent = a_node.parent
+    while parent:
+        text = parent.text().lower()
+        if any(k in text for k in SEMANTIC_KEYWORDS):
+            return True
+        parent = parent.parent
+    return False
+
+
 def is_semantic(href: str) -> bool:
     href = href.lower()
     return any(k in href for k in SEMANTIC_KEYWORDS)

@@ -93,13 +93,13 @@ class CrawlerOrchestrator:
                     missing_contacts.append(domain)
 
         # Write unreachable domains
-        if SCRAPER_CONFIG["write_files"] and unreachable:
+        if SCRAPER_CONFIG["write_files"]:
             with open("bad_urls.txt", "w", encoding="utf-8") as f:
                 for b in unreachable:
                     f.write(b + "\n")
 
         # Write reachable but missing contacts
-        if SCRAPER_CONFIG["write_files"] and missing_contacts:
+        if SCRAPER_CONFIG["write_files"]:
             with open("missing_contacts.txt", "w", encoding="utf-8") as f:
                 for b in missing_contacts:
                     f.write(b + "\n")
