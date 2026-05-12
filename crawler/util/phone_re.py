@@ -14,3 +14,17 @@ PHONE_RE = re.compile(
     """,
     re.VERBOSE,
 )
+
+TEXT_PHONE_RE = re.compile(
+    r"""
+    (?<!\d)                                   # no digit before
+    (                                         # start capture
+        (?:\+?\d{1,3}[\s\-.])?                 # optional +CC or CC with separator
+        (?:\(\+?\d{1,4}\)|\(\d{2,4}\)|\d{2,4}) # area code: (415), (+40), 1234
+        (?:[\s\-.]\d{2,4}){1,4}                # groups with separators
+    )                                         # end capture
+    (?!\d)                                    # no digit after
+    """,
+    re.VERBOSE,
+)
+

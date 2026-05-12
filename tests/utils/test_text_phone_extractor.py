@@ -34,6 +34,22 @@ class TestTextPhoneExtractor:
         result = extract_text_phones(dom)
         assert result == ["+493012345678"]
 
+    def test_reject_fake_contact(self):
+        dom = HTMLParser("""
+            <a href="https://carrettausa.com?referrerPage=ContactUs&refPgId=519758413&SearchTerms=562342590&PCUrl=1">
+            <span class="lnkTxt ">562342590</span></a>
+        """)
+        result = extract_text_phones(dom)
+        assert result == []
+
+    def test_reject_fake_link(self):
+        dom = HTMLParser("""
+            <a href="https://carrettausa.com/ContactUs/?referrerPage=Home&refPgId=519758426&PCUrl=1"  target="_self">
+            <span class="lnkTxt ">Contact Us</span>
+        """)
+        result = extract_text_phones(dom)
+        assert result == []
+
     def test_reject_long_digit_only(self):
         dom = HTMLParser("""
             <div>

@@ -3,7 +3,7 @@
 from selectolax.parser import HTMLParser
 
 from crawler.util.phone_normalizer import dedupe_and_normalize_phones
-from crawler.util.phone_re import PHONE_RE
+from crawler.util.phone_re import TEXT_PHONE_RE
 
 ALLOWED_TAGS = {
     "p", "span", "div", "li", "a",
@@ -49,7 +49,7 @@ def extract_text_phones(dom: HTMLParser):
     candidates = []
 
     for t in texts:
-        for match in PHONE_RE.findall(t):
+        for match in TEXT_PHONE_RE.findall(t):
             candidates.append(match.strip())
 
     return dedupe_and_normalize_phones(candidates)
