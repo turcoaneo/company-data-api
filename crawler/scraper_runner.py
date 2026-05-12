@@ -16,7 +16,7 @@ async def run_scraper():
     logger.info(f"Running {log_thread_id(threading.get_ident(), 'scraper')}")
 
     # Phase 0: Load sites
-    input_csv = get_project_root() / "data" / "sample-websites-company-names.csv"
+    input_csv = get_project_root() / "data" / "small-sample-websites-company-names.csv"
     sites = load_sites_from_config(str(input_csv))
     logger.info(f"Loaded {len(sites)} sites")
 
