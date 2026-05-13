@@ -16,7 +16,7 @@ async def run_scraper():
     logger.info(f"Running {log_thread_id(threading.get_ident(), 'scraper')}")
 
     # Phase 0: Load sites
-    input_csv = get_project_root() / "data" / "small-sample-websites-company-names.csv"
+    input_csv = get_project_root() / "data" / "medium-sample-websites-company-names.csv"
     sites = load_sites_from_config(str(input_csv))
     logger.info(f"Loaded {len(sites)} sites")
 
@@ -66,5 +66,18 @@ async def run_scraper():
         json_out="./bad_urls_report.json")
 
     logger.info("Unreachable-domain classification saved to bad_urls_report.json")
+
+    # ---------------------------------------------------------
+    # SECOND PASS: re-run all HTTP-200 unreachable domains
+    # ---------------------------------------------------------
+    from qa.rerun_http200 import rerun_http200_domains
+
+    scraper_final_path = "final_result.jsonl"
+    await rerun_http200_domains(
+        bad_urls_json_path="./bad_urls_report.json",
+        first_pass_output_path=str(output_path),
+        final_path=scraper_final_path
+    )
+    logger.info(f"Final merged results saved to {scraper_final_path}")
 
     logger.info("Scraper runner finished successfully")
