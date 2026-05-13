@@ -19,7 +19,9 @@ class TestParserUnit:
     @pytest.mark.parametrize("html,expected", [
         ("<p>Call +40 123 456 789</p>", ["+40123456789"]),
         ("<div>Phone: 021-555-3333</div>", ["0215553333"]),
-        ("<span>(021)5553333</span>", ["0215553333"]),
+        ("<span>(021) 555 3333</span>", ["0215553333"]),
+        ("<span>(021)5553333</span>", []),
+        ("<span>0215553333</span>", []),
     ])
     def test_parse_text_phones(self, html, expected):
         result = Parser.parse_text_phones(html)

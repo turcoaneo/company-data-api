@@ -2,16 +2,46 @@
 
 import asyncio
 
+from app.utils.logger_util import get_logger
 from crawler.parser import parse_contacts
 from crawler.pipeline import normalize_record
 from crawler.util.fetch_fast import fetch_fast
 from crawler.util.fetch_with_retries import fetch_with_retries
-from app.utils.logger_util import get_logger
 
 logger = get_logger()
 
+from urllib.parse import urlparse
 
-async def scrape_links(session, links, timeout, concurrency):
+
+def _is_same_domain(url: str, base_domain: str) -> bool:
+    """
+    Return True only if url belongs to the same domain.
+    """
+    if not url:
+        return False
+
+    url = url.strip().lower()
+
+    # Must be http(s)
+    if not (url.startswith("http://") or url.startswith("https://")):
+        return False
+
+    host = urlparse(url).netloc.lower()
+
+    # Strip www.
+    if host.startswith("www."):
+        host = host[4:]
+
+    domain_name = urlparse(base_domain).netloc.lower()
+    return host == domain_name
+
+
+async def scrape_links(session, links, timeout, concurrency, base_domain):
+    if not links:
+        return None
+
+    # Filter out mailto:, tel:, javascript:, anchors, etc.
+    links = [u for u in links if _is_same_domain(u, base_domain)]
     if not links:
         return None
 

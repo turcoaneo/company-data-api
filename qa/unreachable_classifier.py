@@ -2,7 +2,6 @@
 import asyncio
 import csv
 import json
-import logging
 import re
 from collections import defaultdict
 
@@ -96,6 +95,18 @@ async def classify_csv_to_json_sync(csv_path, json_out):
         json.dump(categories, f, indent=2)
     logger.info(f"Classification JSON written to {json_out}")
     return categories
+
+
+def load_http_200_domains(json_path):
+    import json
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    return [
+        item["domain"]
+        for item in data
+        if item["http_status"] == 200
+    ]
 
 
 if __name__ == "__main__":

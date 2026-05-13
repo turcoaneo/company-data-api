@@ -49,16 +49,23 @@ class CrawlerOrchestrator:
 
         # Phase 1: parse homepage itself
         homepage_result = parse_homepage(working_base, homepage_html)
-        if homepage_result["phones"] or homepage_result["socials"]:
-            return {"result": homepage_result, "homepage_ok": True}
+        initial = homepage_result
 
-        # Phase 2: unified semantic discovery
         semantic_links = extract_semantic_links(working_base, homepage_html)
+        result = await scrape_links(session, semantic_links, self.timeout, self.per_domain_concurrency, working_base)
 
-        # Phase 3: scrape semantic links
-        result = await scrape_links(session, semantic_links, self.timeout, self.per_domain_concurrency)
         if result:
-            return {"result": result, "homepage_ok": True}
+            # merge homepage + semantic
+            merged = {
+                "url": result["url"],
+                "phones": list({*initial["phones"], *result["phones"]}),
+                "socials": list({*initial["socials"], *result["socials"]}),
+            }
+            return {"result": merged, "homepage_ok": True}
+
+        # fallback to homepage-only if semantic pages fail
+        if initial["phones"] or initial["socials"]:
+            return {"result": initial, "homepage_ok": True}
 
         return {"result": None, "homepage_ok": True}
 

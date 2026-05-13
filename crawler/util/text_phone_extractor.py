@@ -2,7 +2,7 @@
 
 from selectolax.parser import HTMLParser
 
-from crawler.util.phone_normalizer import dedupe_and_normalize_phones
+from crawler.util.phone_normalizer import dedupe_and_normalize_phones, MIN_DIGITS, MAX_DIGITS
 from crawler.util.phone_re import TEXT_PHONE_RE
 
 ALLOWED_TAGS = {
@@ -49,7 +49,14 @@ def extract_text_phones(dom: HTMLParser):
     candidates = []
 
     for t in texts:
+        # Remove time ranges (prevents 30 470.xxx.xxx)
+        import re
+        t = re.sub(r"\b\d{1,2}:\d{2}\b", "", t)
+
         for match in TEXT_PHONE_RE.findall(t):
+            space_removed = match.replace(" ", "")
+            if MIN_DIGITS > len(space_removed) or len(space_removed) > MAX_DIGITS:
+                continue
             candidates.append(match.strip())
 
-    return dedupe_and_normalize_phones(candidates)
+    return dedupe_and_normalize_phones(list(set(candidates)))

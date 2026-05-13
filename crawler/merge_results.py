@@ -1,7 +1,9 @@
 # /crawler/merge_results.py
 
-import pandas as pd
+import json
 from pathlib import Path
+
+import pandas as pd
 
 from crawler.pipeline import normalize_domain
 from crawler.util.save_output_helper import save_jsonl
@@ -84,3 +86,133 @@ async def async_merge_scraper_results(input_csv: str, results: list, output_dir:
         None,
         lambda: merge_scraper_results(input_csv, results, output_dir)
     )
+
+
+# ---------------------------------------------------------
+# 5. Merging two runs
+# ---------------------------------------------------------
+
+def _normalize_host(value: str) -> str:
+    if not value:
+        return ""
+    value = value.strip().lower()
+
+    # strip protocol
+    if value.startswith("http://"):
+        value = value[7:]
+    elif value.startswith("https://"):
+        value = value[8:]
+
+    # strip path
+    value = value.split("/", 1)[0]
+
+    # strip www
+    if value.startswith("www."):
+        value = value[4:]
+
+    return value
+
+
+def _extract_domain(rec: dict) -> str:
+    dom = rec.get("domain")
+    if isinstance(dom, str) and dom.strip():
+        return _normalize_host(dom)
+
+    url = rec.get("url", "")
+    return _normalize_host(url)
+
+
+# def _clean_record(rec: dict) -> dict:
+#     """
+#     Produce a clean record for final JSONL.
+#     Removes url, normalizes domain, keeps only allowed fields.
+#     """
+#     domain = _extract_domain(rec)
+#
+#     clean = {
+#         "domain": domain,
+#         "phones": rec.get("phones", []),
+#         "socials": rec.get("socials", []),
+#     }
+#
+#     # Preserve company fields if present
+#     for field in (
+#             "company_commercial_name",
+#             "company_legal_name",
+#             "company_all_available_names",
+#     ):
+#         if field in rec:
+#             clean[field] = rec[field]
+#
+#     return clean
+
+
+def merge_two_runs(first_path: str, second_results: list[dict], final_path: str) -> None:
+    """
+    Merge first-pass JSONL with second-pass results.
+    Preserve company fields from first pass.
+    Only override phones/socials when second pass has data.
+    Never write 'url'.
+    """
+    first: dict[str, dict] = {}
+
+    # -------------------------
+    # Load first-pass
+    # -------------------------
+    with open(first_path, "r", encoding="utf-8") as f:
+        for line in f:
+            rec = json.loads(line)
+            key = _extract_domain(rec)
+            if not key:
+                continue
+
+            # Normalize domain
+            rec["domain"] = key
+
+            # Remove url
+            rec.pop("url", None)
+
+            first[key] = rec
+
+    # -------------------------
+    # Merge second-pass
+    # -------------------------
+    for rec in second_results:
+        key = _extract_domain(rec)
+        if not key:
+            continue
+
+        # Normalize domain
+        domain = key
+
+        # Build a clean second-pass record
+        second_clean = {
+            "domain": domain,
+            "phones": rec.get("phones", []),
+            "socials": rec.get("socials", []),
+        }
+
+        # If first-pass exists, merge fields
+        if domain in first:
+            merged = first[domain].copy()
+
+            # Override phones only if second-pass has phones
+            if second_clean["phones"]:
+                merged["phones"] = second_clean["phones"]
+
+            # Override socials only if second-pass has socials
+            if second_clean["socials"]:
+                merged["socials"] = second_clean["socials"]
+
+            first[domain] = merged
+
+        else:
+            # No first-pass record → use second-pass clean record
+            first[domain] = second_clean
+
+    # -------------------------
+    # Write final JSONL
+    # -------------------------
+    with open(final_path, "w", encoding="utf-8") as f:
+        for rec in first.values():
+            f.write(json.dumps(rec) + "\n")

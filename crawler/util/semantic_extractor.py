@@ -30,7 +30,18 @@ def extract_semantic_links(base: str, homepage_html: str):
             continue
         if is_low_signal(full):
             continue
-        if is_semantic(full) or is_semantic_by_ancestry(a):
+        if is_semantic(full):
+            links.add(full)
+
+    if len(links) > 0:
+        return list(links)
+
+    for a in tree.css("a"):
+        href = a.attributes.get("href")
+        if not href:
+            continue
+        full = urljoin(base, href)
+        if is_semantic_by_ancestry(a):
             links.add(full)
 
     return list(links)

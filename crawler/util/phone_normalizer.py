@@ -7,7 +7,7 @@ from crawler.util.country_codes import VALID_COUNTRY_CODES
 
 logger = logging.getLogger(__name__)
 
-MIN_DIGITS = 7
+MIN_DIGITS = 9
 MAX_DIGITS = 16
 MAX_PLAUSIBLE = 13
 
