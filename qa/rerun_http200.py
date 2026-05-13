@@ -58,8 +58,8 @@ def job_wrapper():
     asyncio.run(
         rerun_http200_domains(
             bad_urls_json_path="./bad_urls_report.json",
-            first_pass_output_path="data/results_20260513_064044.jsonl",
-            final_path="qa/final_result.jsonl"
+            first_pass_output_path="data/results_20260513_132243.jsonl",
+            final_path="qa/qa_final_result.jsonl"
         )
     )
 
