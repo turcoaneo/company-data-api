@@ -17,17 +17,19 @@ FILES_TO_CLEAN = [
 
 # Pattern-based filenames
 PATTERNS_TO_CLEAN = [
-    "data/partial_results_*",
-    "data/results_*",
+    "partial_results_*",
+    "results_*",
 ]
 
 
-def clean_scraper_files(base_dir: str = ".") -> None:
+def clean_scraper_files(base_dir: str = ".", patterns=None) -> None:
     """
     Remove stale scraper output files before a new run.
     Supports both exact filenames and wildcard patterns.
     Safe for both single-process and multiprocess runs.
     """
+    if patterns is None:
+        patterns = PATTERNS_TO_CLEAN
     base = Path(base_dir)
 
     # Remove exact files
@@ -40,7 +42,7 @@ def clean_scraper_files(base_dir: str = ".") -> None:
                 logger.error(f"Error removing file {path}: {e}")
 
     # Remove wildcard-matching files
-    for pattern in PATTERNS_TO_CLEAN:
+    for pattern in patterns:
         for path in base.glob(pattern):
             if path.exists():
                 try:
