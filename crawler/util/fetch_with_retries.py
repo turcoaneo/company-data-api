@@ -24,9 +24,11 @@ BROWSER_HEADERS = {
 
 
 # noinspection DuplicatedCode
-async def fetch_with_retries(session, url, timeout):
+async def fetch_with_retries(session, url, timeout, headers: dict = None):
     """
     Multi-strategy fetch to bypass non-Cloudflare 403 bot blocks.
+    Now supports custom headers (rotating UA, slow-mode, etc.).
+
     Returns dict:
     {
         "ok": bool,
@@ -35,42 +37,43 @@ async def fetch_with_retries(session, url, timeout):
     }
     """
 
-    # Strategy 1: GET with browser headers
-    browser_header = "Browser-header"
+    # Merge caller headers with browser headers (caller UA wins)
+    merged_headers = {**BROWSER_HEADERS, **(headers or {})}
+
+    # Strategy 1: GET with merged headers
     try:
-        async with session.get(url, ssl=False, timeout=timeout, headers=BROWSER_HEADERS) as resp:
+        async with session.get(url, ssl=False, timeout=timeout, headers=merged_headers) as resp:
             html = await resp.text(errors="ignore")
             if resp.status < 400:
                 return {"ok": True, "status": resp.status, "html": html}
-            logger.debug(f"{browser_header} GET failed for {url}: {resp.status}")
+            logger.debug(f"Browser-header GET failed for {url}: {resp.status}")
     except Exception as e:
-        logger.debug(f"{browser_header} GET exception for {url}: {e}")
+        logger.debug(f"Browser-header GET exception for {url}: {e}")
 
-    # Strategy 2: HEAD request
+    # Strategy 2: HEAD request (missing body)
     try:
-        async with session.head(url, ssl=False, timeout=timeout) as resp:
+        async with session.head(url, ssl=False, timeout=timeout, headers=merged_headers) as resp:
             if resp.status < 400:
                 return {"ok": True, "status": resp.status, "html": ""}
             logger.debug(f"HEAD failed for {url}: {resp.status}")
     except Exception as e:
         logger.debug(f"HEAD exception for {url}: {e}")
 
-    # Strategy 3: GET with cookie jar
-    cookie_jar = "Cookie-jar"
+    # Strategy 3: GET with cookie jar (new session)
     try:
         jar = aiohttp.CookieJar()
         async with aiohttp.ClientSession(cookie_jar=jar) as s2:
-            async with s2.get(url, ssl=False, timeout=timeout, headers=BROWSER_HEADERS) as resp:
+            async with s2.get(url, ssl=False, timeout=timeout, headers=merged_headers) as resp:
                 html = await resp.text(errors="ignore")
                 if resp.status < 400:
                     return {"ok": True, "status": resp.status, "html": html}
-                logger.debug(f"{cookie_jar} GET failed for {url}: {resp.status}")
+                logger.debug(f"Cookie-jar GET failed for {url}: {resp.status}")
     except Exception as e:
-        logger.debug(f"cookie_jar GET exception for {url}: {e}")
+        logger.debug(f"Cookie-jar GET exception for {url}: {e}")
 
     # Strategy 4: POST fallback
     try:
-        async with session.post(url, ssl=False, timeout=timeout, headers=BROWSER_HEADERS, data={}) as resp:
+        async with session.post(url, ssl=False, timeout=timeout, headers=merged_headers, data={}) as resp:
             html = await resp.text(errors="ignore")
             if resp.status < 400:
                 return {"ok": True, "status": resp.status, "html": html}

@@ -17,8 +17,8 @@ FILES_TO_CLEAN = [
 
 # Pattern-based filenames
 PATTERNS_TO_CLEAN = [
-    "partial_results_*",
-    "results_*",
+    "data/partial_results_*",
+    "data/results_*",
 ]
 
 

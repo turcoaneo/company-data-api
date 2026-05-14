@@ -17,10 +17,10 @@ logger = get_logger()
 
 class CrawlerOrchestrator:
     def __init__(
-        self,
-        per_domain_concurrency: int = 5,
-        timeout: int = 10,
-        max_domains_in_parallel: int = 20,
+            self,
+            per_domain_concurrency: int = 5,
+            timeout: int = 10,
+            max_domains_in_parallel: int = 20,
     ):
         self.per_domain_concurrency = per_domain_concurrency
         self.max_domains_in_parallel = max_domains_in_parallel
@@ -30,10 +30,20 @@ class CrawlerOrchestrator:
     # Crawl a single domain
     # -------------------------
     async def crawl_domain(
-        self,
-        session: aiohttp.ClientSession,
-        domain: str
+            self,
+            session: aiohttp.ClientSession,
+            domain: str,
+            headers: dict = None,
+            slow_mode: bool = False
     ) -> Dict:
+
+        headers = headers or {}
+
+        import random
+        if slow_mode:
+            await asyncio.sleep(random.uniform(0.3, 0.6))
+        else:
+            await asyncio.sleep(random.uniform(0.05, 0.15))
 
         logger.info(f"Starting crawl for domain: {domain}")
 
@@ -41,7 +51,7 @@ class CrawlerOrchestrator:
         base = domain.rstrip("/") if domain.startswith(("http://", "https://")) else f"https://{domain}".rstrip("/")
 
         # Phase 0: homepage must be reachable (with fallback)
-        homepage_info = await resolve_homepage(session, base, self.timeout)
+        homepage_info = await resolve_homepage(session, base, self.timeout, headers)
         if homepage_info is None:
             return {"result": None, "homepage_ok": False}
 
@@ -52,7 +62,8 @@ class CrawlerOrchestrator:
         initial = homepage_result
 
         semantic_links = extract_semantic_links(working_base, homepage_html)
-        result = await scrape_links(session, semantic_links, self.timeout, self.per_domain_concurrency, working_base)
+        result = await scrape_links(session, semantic_links, self.timeout, self.per_domain_concurrency, working_base,
+                                    headers)
 
         if result:
             # merge homepage + semantic
@@ -73,39 +84,60 @@ class CrawlerOrchestrator:
     # Crawl many domains (parallel)
     # -------------------------
     async def crawl(self, domains: List[str]) -> List[Dict]:
+        import random
+        from crawler.util.user_agents import USER_AGENTS
+
         good: List[Dict] = []
         unreachable: List[str] = []
         missing_contacts: List[str] = []
 
         sem = asyncio.Semaphore(self.max_domains_in_parallel)
 
-        async def crawl_guarded(domain: str):
-            async with sem:
-                async with aiohttp.ClientSession() as session:
-                    return domain, await self.crawl_domain(session, domain)
+        # Shared connector for connection reuse
+        connector = aiohttp.TCPConnector(limit=0, ttl_dns_cache=300)
 
-        tasks = [asyncio.create_task(crawl_guarded(domain)) for domain in domains]
+        async with aiohttp.ClientSession(connector=connector) as shared_session:
 
-        for task in tasks:
-            domain, info = await task
-            result = info["result"]
-            homepage_ok = info["homepage_ok"]
+            async def crawl_guarded(domain: str):
+                async with sem:
+                    # Pick UA per domain
+                    headers = {"User-Agent": random.choice(USER_AGENTS)}
 
-            if result:
-                good.append(result)
-            else:
-                if not homepage_ok:
-                    unreachable.append(domain)
+                    # Slow-mode for Google Business Sites
+                    slow_mode = (
+                            domain.endswith(".business.site")
+                            or "googleusercontent" in domain
+                    )
+
+                    return domain, await self.crawl_domain(
+                        shared_session,
+                        domain,
+                        headers=headers,
+                        slow_mode=slow_mode
+                    )
+
+            tasks = [asyncio.create_task(crawl_guarded(domain)) for domain in domains]
+
+            for task in tasks:
+                domain, info = await task
+                result = info["result"]
+                homepage_ok = info["homepage_ok"]
+
+                if result:
+                    good.append(result)
                 else:
-                    missing_contacts.append(domain)
+                    if not homepage_ok:
+                        unreachable.append(domain)
+                    else:
+                        missing_contacts.append(domain)
 
-        # Write unreachable domains
+        # Append unreachable
         if SCRAPER_CONFIG["write_files"]:
             with open("bad_urls.txt", "a", encoding="utf-8") as f:
                 for b in unreachable:
                     f.write(b + "\n")
 
-        # Write reachable but missing contacts
+        # Append missing contacts
         if SCRAPER_CONFIG["write_files"]:
             with open("missing_contacts.txt", "a", encoding="utf-8") as f:
                 for b in missing_contacts:

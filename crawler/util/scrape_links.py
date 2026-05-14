@@ -1,6 +1,8 @@
 # crawler/util/scrape_links.py
 
 import asyncio
+import random
+from urllib.parse import urlparse
 
 from app.utils.logger_util import get_logger
 from crawler.parser import parse_contacts
@@ -10,25 +12,16 @@ from crawler.util.fetch_with_retries import fetch_with_retries
 
 logger = get_logger()
 
-from urllib.parse import urlparse
-
 
 def _is_same_domain(url: str, base_domain: str) -> bool:
-    """
-    Return True only if url belongs to the same domain.
-    """
     if not url:
         return False
 
     url = url.strip().lower()
-
-    # Must be http(s)
     if not (url.startswith("http://") or url.startswith("https://")):
         return False
 
     host = urlparse(url).netloc.lower()
-
-    # Strip www.
     if host.startswith("www."):
         host = host[4:]
 
@@ -36,11 +29,20 @@ def _is_same_domain(url: str, base_domain: str) -> bool:
     return host == domain_name
 
 
-async def scrape_links(session, links, timeout, concurrency, base_domain):
+async def scrape_links(
+    session,
+    links,
+    timeout,
+    concurrency,
+    base_domain,
+    headers: dict = None,
+    slow_mode: bool = False
+):
+    headers = headers or {}
+
     if not links:
         return None
 
-    # Filter out mailto:, tel:, javascript:, anchors, etc.
     links = [u for u in links if _is_same_domain(u, base_domain)]
     if not links:
         return None
@@ -49,15 +51,29 @@ async def scrape_links(session, links, timeout, concurrency, base_domain):
 
     async def fetch_and_parse(url: str):
         async with sem:
+
+            # Jitter
+            if slow_mode:
+                await asyncio.sleep(random.uniform(0.3, 0.6))
+            else:
+                await asyncio.sleep(random.uniform(0.05, 0.15))
+
             # --- FAST PATH ---
-            ok, status, html = await fetch_fast(session, url, timeout)
+            ok, status, html = await fetch_fast(session, url, timeout, headers=headers)
+
+            # Retry on tiny-body 200
+            if ok and status == 200 and html and len(html) < 2000:
+                await asyncio.sleep(random.uniform(0.2, 0.5))
+                ok2, status2, html2 = await fetch_fast(session, url, timeout, headers=headers)
+                if ok2 and status2 == 200 and html2 and len(html2) >= 2000:
+                    return parse_and_normalize(url, html2)
 
             if ok and status < 400:
                 return parse_and_normalize(url, html)
 
             # --- RETRY ONLY ON 403 ---
             if status == 403:
-                retry = await fetch_with_retries(session, url, timeout)
+                retry = await fetch_with_retries(session, url, timeout, headers=headers)
                 if retry["ok"]:
                     return parse_and_normalize(url, retry["html"])
 
