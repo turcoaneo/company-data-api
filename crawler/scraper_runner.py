@@ -45,7 +45,7 @@ async def run_scraper():
     # ---------------------------------------------------------
     # Run QA unreachable-domain analysis
     # ---------------------------------------------------------
-    logger.info("Running QA unreachable-domain analysis...")
+    logger.info("Scraper - Running QA unreachable-domain analysis...")
 
     from qa.qa_bad_urls import run_bad_urls_check
     await run_bad_urls_check(

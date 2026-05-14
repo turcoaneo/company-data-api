@@ -13,9 +13,17 @@ logger = get_logger('scraper_job')
 
 @elapsed_time("run_scraper")
 def run_job():
-    import asyncio
-    logger.info('Scraping')
-    asyncio.run(run_scraper())
+    from crawler.clean_files import clean_scraper_files
+    clean_scraper_files()
+    chunks = SCRAPER_CONFIG["mp_chunks"]
+    if not chunks:
+        import asyncio
+        logger.info('Scraping')
+        asyncio.run(run_scraper())
+    else:
+        logger.info('Scraping (multiprocess)')
+        from crawler.mp_crawler import run_scraper_multiprocess
+        run_scraper_multiprocess(num_chunks=chunks)
     if APP_ENV == 'local_debug':
         exit(0)
 
