@@ -27,7 +27,7 @@ async def rerun_http200_domains(
         bad_urls_json_path: str,
         first_pass_output_path: str,
         final_path: str,
-        per_domain_concurrency: int = 4,
+        per_domain_concurrency: int = 1,
         timeout: int = 10,
 ):
     """
@@ -39,7 +39,7 @@ async def rerun_http200_domains(
     logger.info(f"Re-running {len(http200_domains)} HTTP-200 domains...")
 
     orch = CrawlerOrchestrator(
-        per_domain_concurrency=per_domain_concurrency,
+        domain_concurrency=per_domain_concurrency,
         timeout=timeout
     )
 

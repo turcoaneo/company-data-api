@@ -18,17 +18,14 @@ logger = get_logger()
 class CrawlerOrchestrator:
     def __init__(
             self,
-            per_domain_concurrency: int = 5,
+            domain_concurrency: int = None,
+            domains_in_parallel: int = None,
             timeout: int = 10,
-            max_domains_in_parallel: int = 20,
     ):
-        self.per_domain_concurrency = per_domain_concurrency
-        self.max_domains_in_parallel = max_domains_in_parallel
+        self.domain_concurrency = domain_concurrency if domain_concurrency else SCRAPER_CONFIG["domain_concurrency"]
+        self.domains_in_parallel = domains_in_parallel if domains_in_parallel else SCRAPER_CONFIG["domains_in_parallel"]
         self.timeout = timeout
 
-    # -------------------------
-    # Crawl a single domain
-    # -------------------------
     async def crawl_domain(
             self,
             session: aiohttp.ClientSession,
@@ -62,7 +59,7 @@ class CrawlerOrchestrator:
         initial = homepage_result
 
         semantic_links = extract_semantic_links(working_base, homepage_html)
-        result = await scrape_links(session, semantic_links, self.timeout, self.per_domain_concurrency, working_base,
+        result = await scrape_links(session, semantic_links, self.timeout, self.domain_concurrency, working_base,
                                     headers)
 
         if result:
@@ -81,8 +78,9 @@ class CrawlerOrchestrator:
         return {"result": None, "homepage_ok": True}
 
     # -------------------------
-    # Crawl many domains (parallel)
+    # Crawl a single domain
     # -------------------------
+
     async def crawl(self, domains: List[str]) -> List[Dict]:
         import random
         from crawler.util.user_agents import USER_AGENTS
@@ -91,7 +89,7 @@ class CrawlerOrchestrator:
         unreachable: List[str] = []
         missing_contacts: List[str] = []
 
-        sem = asyncio.Semaphore(self.max_domains_in_parallel)
+        sem = asyncio.Semaphore(self.domains_in_parallel)
 
         # Shared connector for connection reuse
         connector = aiohttp.TCPConnector(limit=0, ttl_dns_cache=300)
@@ -144,3 +142,6 @@ class CrawlerOrchestrator:
                     f.write(b + "\n")
 
         return good
+    # -------------------------
+    # Crawl many domains (parallel)
+    # -------------------------

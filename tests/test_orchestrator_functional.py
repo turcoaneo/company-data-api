@@ -51,7 +51,7 @@ class TestCrawlerOrchestrator:
         app.router.add_get("/about", handler_about)
         server = await server_factory(app)
 
-        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -91,7 +91,7 @@ class TestCrawlerOrchestrator:
         app.router.add_get("/contact", handler_contact)
         server = await server_factory(app)
 
-        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -114,7 +114,7 @@ class TestCrawlerOrchestrator:
         app.router.add_get("/", handler_home)
         server = await server_factory(app)
 
-        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -142,7 +142,7 @@ class TestCrawlerOrchestrator:
         import crawler.orchestrator as orch_mod
         monkeypatch.setattr(orch_mod, "resolve_homepage", fake_fetch)
 
-        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(domain_concurrency=2, timeout=5)
         domain = str(server.make_url(""))
 
         async with aiohttp.ClientSession() as session:
@@ -168,7 +168,7 @@ class TestCrawlerOrchestrator:
         good_domain = str(server.make_url(""))
         bad_domain = "nonexistent-domain-xyz123.com"
 
-        orch = CrawlerOrchestrator(per_domain_concurrency=2, timeout=5)
+        orch = CrawlerOrchestrator(domain_concurrency=2, timeout=5)
 
         os.chdir(tmp_path)
 

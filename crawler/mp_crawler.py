@@ -32,7 +32,7 @@ def _write_partial_jsonl(path: Path, rows: List[dict]) -> None:
 
 async def _crawl_chunk(chunk_id: int, domains: List[str], output_dir: Path) -> None:
     logger.info(f"[chunk {chunk_id}] Starting crawl for {len(domains)} domains")
-    orch = CrawlerOrchestrator(per_domain_concurrency=4, timeout=10)
+    orch = CrawlerOrchestrator()
 
     try:
         results = await orch.crawl(domains)
