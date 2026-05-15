@@ -13,9 +13,19 @@ logger = get_logger('scraper_job')
 
 @elapsed_time("run_scraper")
 def run_job():
+    import time
+    from crawler.util.run_history import record_run
     from crawler.clean_files import clean_scraper_files
+
+    start_time = time.time()
+
     clean_scraper_files()
+
     chunks = SCRAPER_CONFIG["mp_chunks"]
+    domain_conc = SCRAPER_CONFIG["domain_concurrency"]
+    domains_parallel = SCRAPER_CONFIG["domains_in_parallel"]
+
+    # Run scraper
     if not chunks:
         import asyncio
         logger.info('Scraping')
@@ -24,6 +34,32 @@ def run_job():
         logger.info('Scraping (multiprocess)')
         from crawler.mp_crawler import run_scraper_multiprocess
         run_scraper_multiprocess(num_chunks=chunks)
+
+    # Extract timestamp from results_YYYYMMDD_HHMMSS.jsonl
+    import re
+    from pathlib import Path
+
+    results_files = list(Path(".").glob("data/results_*.jsonl"))
+    if results_files:
+        # pick the latest by timestamp in filename
+        latest = max(results_files, key=lambda p: p.stat().st_mtime)
+        m = re.search(r"results_(\d{8}_\d{6})\.jsonl", latest.name)
+        if m:
+            ts = m.group(1)
+        else:
+            ts = "unknown"
+    else:
+        ts = "unknown"
+
+    duration = time.time() - start_time
+
+    # Record run history
+    record_run(
+        start_ts=ts,
+        duration=duration,
+        config=[chunks, domain_conc, domains_parallel]
+    )
+
     if APP_ENV == 'local_debug':
         exit(0)
 
