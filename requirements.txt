@@ -11,3 +11,4 @@ python-dotenv==1.2.2
 psutil
 pandas
 brotli
+requests

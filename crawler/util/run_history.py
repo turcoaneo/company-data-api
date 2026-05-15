@@ -47,12 +47,19 @@ def record_run(start_ts: str, duration: float, config: list):
     initial_counts = _count_contacts(results_file)
     final_counts = _count_contacts(final_file)
 
+    from crawler.util.ip_util import get_isp_info
+
+    isp = get_isp_info()
+
     entry = {
         start_ts: {
             "initial": list(initial_counts),
             "final": list(final_counts),
             "config": config,
             "duration": round(duration, 3),
+            "ip": isp["ip"],
+            "isp_org": isp["org"],
+            "asn": isp["asn"],
         }
     }
 
