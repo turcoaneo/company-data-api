@@ -6,11 +6,13 @@ from .scorer import score
 router = APIRouter()
 index = InMemoryIndex()
 
+
 class MatchQuery(BaseModel):
     name: str | None = None
     domain: str | None = None
     phone: str | None = None
     facebook: str | None = None
+
 
 @router.post("/match")
 def match_company(query: MatchQuery):

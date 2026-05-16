@@ -14,7 +14,7 @@ if __name__ == "__main__":
     logger.info(f"APP_ENV = {APP_ENV}, binding to port {exposed_port}")
 
     # Optional: start scraper loop alongside FastAPI
-    start_scraper_loop(interval_sec=5, is_looped=True)
+    start_scraper_loop(is_looped=False)
 
     # Monitor resources
     start_monitor_daemon()
