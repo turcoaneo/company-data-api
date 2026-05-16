@@ -2,10 +2,25 @@
 
 import csv
 import json
+import re
 import shutil
 from pathlib import Path
+
 from app.utils.logger_util import get_logger
+
 logger = get_logger()
+
+
+def _extract_id_from_path(path: str) -> str:
+    """
+    Extracts run ID from results_YYYYMMDD_HHMMSS.jsonl.
+    If no match, returns the filename without extension.
+    """
+    name = Path(path).name
+    m = re.search(r"results_(\d{8}_\d{6})\.jsonl", name)
+    if m:
+        return m.group(1)
+    return Path(path).stem
 
 
 def _count_jsonl_contacts(path: Path):
@@ -98,6 +113,7 @@ def compute_scraper_metrics(
     any_datapoints_per_coverage = datapoints_per_coverage
 
     return {
+        "id": _extract_id_from_path(initial_jsonl_path),
         "total_sites": total_sites,
         "unreachable_sites": len(bad_urls),
         "missing_contacts": len(missing_contacts),
@@ -186,6 +202,7 @@ def compute_latest_and_top_metrics(
     if latest_score > top_score:
         # New best run → update top_result.jsonl + best_metric.json
         _copy_top_result(final_jsonl_path, top_result_file)
+        latest["id"] = _extract_id_from_path(initial_jsonl_path)
         _save_top_metrics(top_metrics_file, latest)
         top = latest
     else:
