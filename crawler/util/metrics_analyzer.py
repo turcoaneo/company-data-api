@@ -6,10 +6,6 @@ import re
 import shutil
 from pathlib import Path
 
-from app.utils.logger_util import get_logger
-
-logger = get_logger()
-
 
 def _extract_id_from_path(path: str) -> str:
     """
@@ -37,6 +33,8 @@ def _count_jsonl_contacts(path: Path):
             try:
                 obj = json.loads(line)
             except Exception as e:
+                from app.utils.logger_util import get_logger
+                logger = get_logger()
                 logger.error(f"Metrics analyzer extract line error for {line}: {e}")
                 continue
 
@@ -108,7 +106,6 @@ def compute_scraper_metrics(
     phones_per_coverage = final_phones / coverage if coverage else 0
     socials_per_coverage = final_socials / coverage if coverage else 0
 
-    # UNIQUE datapoints = sites with phone OR social
     datapoints_per_coverage = final_sites_with_contacts / coverage if coverage else 0
     any_datapoints_per_coverage = datapoints_per_coverage
 
@@ -146,6 +143,8 @@ def _load_top_metrics(top_metrics_path: Path) -> dict | None:
     try:
         return json.loads(top_metrics_path.read_text(encoding="utf-8"))
     except Exception as e:
+        from app.utils.logger_util import get_logger
+        logger = get_logger()
         logger.error(f"Top metrics could not be loaded: {e}")
         return None
 
@@ -169,16 +168,6 @@ def compute_latest_and_top_metrics(
         top_metrics_path: str = "best_metric.json",
         top_result_path: str = "top_result.jsonl",
 ):
-    """
-    Computes metrics for the latest run (final_result.jsonl),
-    compares with stored top metrics, and updates top_result.jsonl + best_metric.json
-    if the latest run is better (phones + socials).
-    Returns:
-      {
-        "latest_results": {...},
-        "top_results": {...},
-      }
-    """
     latest = compute_scraper_metrics(
         input_csv_path=input_csv_path,
         bad_urls_path=bad_urls_path,
@@ -206,7 +195,6 @@ def compute_latest_and_top_metrics(
         _save_top_metrics(top_metrics_file, latest)
         top = latest
     else:
-        # Keep existing top
         top = existing_top if existing_top is not None else latest
 
     return {

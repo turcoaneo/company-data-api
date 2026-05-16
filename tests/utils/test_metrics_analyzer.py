@@ -83,6 +83,7 @@ class TestMetricsAnalyzer:
             final_jsonl_path=str(paths["final"]),
         )
 
+        assert metrics["id"] == "20260515_120000"
         assert metrics["total_sites"] == 5
         assert metrics["unreachable_sites"] == 1
         assert metrics["missing_contacts"] == 1
@@ -153,3 +154,5 @@ class TestMetricsAnalyzer:
         top2 = result2["top_results"]
         assert top2["final"]["phones"] == top["final"]["phones"]
         assert top2["final"]["socials"] == top["final"]["socials"]
+        assert result["latest_results"]["id"] == "20260515_120000"
+        assert result["top_results"]["id"] == "20260515_120000"
