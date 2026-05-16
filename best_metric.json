@@ -21,6 +21,6 @@
     "phones_per_coverage": 0.5666156202143952,
     "socials_per_coverage": 0.4793261868300153,
     "datapoints_per_coverage": 0.7304747320061256,
-    "any_datapoints_per_coverage": 0.7304747320061256
+    "datapoints_per_sites": 0.47843530591775324
   }
 }

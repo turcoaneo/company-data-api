@@ -107,7 +107,7 @@ class TestMetricsAnalyzer:
         assert fr["phones_per_coverage"] == pytest.approx(2 / 5)
         assert fr["socials_per_coverage"] == pytest.approx(1 / 5)
         assert fr["datapoints_per_coverage"] == pytest.approx(3 / 5)
-        assert fr["any_datapoints_per_coverage"] == pytest.approx(3 / 5)
+        assert fr["datapoints_per_sites"] == pytest.approx(3 / 5)
 
     def test_compute_latest_and_top_metrics_updates_top(self, setup_files):
         paths = setup_files

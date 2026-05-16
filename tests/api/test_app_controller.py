@@ -17,7 +17,7 @@ class TestAppController:
     # -----------------------------
     # /api/metrics
     # -----------------------------
-    @patch("app.run_metrics")
+    @patch("app.service.service_metrics.compute_latest_and_top_metrics")
     def test_get_metrics(self, mock_service, client):
         mock_service.return_value = {
             "coverage": 123,
@@ -39,7 +39,7 @@ class TestAppController:
     # -----------------------------
     # /api/scraper/history/summary
     # -----------------------------
-    @patch("app.service.service_history.get_history_summary")
+    @patch("app.service.service_history.load_history_summary")
     def test_get_history_summary(self, mock_service, client):
         mock_service.return_value = {
             "20260516_090820": {

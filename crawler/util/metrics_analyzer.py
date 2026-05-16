@@ -107,7 +107,7 @@ def compute_scraper_metrics(
     socials_per_coverage = final_socials / coverage if coverage else 0
 
     datapoints_per_coverage = final_sites_with_contacts / coverage if coverage else 0
-    any_datapoints_per_coverage = datapoints_per_coverage
+    datapoints_per_sites = final_sites_with_contacts / total_sites
 
     return {
         "id": _extract_id_from_path(initial_jsonl_path),
@@ -132,7 +132,7 @@ def compute_scraper_metrics(
             "phones_per_coverage": phones_per_coverage,
             "socials_per_coverage": socials_per_coverage,
             "datapoints_per_coverage": datapoints_per_coverage,
-            "any_datapoints_per_coverage": any_datapoints_per_coverage,
+            "datapoints_per_sites": datapoints_per_sites,
         }
     }
 
