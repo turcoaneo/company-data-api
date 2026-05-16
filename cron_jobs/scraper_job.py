@@ -8,7 +8,7 @@ from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 from crawler.scraper_runner import run_scraper
 
-logger = get_logger('scraper_job')
+logger = get_logger("scraper_job")
 
 
 @elapsed_time("run_scraper")
@@ -28,7 +28,7 @@ def run_job():
     # Run scraper
     if not chunks:
         import asyncio
-        logger.info('Scraping')
+        logger.info('Scraping (single)')
         asyncio.run(run_scraper())
     else:
         logger.info('Scraping (multiprocess)')
@@ -74,7 +74,7 @@ def start_scraper_loop(interval_sec: int = 1200, is_looped: bool = True):
             if not is_looped:
                 break
 
-    threading.Thread(target=loop_cron_job, daemon=True).start()
+    threading.Thread(target=loop_cron_job, daemon=False).start()
 
 
 if __name__ == "__main__":

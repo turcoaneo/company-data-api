@@ -8,7 +8,7 @@ from app.utils.path_util import get_project_root
 from app.utils.timing_util import log_thread_id
 from crawler.orchestrator import CrawlerOrchestrator
 
-logger = get_logger()
+logger = get_logger("single_scraper")
 
 
 async def run_scraper():
