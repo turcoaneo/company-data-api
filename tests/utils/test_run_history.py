@@ -12,18 +12,17 @@ class TestRunHistory:
 
     @pytest.fixture
     def tmp_results(self, tmp_path):
-        """
-        Creates a fake results_YYYYMMDD_HHMMSS.jsonl and final_result.jsonl
-        inside a temporary directory.
-        """
-        # Switch working directory to tmp_path for the duration of the test
         old_cwd = Path.cwd()
         import os
         try:
             os.chdir(tmp_path)
 
-            # Create initial results file
-            initial = tmp_path / "results_20260515_061008.jsonl"
+            # Create data/ directory
+            data_dir = tmp_path / "data"
+            data_dir.mkdir()
+
+            # Create initial results file in data/
+            initial = data_dir / "results_20260515_061008.jsonl"
             initial.write_text(
                 "\n".join([
                     json.dumps({"phones": ["+401"], "socials": []}),
@@ -33,7 +32,7 @@ class TestRunHistory:
                 encoding="utf-8"
             )
 
-            # Create final results file
+            # Create final results file in root
             final = tmp_path / "final_result.jsonl"
             final.write_text(
                 "\n".join([

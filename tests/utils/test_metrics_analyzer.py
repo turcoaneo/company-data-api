@@ -88,32 +88,27 @@ class TestMetricsAnalyzer:
             final_jsonl_path=str(paths["final"]),
         )
 
-        # -------------------------
-        # Validate core metrics
-        # -------------------------
         assert metrics["total_sites"] == 5
         assert metrics["unreachable_sites"] == 1
         assert metrics["missing_contacts"] == 1
 
-        # Recovered: c.com (was missing, now has phones)
         assert metrics["recovered_sites"] == 1
-
-        # Coverage = total - unreachable + recovered = 5 - 1 + 1 = 5
         assert metrics["coverage"] == 5
 
-        # Initial contacts: a.com + b.com = 2
+        # Initial
         assert metrics["initial"]["sites_with_contacts"] == 2
         assert metrics["initial"]["phones"] == 1
         assert metrics["initial"]["socials"] == 1
+        assert metrics["initial"]["phones_and_socials"] == 0
 
-        # Final contacts: a.com + b.com + c.com = 3
+        # Final
         assert metrics["final"]["sites_with_contacts"] == 3
         assert metrics["final"]["phones"] == 2
         assert metrics["final"]["socials"] == 1
+        assert metrics["final"]["phones_and_socials"] == 0
 
-        # Fill rates
         fr = metrics["fill_rates"]
         assert fr["phones_per_coverage"] == pytest.approx(2 / 5)
         assert fr["socials_per_coverage"] == pytest.approx(1 / 5)
         assert fr["datapoints_per_coverage"] == pytest.approx(3 / 5)
-        assert fr["sites_with_any_contact_per_coverage"] == pytest.approx(3 / 5)
+        assert fr["any_datapoints_per_coverage"] == pytest.approx(3 / 5)
