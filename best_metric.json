@@ -1,26 +1,26 @@
 {
-  "id": "20260516_061723",
+  "id": "20260516_084616",
   "total_sites": 997,
-  "unreachable_sites": 370,
-  "missing_contacts": 187,
+  "unreachable_sites": 362,
+  "missing_contacts": 174,
   "recovered_sites": 0,
-  "coverage": 627,
+  "coverage": 635,
   "initial": {
-    "phones": 344,
-    "socials": 284,
-    "sites_with_contacts": 440,
-    "phones_and_socials": 188
+    "phones": 360,
+    "socials": 301,
+    "sites_with_contacts": 461,
+    "phones_and_socials": 200
   },
   "final": {
-    "phones": 344,
-    "socials": 284,
-    "sites_with_contacts": 440,
-    "phones_and_socials": 188
+    "phones": 360,
+    "socials": 301,
+    "sites_with_contacts": 461,
+    "phones_and_socials": 200
   },
   "fill_rates": {
-    "phones_per_coverage": 0.5486443381180224,
-    "socials_per_coverage": 0.4529505582137161,
-    "datapoints_per_coverage": 0.7017543859649122,
-    "any_datapoints_per_coverage": 0.7017543859649122
+    "phones_per_coverage": 0.5669291338582677,
+    "socials_per_coverage": 0.47401574803149604,
+    "datapoints_per_coverage": 0.7259842519685039,
+    "any_datapoints_per_coverage": 0.7259842519685039
   }
 }
