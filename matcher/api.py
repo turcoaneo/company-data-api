@@ -3,7 +3,11 @@ from pydantic import BaseModel
 from .indexer import InMemoryIndex
 from .scorer import score
 
-matcher_router = APIRouter()
+matcher_router = APIRouter(
+    prefix="/api",
+    tags=["Matcher"],
+)
+
 index = InMemoryIndex()
 
 
