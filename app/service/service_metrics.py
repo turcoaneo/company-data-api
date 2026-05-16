@@ -1,7 +1,8 @@
 # app/service/service_metrics.py
 
 from pathlib import Path
-from crawler.util.metrics_analyzer import compute_scraper_metrics
+
+from crawler.util.metrics_analyzer import compute_latest_and_top_metrics
 
 
 def find_latest_results_file() -> str | None:
@@ -22,7 +23,7 @@ def run_metrics():
         # fallback for first run or missing files
         initial_jsonl = "results_latest.jsonl"
 
-    return compute_scraper_metrics(
+    return compute_latest_and_top_metrics(
         input_csv_path="data/sample-websites-company-names.csv",
         bad_urls_path="bad_urls.txt",
         missing_contacts_path="missing_contacts.txt",

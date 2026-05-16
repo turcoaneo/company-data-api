@@ -1,7 +1,6 @@
 # tests/service/test_service_metrics.py
 
 import time
-from pathlib import Path
 from unittest.mock import patch
 
 from app.service.service_metrics import run_metrics, find_latest_results_file
@@ -9,7 +8,7 @@ from app.service.service_metrics import run_metrics, find_latest_results_file
 
 class TestServiceMetrics:
 
-    @patch("app.service.service_metrics.compute_scraper_metrics")
+    @patch("app.service.service_metrics.compute_latest_and_top_metrics")
     @patch("app.service.service_metrics.find_latest_results_file")
     def test_run_metrics(self, mock_find, mock_compute):
         mock_find.return_value = "data/results_20260516_061723.jsonl"

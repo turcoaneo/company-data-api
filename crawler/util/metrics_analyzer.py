@@ -1,8 +1,11 @@
 # crawler/util/metrics_analyzer.py
 
-import json
-from pathlib import Path
 import csv
+import json
+import shutil
+from pathlib import Path
+from app.utils.logger_util import get_logger
+logger = get_logger()
 
 
 def _count_jsonl_contacts(path: Path):
@@ -19,8 +22,6 @@ def _count_jsonl_contacts(path: Path):
             try:
                 obj = json.loads(line)
             except Exception as e:
-                from app.utils.logger_util import get_logger
-                logger = get_logger()
                 logger.error(f"Metrics analyzer extract line error for {line}: {e}")
                 continue
 
@@ -46,15 +47,11 @@ def compute_scraper_metrics(
         initial_jsonl_path: str,
         final_jsonl_path: str
 ):
-    # -----------------------------
-    # 1. Total sites from CSV
-    # -----------------------------
+    # 1. Total sites
     with open(input_csv_path, "r", encoding="utf-8") as f:
         total_sites = sum(1 for _ in csv.reader(f)) - 1
 
-    # -----------------------------
     # 2. Unreachable + missing
-    # -----------------------------
     bad_urls = set()
     if Path(bad_urls_path).exists():
         with open(bad_urls_path, "r", encoding="utf-8") as f:
@@ -71,9 +68,7 @@ def compute_scraper_metrics(
                 if d:
                     missing_contacts.add(d)
 
-    # -----------------------------
-    # 3. Initial + final JSONL stats
-    # -----------------------------
+    # 3. Initial + final stats
     (
         initial_phones,
         initial_socials,
@@ -88,37 +83,26 @@ def compute_scraper_metrics(
         final_both
     ) = _count_jsonl_contacts(Path(final_jsonl_path))
 
-    # -----------------------------
     # 4. Recovered sites
-    # -----------------------------
     recovered_sites = final_sites_with_contacts - initial_sites_with_contacts
 
-    # -----------------------------
-    # 5. Corrected coverage
-    # -----------------------------
+    # 5. Coverage
     coverage = total_sites - len(bad_urls) + recovered_sites
 
-    # -----------------------------
     # 6. Fill-rate metrics
-    # -----------------------------
     phones_per_coverage = final_phones / coverage if coverage else 0
     socials_per_coverage = final_socials / coverage if coverage else 0
 
     # UNIQUE datapoints = sites with phone OR social
     datapoints_per_coverage = final_sites_with_contacts / coverage if coverage else 0
-
     any_datapoints_per_coverage = datapoints_per_coverage
 
-    # -----------------------------
-    # 7. Return all metrics
-    # -----------------------------
     return {
         "total_sites": total_sites,
         "unreachable_sites": len(bad_urls),
         "missing_contacts": len(missing_contacts),
         "recovered_sites": recovered_sites,
         "coverage": coverage,
-
         "initial": {
             "phones": initial_phones,
             "socials": initial_socials,
@@ -131,11 +115,84 @@ def compute_scraper_metrics(
             "sites_with_contacts": final_sites_with_contacts,
             "phones_and_socials": final_both,
         },
-
         "fill_rates": {
             "phones_per_coverage": phones_per_coverage,
             "socials_per_coverage": socials_per_coverage,
             "datapoints_per_coverage": datapoints_per_coverage,
             "any_datapoints_per_coverage": any_datapoints_per_coverage,
         }
+    }
+
+
+def _load_top_metrics(top_metrics_path: Path) -> dict | None:
+    if not top_metrics_path.exists():
+        return None
+    try:
+        return json.loads(top_metrics_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        logger.error(f"Top metrics could not be loaded: {e}")
+        return None
+
+
+def _save_top_metrics(top_metrics_path: Path, metrics: dict) -> None:
+    top_metrics_path.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _copy_top_result(final_jsonl_path: str, top_result_path: Path) -> None:
+    src = Path(final_jsonl_path)
+    if src.exists():
+        shutil.copyfile(src, top_result_path)
+
+
+def compute_latest_and_top_metrics(
+        input_csv_path: str,
+        bad_urls_path: str,
+        missing_contacts_path: str,
+        initial_jsonl_path: str,
+        final_jsonl_path: str,
+        top_metrics_path: str = "best_metric.json",
+        top_result_path: str = "top_result.jsonl",
+):
+    """
+    Computes metrics for the latest run (final_result.jsonl),
+    compares with stored top metrics, and updates top_result.jsonl + best_metric.json
+    if the latest run is better (phones + socials).
+    Returns:
+      {
+        "latest_results": {...},
+        "top_results": {...},
+      }
+    """
+    latest = compute_scraper_metrics(
+        input_csv_path=input_csv_path,
+        bad_urls_path=bad_urls_path,
+        missing_contacts_path=missing_contacts_path,
+        initial_jsonl_path=initial_jsonl_path,
+        final_jsonl_path=final_jsonl_path,
+    )
+
+    top_metrics_file = Path(top_metrics_path)
+    top_result_file = Path(top_result_path)
+
+    existing_top = _load_top_metrics(top_metrics_file)
+
+    latest_score = latest["final"]["phones"] + latest["final"]["socials"]
+    top_score = (
+        existing_top["final"]["phones"] + existing_top["final"]["socials"]
+        if existing_top
+        else -1
+    )
+
+    if latest_score > top_score:
+        # New best run → update top_result.jsonl + best_metric.json
+        _copy_top_result(final_jsonl_path, top_result_file)
+        _save_top_metrics(top_metrics_file, latest)
+        top = latest
+    else:
+        # Keep existing top
+        top = existing_top if existing_top is not None else latest
+
+    return {
+        "latest_results": latest,
+        "top_results": top,
     }

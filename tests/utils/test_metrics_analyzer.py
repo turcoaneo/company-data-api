@@ -1,27 +1,21 @@
 # tests/utils/test_metrics_analyzer.py
 
-import json
 import csv
+import json
 from pathlib import Path
 
 import pytest
 
-from crawler.util.metrics_analyzer import compute_scraper_metrics
+from crawler.util.metrics_analyzer import (
+    compute_scraper_metrics,
+    compute_latest_and_top_metrics,
+)
 
 
 class TestMetricsAnalyzer:
 
     @pytest.fixture
     def setup_files(self, tmp_path):
-        """
-        Creates a realistic environment:
-        - input CSV with 5 sites
-        - bad_urls.txt with 1 unreachable
-        - missing_contacts.txt with 1 missing
-        - initial JSONL with 2 sites having contacts
-        - final JSONL with 3 sites having contacts (1 recovered)
-        """
-        # Switch working directory
         old_cwd = Path.cwd()
         import os
         os.chdir(tmp_path)
@@ -73,6 +67,7 @@ class TestMetricsAnalyzer:
             "missing": missing,
             "initial": initial,
             "final": final,
+            "root": tmp_path,
         }
 
         os.chdir(old_cwd)
@@ -112,3 +107,49 @@ class TestMetricsAnalyzer:
         assert fr["socials_per_coverage"] == pytest.approx(1 / 5)
         assert fr["datapoints_per_coverage"] == pytest.approx(3 / 5)
         assert fr["any_datapoints_per_coverage"] == pytest.approx(3 / 5)
+
+    def test_compute_latest_and_top_metrics_updates_top(self, setup_files):
+        paths = setup_files
+        root = paths["root"]
+
+        # First run: no best_metric.json yet → latest becomes top
+        result = compute_latest_and_top_metrics(
+            input_csv_path=str(paths["csv"]),
+            bad_urls_path=str(paths["bad"]),
+            missing_contacts_path=str(paths["missing"]),
+            initial_jsonl_path=str(paths["initial"]),
+            final_jsonl_path=str(paths["final"]),
+            top_metrics_path=str(root / "best_metric.json"),
+            top_result_path=str(root / "top_result.jsonl"),
+        )
+
+        latest = result["latest_results"]
+        top = result["top_results"]
+
+        # On first run, top == latest
+        assert top["final"]["phones"] == latest["final"]["phones"]
+        assert top["final"]["socials"] == latest["final"]["socials"]
+
+        # Now simulate a weaker new run (fewer datapoints)
+        weaker_final = root / "final_result_weaker.jsonl"
+        weaker_final.write_text(
+            "\n".join([
+                json.dumps({"domain": "a.com", "phones": ["1"], "socials": []}),
+            ]),
+            encoding="utf-8"
+        )
+
+        result2 = compute_latest_and_top_metrics(
+            input_csv_path=str(paths["csv"]),
+            bad_urls_path=str(paths["bad"]),
+            missing_contacts_path=str(paths["missing"]),
+            initial_jsonl_path=str(paths["initial"]),
+            final_jsonl_path=str(weaker_final),
+            top_metrics_path=str(root / "best_metric.json"),
+            top_result_path=str(root / "top_result.jsonl"),
+        )
+
+        # Top should remain the original (stronger) run
+        top2 = result2["top_results"]
+        assert top2["final"]["phones"] == top["final"]["phones"]
+        assert top2["final"]["socials"] == top["final"]["socials"]
