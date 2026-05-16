@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from .indexer import InMemoryIndex
 from .scorer import score
 
-router = APIRouter()
+matcher_router = APIRouter()
 index = InMemoryIndex()
 
 
@@ -14,7 +14,7 @@ class MatchQuery(BaseModel):
     facebook: str | None = None
 
 
-@router.post("/match")
+@matcher_router.post("/match")
 def match_company(query: MatchQuery):
     best = None
     best_score = -1.0
