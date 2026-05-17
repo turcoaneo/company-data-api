@@ -14,7 +14,6 @@ class TestMatcherBenchmark:
 
     @classmethod
     def setup_class(cls):
-        # Build real API client
         app = FastAPI()
         app.include_router(matcher_router)
         cls.client = TestClient(app)
@@ -27,8 +26,8 @@ class TestMatcherBenchmark:
         # Ensure output file is empty
         cls.output_path.write_text("")
 
-    def test_benchmark_matcher(self):
-        assert self.input_path.exists(), "Input CSV missing"
+    def test_match_benchmark_with_coverage(self):
+        assert self.input_path.exists()
 
         with open(self.input_path, newline="", encoding="utf-8") as f:
             reader: csv.DictReader = csv.DictReader(f)
@@ -41,18 +40,34 @@ class TestMatcherBenchmark:
                     "facebook": row.get("input_facebook") or None,
                 }
 
-                # Call real API
                 resp = self.client.post("/api/match", json=payload)
                 assert resp.status_code == 200
 
+                output = resp.json()
+
+                # Coverage check: does any output field contain any input token?
+                coverage = False
+                input_tokens = [
+                    str(v).lower()
+                    for v in payload.values()
+                    if v and isinstance(v, str)
+                ]
+
+                if isinstance(output, dict):
+                    for out_val in output.values():
+                        if isinstance(out_val, str):
+                            out_val_low = out_val.lower()
+                            if any(tok in out_val_low for tok in input_tokens):
+                                coverage = True
+                                break
+
                 result = {
                     "input": payload,
-                    "output": resp.json(),
+                    "output": output,
+                    "coverage": coverage,
                 }
 
-                # Append to results.jsonl
                 with open(self.output_path, "a", encoding="utf-8") as out:
                     out.write(json.dumps(result) + "\n")
 
-        # Final assertion: file must not be empty
         assert self.output_path.stat().st_size > 0
