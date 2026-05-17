@@ -1,4 +1,4 @@
-# tests/test_matcher_api.py
+# tests/api/test_matcher_api.py
 
 import pytest
 from unittest.mock import patch, MagicMock
@@ -34,7 +34,7 @@ class TestMatcherAPI:
     # /api/match
     # ---------------------------------------------------------
     def test_match_company_found(self):
-        from matcher import api  # import after setup so we can patch `service`
+        from matcher import api
 
         mock_service = MagicMock()
         mock_service.match.return_value = {"id": "abc123"}
@@ -82,3 +82,21 @@ class TestMatcherAPI:
             resp = self.client.get("/api/suggest?prefix=ac")
             assert resp.status_code == 200
             assert resp.json() == {"hits": [{"id": "1"}]}
+
+    # ---------------------------------------------------------
+    # /api/match/sample
+    # ---------------------------------------------------------
+    def test_match_sample(self):
+        from matcher import api
+
+        mock_service = MagicMock()
+        mock_service.match_sample.return_value = [
+            {"input": {"name": "Acme"}, "output": {"id": "123"}}
+        ]
+
+        with patch.object(api, "service", mock_service):
+            resp = self.client.get("/api/match/sample")
+            assert resp.status_code == 200
+            assert resp.json() == [
+                {"input": {"name": "Acme"}, "output": {"id": "123"}}
+            ]

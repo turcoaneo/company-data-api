@@ -70,6 +70,33 @@ class MatcherService:
         )
 
     # ---------------------------------------------------------
+    # 4) Match all sample inputs
+    # ---------------------------------------------------------
+    def match_sample(self):
+        from app.utils.path_util import get_project_root
+        input_path = get_project_root() / "data/api-input-sample.csv"
+        assert input_path.exists(), "Sample CSV missing"
+
+        results = []
+
+        with open(input_path, newline="", encoding="utf-8") as f:
+            import csv
+            reader: csv.DictReader = csv.DictReader(f)
+
+            for row in reader:
+                payload = {
+                    "name": row.get("input name") or None,
+                    "phone": row.get("input phone") or None,
+                    "website": row.get("input website") or None,
+                    "facebook": row.get("input_facebook") or None,
+                }
+
+                hit = self.match(**payload)
+                results.append({"input": payload, "output": hit})
+
+        return results
+
+    # ---------------------------------------------------------
     # INTERNAL: weighted single search
     # ---------------------------------------------------------
     def _search_single(self, query: str, fields: list[str]) -> Optional[Dict[str, Any]]:
