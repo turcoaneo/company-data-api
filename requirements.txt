@@ -12,3 +12,4 @@ psutil
 pandas
 brotli
 requests
+meilisearch

@@ -31,17 +31,41 @@ uvicorn main:app --reload
 pytest
 ```
 
-## Docker
-
-```bash
-docker build -t company-data-api:local .
-docker run --rm -p 8000:8000 company-data-api:local
+## Prepare Meilisearch
+### Start Meilisearch in Docker
+```powershell
+docker run -d --name ms -p 7700:7700 getmeili/meilisearch:v1.7
 ```
 
-## AWS Fargate & Terraform
+### Add ID for Meili index
+```shell
+python .\scripts\convert_for_meili.py
+```
 
-- `terraform/` will contain ECS/Fargate, ECR, networking, and IAM definitions.
-- `.github/workflows/deploy.yml` will:
-  - build & push Docker image to ECR
-  - run `terraform init/plan/apply` (with remote state)
-- You will plug in your own Terraform and workflow definitions later.
+### Create index
+```shell
+Invoke-WebRequest -Method DELETE "http://localhost:7700/indexes/companies"
+```
+
+### Ingest into Meili
+```shell
+Invoke-WebRequest -Method POST `
+  -Uri "http://localhost:7700/indexes/companies/documents?primaryKey=id" `
+  -ContentType "application/x-ndjson" `
+  -InFile "D:\DEV\Python\company-data-api\meili_final.jsonl"
+```
+
+```bash
+curl -X POST "http://localhost:7700/indexes/companies/documents?primaryKey=id" \
+     -H "Content-Type: application/x-ndjson" \
+     --data-binary @meili_final.jsonl
+```
+
+### Verify Meili
+```shell
+Invoke-WebRequest "http://localhost:7700/tasks/7" | Select-Object -Expand Content
+
+Invoke-WebRequest "http://localhost:7700/indexes/companies/documents?limit=3" | Select-Object -Expand Content
+```
+
+

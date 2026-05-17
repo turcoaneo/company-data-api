@@ -1,30 +1,48 @@
+import meilisearch
 from fastapi import APIRouter
 from pydantic import BaseModel
+
 from .indexer import InMemoryIndex
-from .scorer import score
 
 matcher_router = APIRouter(
     prefix="/api",
     tags=["Matcher"],
 )
 
-index = InMemoryIndex()
+in_mem_index = InMemoryIndex()  # to be used later
+
+client = meilisearch.Client("http://localhost:7700")
+index = client.index("companies")
 
 
-class MatchQuery(BaseModel):
+class MatchRequest(BaseModel):
     name: str | None = None
-    domain: str | None = None
+    website: str | None = None
     phone: str | None = None
     facebook: str | None = None
 
 
 @matcher_router.post("/match")
-def match_company(query: MatchQuery):
-    best = None
-    best_score = -1.0
-    for item in index.all():
-        s = score(item, query.dict())
-        if s > best_score:
-            best_score = s
-            best = item
-    return {"score": best_score, "match": best}
+def match_company(req: MatchRequest):
+    query_parts = []
+
+    if req.name:
+        query_parts.append(req.name)
+
+    if req.website:
+        query_parts.append(req.website)
+
+    if req.phone:
+        query_parts.append(req.phone)
+
+    if req.facebook:
+        query_parts.append(req.facebook)
+
+    query = " ".join(query_parts)
+
+    result = index.search(query, {"limit": 1})
+
+    if result["hits"]:
+        return result["hits"][0]
+
+    return {"message": "No match found"}

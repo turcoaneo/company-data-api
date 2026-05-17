@@ -2,10 +2,9 @@
 
 import subprocess
 import time
-import requests
-import meilisearch
-from pathlib import Path
 
+import meilisearch
+import requests
 
 MEILI_URL = "http://localhost:7700"
 INDEX_NAME = "companies"
@@ -69,47 +68,49 @@ class MeiliManager:
     def create_and_configure_index(self):
         print("Creating/configuring Meili index...")
 
-        # Create index if missing
+        # 1) Create index if missing
         try:
             self.client.create_index(self.index_name, {"primaryKey": "id"})
             print("Index created.")
         except Exception as e:
             print(f"Index {self.index_name} already exists: {e}")
 
-        # Configure searchable fields
+        # Always refresh index handle
+        self.index = self.client.index(self.index_name)
+
+        # 2) Searchable fields
         self.index.update_searchable_attributes([
             "company_commercial_name",
             "company_legal_name",
             "company_all_available_names",
             "domain",
             "phones",
-            "socials"
+            "socials",
         ])
 
-        # Configure filterable fields
+        # 3) Filterable fields
         self.index.update_filterable_attributes([
             "domain",
             "phones",
             "socials",
             "phones_count",
-            "socials_count"
+            "socials_count",
         ])
 
-        # Make numeric fields sortable (required for custom ranking rules)
+        # 4) Sortable fields (for per-query sort, not ranking rules)
         self.index.update_sortable_attributes([
             "phones_count",
-            "socials_count"
+            "socials_count",
         ])
 
-        # Ranking rules
+        # 5) Base ranking rules ONLY (no desc(...) here)
         self.index.update_ranking_rules([
             "words",
             "typo",
             "proximity",
             "attribute",
             "exactness",
-            "desc(phones_count)",
-            "desc(socials_count)"
+            "sort",
         ])
 
         print("Index configured successfully.")
@@ -117,18 +118,18 @@ class MeiliManager:
     # ---------------------------------------------------------
     # 6) INGEST DOCUMENTS (NDJSON)
     # ---------------------------------------------------------
+
     def ingest_ndjson(self, file_path: str):
-        file_path = Path(file_path)
-        if not file_path.exists():
-            raise FileNotFoundError(f"NDJSON file not found: {file_path}")
-
-        print(f"Ingesting NDJSON: {file_path}")
-
-        # Must be opened in binary mode for Meili
         with open(file_path, "rb") as f:
-            self.index.add_documents_ndjson(f)
+            resp = requests.post(
+                f"{self.url}/indexes/{self.index_name}/documents",
+                params={"primaryKey": "id"},
+                data=f,
+                headers={"Content-Type": "application/x-ndjson"}
+            )
 
-        print("Ingestion complete.")
+        print("Status:", resp.status_code)
+        print("Response:", resp.text)
 
     # ---------------------------------------------------------
     # 7) FULL BOOTSTRAP (start + configure)

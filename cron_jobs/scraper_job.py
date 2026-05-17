@@ -3,7 +3,7 @@
 import threading
 import time
 
-from app.utils.env_vars import SCRAPER_CONFIG, APP_ENV
+from app.utils.env_vars import SCRAPER_CONFIG
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 from crawler.scraper_runner import run_scraper
@@ -13,18 +13,31 @@ logger = get_logger("scraper_job")
 
 @elapsed_time("run_scraper")
 def run_job():
+    # run_scraper_crawler()
+
+    run_meili()
+
+
+def run_meili():
+    # Convert scraper final result to meili PK-wise JSONL
+    from scripts.convert_for_meili import run_meili_converter
+    run_meili_converter()
+    # Ingest file into Meili
+    from meili_manager import MeiliManager
+    meili = MeiliManager()
+    meili.connect()  # Meili already running
+    meili.ingest_ndjson("meili_final.jsonl")
+
+
+def run_scraper_crawler():
     import time
     from crawler.util.run_history import record_run
     from crawler.clean_files import clean_scraper_files
-
     start_time = time.time()
-
     clean_scraper_files()
-
     chunks = SCRAPER_CONFIG["mp_chunks"]
     domain_conc = SCRAPER_CONFIG["domain_concurrency"]
     domains_parallel = SCRAPER_CONFIG["domains_in_parallel"]
-
     # Run scraper
     if not chunks:
         import asyncio
@@ -34,11 +47,9 @@ def run_job():
         logger.info('Scraping (multiprocess)')
         from crawler.mp_crawler import run_scraper_multiprocess
         run_scraper_multiprocess(num_chunks=chunks)
-
     # Extract timestamp from results_YYYYMMDD_HHMMSS.jsonl
     import re
     from pathlib import Path
-
     results_files = list(Path(".").glob("data/results_*.jsonl"))
     if results_files:
         # pick the latest by timestamp in filename
@@ -50,18 +61,13 @@ def run_job():
             ts = "unknown"
     else:
         ts = "unknown"
-
     duration = time.time() - start_time
-
     # Record run history
     record_run(
         start_ts=ts,
         duration=duration,
         config=[chunks, domain_conc, domains_parallel]
     )
-
-    if APP_ENV == 'local_debug':
-        exit(0)
 
 
 def start_scraper_loop(interval_sec: int = 1200, is_looped: bool = True):

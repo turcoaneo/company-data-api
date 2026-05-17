@@ -27,12 +27,18 @@ if __name__ == "__main__":
     logger = get_logger("main_app_and_cron")
     logger.info(f"APP_ENV = {APP_ENV}, binding to port {exposed_port}")
 
-    # Run scraper in a separate process
+    # 1) Start + configure Meili
+    from meili_manager import MeiliManager
+    meili = MeiliManager()
+    meili.bootstrap()
+
+    # 2) Start scraper in separate process
     looped = SCRAPER_CONFIG["looped"]
     interval_seconds = int(SCRAPER_CONFIG["interval"])
     scraper_proc = start_scraper_process(interval_sec=interval_seconds, is_looped=looped)
 
-    # Monitor resources (still safe)
+    # 3) Start resource monitor
     start_monitor_daemon()
 
+    # 4) Start API
     uvicorn.run(app, host="0.0.0.0", port=exposed_port)
