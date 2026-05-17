@@ -1,18 +1,11 @@
-import meilisearch
+# matcher/api.py
+
 from fastapi import APIRouter
 from pydantic import BaseModel
+from .service import MatcherService
 
-from .indexer import InMemoryIndex
-
-matcher_router = APIRouter(
-    prefix="/api",
-    tags=["Matcher"],
-)
-
-in_mem_index = InMemoryIndex()  # to be used later
-
-client = meilisearch.Client("http://localhost:7700")
-index = client.index("companies")
+matcher_router = APIRouter(prefix="/api", tags=["Matcher"])
+service = MatcherService()
 
 
 class MatchRequest(BaseModel):
@@ -24,25 +17,15 @@ class MatchRequest(BaseModel):
 
 @matcher_router.post("/match")
 def match_company(req: MatchRequest):
-    query_parts = []
+    hit = service.match(req.name, req.website, req.phone, req.facebook)
+    return hit or {"message": "No match found"}
 
-    if req.name:
-        query_parts.append(req.name)
 
-    if req.website:
-        query_parts.append(req.website)
+@matcher_router.get("/search")
+def search(q: str, limit: int = 10):
+    return service.search(q, limit)
 
-    if req.phone:
-        query_parts.append(req.phone)
 
-    if req.facebook:
-        query_parts.append(req.facebook)
-
-    query = " ".join(query_parts)
-
-    result = index.search(query, {"limit": 1})
-
-    if result["hits"]:
-        return result["hits"][0]
-
-    return {"message": "No match found"}
+@matcher_router.get("/suggest")
+def suggest(prefix: str, limit: int = 5):
+    return service.suggest(prefix, limit)
