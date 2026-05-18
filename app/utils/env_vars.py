@@ -20,7 +20,7 @@ SCRAPER_CONFIG = {
     "looped": merged.get("SCRAPER_JOB_LOOPED", "True") == "True",
     "sleep_time": int(merged.get("SCRAPER_SLEEPING_TIME", 5)),
     "interval": int(merged.get("SCRAPER_INTERVAL_SECONDS", 5)),
-    "mp_chunks": int(merged.get("MULTI_PROCESSING_CHUNKS", 8)),
-    "domain_concurrency": int(merged.get("PER_DOMAIN_CONCURRENCY", 4)),
-    "domains_in_parallel": int(merged.get("MAX_DOMAINS_IN_PARALLEL", 8)),
+    "mp_chunks": int(merged.get("SCRAPER_MULTI_PROCESSING_CHUNKS", 8)),
+    "domain_concurrency": int(merged.get("SCRAPER_PER_DOMAIN_CONCURRENCY", 4)),
+    "domains_in_parallel": int(merged.get("SCRAPER_MAX_DOMAINS_IN_PARALLEL", 8)),
 }
