@@ -3,8 +3,10 @@
 import json
 from pathlib import Path
 
+from app.utils.env_vars import PATHS
 
-def load_history_summary(history_path: str = "history_runs.jsonl") -> dict:
+
+def load_history_summary(history_path: str = PATHS["path_history_result"]) -> dict:
     """
     Returns a dict:
     {
@@ -15,7 +17,7 @@ def load_history_summary(history_path: str = "history_runs.jsonl") -> dict:
             "duration": 453.061,
             "isp_org": "AS8953"
         },
-        ...
+        ...,
     }
     """
     path = Path(history_path)

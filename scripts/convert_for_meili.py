@@ -3,8 +3,10 @@
 import json
 import base64
 
-inp = "final_result.jsonl"
-out = "meili_final.jsonl"
+from app.utils.env_vars import PATHS
+
+inp = PATHS["path_final_result"]
+out = PATHS["path_meili_final"]
 
 
 def run_meili_converter():

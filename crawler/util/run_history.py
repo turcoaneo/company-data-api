@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+from app.utils.env_vars import PATHS
 from app.utils.logger_util import get_logger
 
 logger = get_logger()
@@ -32,7 +33,7 @@ def _count_contacts(jsonl_path: Path):
     return phones, socials
 
 
-def record_run(start_ts: str, duration: float, config: list):
+def record_run(start_ts: str, duration: float, config: list, final_res_file: str = None, history_res_file: str = None):
     """
     Append a run summary to history_runs.jsonl.
     start_ts: timestamp extracted from results_YYYYMMDD_HHMMSS.jsonl
@@ -42,7 +43,7 @@ def record_run(start_ts: str, duration: float, config: list):
 
     # Find initial results file
     results_file = Path(f"data/results_{start_ts}.jsonl")
-    final_file = Path("final_result.jsonl")
+    final_file = Path(PATHS["path_final_result"]) if final_res_file is None else Path(final_res_file)
 
     initial_counts = _count_contacts(results_file)
     final_counts = _count_contacts(final_file)
@@ -63,7 +64,7 @@ def record_run(start_ts: str, duration: float, config: list):
         }
     }
 
-    history_path = Path("history_runs.jsonl")
+    history_path = Path(PATHS["path_history_result"]) if history_res_file is None else Path(history_res_file)
 
     # Append the newest entry at the top (stack-like)
     if history_path.exists():

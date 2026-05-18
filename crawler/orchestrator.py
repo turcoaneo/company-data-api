@@ -5,7 +5,7 @@ from typing import List, Dict
 
 import aiohttp
 
-from app.utils.env_vars import SCRAPER_CONFIG
+from app.utils.env_vars import SCRAPER_CONFIG, PATHS
 from app.utils.logger_util import get_logger
 from crawler.util.homepage_parser import parse_homepage
 from crawler.util.scrape_links import scrape_links
@@ -81,7 +81,9 @@ class CrawlerOrchestrator:
     # Crawl a single domain
     # -------------------------
 
-    async def crawl(self, domains: List[str]) -> List[Dict]:
+    async def crawl(self, domains: List[str],
+                    path_bad_urls: str = None,
+                    path_missing_contacts: str = None) -> List[Dict]:
         import random
         from crawler.util.user_agents import USER_AGENTS
 
@@ -131,13 +133,17 @@ class CrawlerOrchestrator:
 
         # Append unreachable
         if SCRAPER_CONFIG["write_files"]:
-            with open("bad_urls.txt", "a", encoding="utf-8") as f:
+            if path_bad_urls is None:
+                path_bad_urls = PATHS["path_bad_urls"]
+            with open(path_bad_urls, "a", encoding="utf-8") as f:
                 for b in unreachable:
                     f.write(b + "\n")
 
         # Append missing contacts
         if SCRAPER_CONFIG["write_files"]:
-            with open("missing_contacts.txt", "a", encoding="utf-8") as f:
+            if path_missing_contacts is None:
+                path_missing_contacts = PATHS["path_missing_contacts"]
+            with open(path_missing_contacts, "a", encoding="utf-8") as f:
                 for b in missing_contacts:
                     f.write(b + "\n")
 

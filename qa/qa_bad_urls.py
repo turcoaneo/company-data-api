@@ -7,6 +7,7 @@ import socket
 import aiohttp
 from aiohttp import ClientConnectorError, ClientSSLError
 
+from app.utils.env_vars import PATHS
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 
@@ -94,7 +95,7 @@ def job_wrapper():
     asyncio.run(run_bad_urls_check())
 
 
-async def run_bad_urls_check(path="./bad_urls.txt", csv_out="qa/qa_bad_urls_report.csv"):
+async def run_bad_urls_check(path=PATHS["path_bad_urls"], csv_out="qa/qa_bad_urls_report.csv"):
     with open(path, "r", encoding="utf-8") as f:
         domains = [line.strip() for line in f if line.strip()]
 

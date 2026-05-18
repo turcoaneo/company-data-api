@@ -165,8 +165,8 @@ def compute_latest_and_top_metrics(
         missing_contacts_path: str,
         initial_jsonl_path: str,
         final_jsonl_path: str,
-        top_metrics_path: str = "best_metric.json",
-        top_result_path: str = "top_result.jsonl",
+        top_metrics_path: str,
+        top_result_path: str,
 ):
     latest = compute_scraper_metrics(
         input_csv_path=input_csv_path,

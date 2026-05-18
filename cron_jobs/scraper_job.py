@@ -3,7 +3,7 @@
 import threading
 import time
 
-from app.utils.env_vars import SCRAPER_CONFIG
+from app.utils.env_vars import SCRAPER_CONFIG, PATHS
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 from crawler.scraper_runner import run_scraper
@@ -13,7 +13,7 @@ logger = get_logger("scraper_job")
 
 @elapsed_time("run_scraper")
 def run_job():
-    # run_scraper_crawler()
+    run_scraper_crawler()
 
     run_meili()
 
@@ -26,7 +26,7 @@ def run_meili():
     from meili_manager import MeiliManager
     meili = MeiliManager()
     meili.connect()  # Meili already running
-    meili.ingest_ndjson("meili_final.jsonl")
+    meili.ingest_ndjson(PATHS["path_meili_final"])
 
 
 def run_scraper_crawler():

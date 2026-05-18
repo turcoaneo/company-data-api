@@ -7,6 +7,7 @@ from multiprocessing import Process
 from pathlib import Path
 from typing import List
 
+from app.utils.env_vars import PATHS
 from app.utils.loader import load_sites_from_config
 from app.utils.logger_util import get_logger
 from app.utils.path_util import get_project_root
@@ -68,22 +69,22 @@ async def _run_qa_pipeline(merged_output_path: Path) -> None:
 
     logger.info("Running QA unreachable-domain analysis...")
     await run_bad_urls_check(
-        path="./bad_urls.txt",
-        csv_out="./bad_urls_report.csv"
+        path=PATHS["path_bad_urls"],
+        csv_out=PATHS["path_bad_urls_report_csv"]
     )
     logger.info("MP Pipeline - QA unreachable-domain report saved to bad_urls_report.csv")
 
     logger.info("Classifying unreachable domains...")
     await classify_csv_to_json(
-        csv_path="./bad_urls_report.csv",
-        json_out="./bad_urls_report.json"
+        csv_path=PATHS["path_bad_urls_report_csv"],
+        json_out=PATHS["path_bad_urls_report_json"]
     )
     logger.info("Unreachable-domain classification saved to bad_urls_report.json")
 
-    scraper_final_path = "final_result.jsonl"
+    scraper_final_path = PATHS["path_final_result"]
     logger.info("Re-running HTTP-200 unreachable domains...")
     await rerun_http200_domains(
-        bad_urls_json_path="./bad_urls_report.json",
+        bad_urls_json_path=PATHS["path_bad_urls_report_json"],
         first_pass_output_path=str(merged_output_path),
         final_path=scraper_final_path
     )

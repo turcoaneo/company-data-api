@@ -56,9 +56,10 @@ class TestRunHistory:
         config = [2, 2, 4]
 
         # Execute
-        record_run(start_ts=ts, duration=duration, config=config)
-
         history_file = tmp_results / "history_runs.jsonl"
+        record_run(start_ts=ts, duration=duration, config=config, final_res_file="final_result.jsonl",
+                   history_res_file=str(history_file))
+
         assert history_file.exists()
 
         # Read first (newest) entry
@@ -71,23 +72,23 @@ class TestRunHistory:
         data = entry[ts]
 
         # Validate counts
-        assert data["initial"] == [1, 1]      # 1 phone, 1 social
-        assert data["final"] == [1, 2]        # 1 phone, 2 socials
+        assert data["initial"] == [1, 1]  # 1 phone, 1 social
+        assert data["final"] == [1, 2]  # 1 phone, 2 socials
 
         # Validate config + duration
         assert data["config"] == config
         assert data["duration"] == pytest.approx(duration, rel=1e-3)
 
     def test_record_run_stacks_entries(self, tmp_results):
+        history_file = tmp_results / "history_runs.jsonl"
         """
         Ensures new entries are prepended (stack behavior).
         """
         # First entry
-        record_run("20260101_000000", 1.0, [1, 1, 1])
+        record_run("20260101_000000", 1.0, [1, 1, 1], None, str(history_file))
         # Second entry (should appear first)
-        record_run("20260102_000000", 2.0, [2, 2, 2])
+        record_run("20260102_000000", 2.0, [2, 2, 2], None, str(history_file))
 
-        history_file = tmp_results / "history_runs.jsonl"
         lines = history_file.read_text(encoding="utf-8").strip().splitlines()
 
         assert len(lines) == 2

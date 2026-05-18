@@ -55,9 +55,10 @@ def job_wrapper():
     Standalone runner, similar to qa_bad_urls.
     """
     logger.info("Running HTTP-200 re-run as standalone script")
+    from app.utils.env_vars import PATHS
     asyncio.run(
         rerun_http200_domains(
-            bad_urls_json_path="./bad_urls_report.json",
+            bad_urls_json_path=PATHS["path_bad_urls"],
             first_pass_output_path="data/results_20260513_132243.jsonl",
             final_path="qa/qa_final_result.jsonl"
         )

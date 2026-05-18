@@ -2,6 +2,7 @@
 
 import threading
 
+from app.utils.env_vars import PATHS
 from app.utils.loader import load_sites_from_config
 from app.utils.logger_util import get_logger
 from app.utils.path_util import get_project_root
@@ -49,8 +50,8 @@ async def run_scraper():
 
     from qa.qa_bad_urls import run_bad_urls_check
     await run_bad_urls_check(
-        path="./bad_urls.txt",
-        csv_out="./bad_urls_report.csv"
+        path=PATHS["path_bad_urls"],
+        csv_out=PATHS["path_bad_urls_report_csv"]
     )
 
     logger.info("QA unreachable-domain report saved to bad_urls_report.csv")
@@ -62,8 +63,8 @@ async def run_scraper():
 
     from qa.unreachable_classifier import classify_csv_to_json
     await classify_csv_to_json(
-        csv_path="./bad_urls_report.csv",
-        json_out="./bad_urls_report.json")
+        csv_path=PATHS["path_bad_urls_report_csv"],
+        json_out=PATHS["path_bad_urls_report_json"])
 
     logger.info("Unreachable-domain classification saved to bad_urls_report.json")
 
@@ -72,9 +73,9 @@ async def run_scraper():
     # ---------------------------------------------------------
     from qa.rerun_http200 import rerun_http200_domains
 
-    scraper_final_path = "final_result.jsonl"
+    scraper_final_path = PATHS["path_final_result"]
     await rerun_http200_domains(
-        bad_urls_json_path="./bad_urls_report.json",
+        bad_urls_json_path=PATHS["path_bad_urls"],
         first_pass_output_path=str(output_path),
         final_path=scraper_final_path
     )

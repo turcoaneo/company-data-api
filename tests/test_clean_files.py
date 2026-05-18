@@ -27,7 +27,7 @@ class TestCleanFiles:
             p.write_text("dummy")
 
         # Run cleaner
-        clean_scraper_files(str(tmp_path), ["partial_results_*", "results_*"])
+        clean_scraper_files(str(tmp_path), ["partial_results_*", "results_*"], exact_files)
 
         # Assert all removed
         for p in exact_files + pattern_files:

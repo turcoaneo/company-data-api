@@ -172,11 +172,11 @@ class TestCrawlerOrchestrator:
 
         os.chdir(tmp_path)
 
-        results = await orch.crawl([good_domain, bad_domain])
+        bad_file = tmp_path / "bad_urls.txt"
+        results = await orch.crawl([good_domain, bad_domain], str(bad_file))
 
         assert len(results) == 1
         assert "+401234567" in results[0]["phones"]
 
-        bad_file = tmp_path / "bad_urls.txt"
         assert bad_file.exists()
         assert bad_domain in bad_file.read_text()
