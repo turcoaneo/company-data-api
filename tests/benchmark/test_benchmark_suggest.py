@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from matcher.api import matcher_router
 
 
-class TestSuggestBenchmark:
+class TestBenchmarkSuggest:
     output_path = None
 
     @classmethod

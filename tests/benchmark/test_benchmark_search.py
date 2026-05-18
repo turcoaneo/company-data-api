@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from matcher.api import matcher_router
 
 
-class TestSearchBenchmark:
+class TestBenchmarkSearch:
     output_path = None
 
     @classmethod

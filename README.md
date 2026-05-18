@@ -28,7 +28,7 @@ uvicorn main:app --reload
 ## Run tests
 
 ```bash
-pytest
+pytest --ignore=tests/benchmark 
 ```
 
 ## Prepare Meilisearch
