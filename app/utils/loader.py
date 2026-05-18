@@ -1,18 +1,19 @@
 # app/utils/loader.py
 
-# noinspection PyPackageRequirements
-import pandas as pd
 from typing import List
 
+# noinspection PyPackageRequirements
+import pandas as pd
+
 from app.utils.logger_util import get_logger
-from app.utils.path_util import get_project_root
 
 logger = get_logger()
 
 
 def load_sites_from_config(config_path: str = None) -> List[str]:
     if config_path is None:
-        config_path = get_project_root() / "data" / "small-sample-websites-company-names.csv"
+        from app.utils.env_vars import PATHS
+        config_path = PATHS["path_data_sample"]
 
     sites = []
 

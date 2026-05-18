@@ -25,7 +25,7 @@ def run_metrics():
         initial_jsonl = "results_latest.jsonl"
 
     return compute_latest_and_top_metrics(
-        input_csv_path="data/sample-websites-company-names.csv",
+        input_csv_path=PATHS["path_data_sample"],
         bad_urls_path=PATHS["path_bad_urls"],
         missing_contacts_path=PATHS["path_missing_contacts"],
         initial_jsonl_path=initial_jsonl,

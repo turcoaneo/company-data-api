@@ -2,10 +2,8 @@
 
 import threading
 
-from app.utils.env_vars import PATHS
 from app.utils.loader import load_sites_from_config
 from app.utils.logger_util import get_logger
-from app.utils.path_util import get_project_root
 from app.utils.timing_util import log_thread_id
 from crawler.orchestrator import CrawlerOrchestrator
 
@@ -17,7 +15,8 @@ async def run_scraper():
     logger.info(f"Running {log_thread_id(threading.get_ident(), 'scraper')}")
 
     # Phase 0: Load sites
-    input_csv = get_project_root() / "data" / "sample-websites-company-names.csv"
+    from app.utils.env_vars import PATHS
+    input_csv = PATHS["path_data_sample"]
     sites = load_sites_from_config(str(input_csv))
     logger.info(f"Loaded {len(sites)} sites")
 

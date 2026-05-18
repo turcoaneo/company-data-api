@@ -1,6 +1,7 @@
 # matcher/service.py
 
 from typing import Optional, Dict, Any
+
 import meilisearch
 
 
@@ -73,8 +74,8 @@ class MatcherService:
     # 4) Match all sample inputs
     # ---------------------------------------------------------
     def match_sample(self):
-        from app.utils.path_util import get_project_root
-        input_path = get_project_root() / "data/api-input-sample.csv"
+        from app.utils.env_vars import PATHS
+        input_path = PATHS["path_api_input"]
         assert input_path.exists(), "Sample CSV missing"
 
         results = []
