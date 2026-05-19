@@ -9,8 +9,17 @@ inp = PATHS["path_final_result"]
 out = PATHS["path_meili_final"]
 
 
-def run_meili_converter():
-    with open(inp, "r", encoding="utf-8") as fin, open(out, "w", encoding="utf-8") as fout:
+top_inp = PATHS["path_top_result"]
+top_out = PATHS["path_meili_top"]
+
+
+def convert_files():
+    run_meili_converter(inp, out)
+    run_meili_converter(top_inp, top_out)
+
+
+def run_meili_converter(input_file, output_file):
+    with open(input_file, "r", encoding="utf-8") as fin, open(output_file, "w", encoding="utf-8") as file_out:
         for line in fin:
             line = line.strip()
             if not line:
@@ -42,10 +51,10 @@ def run_meili_converter():
             new_obj = {"id": encoded_id}
             new_obj.update(obj)
 
-            fout.write(json.dumps(new_obj, ensure_ascii=False) + "\n")
+            file_out.write(json.dumps(new_obj, ensure_ascii=False) + "\n")
 
-    print("Created:", out)
+    print("Created:", output_file)
 
 
 if __name__ == "__main__":
-    run_meili_converter()
+    convert_files()

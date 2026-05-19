@@ -3,7 +3,7 @@
 import threading
 import time
 
-from app.utils.env_vars import SCRAPER_CONFIG, PATHS
+from app.utils.env_vars import SCRAPER_CONFIG, PATHS, MEILI
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 from crawler.scraper_runner import run_scraper
@@ -15,21 +15,22 @@ logger = get_logger("scraper_job")
 def run_job():
     run_scraper_crawler()
 
-    run_meili()
+    meili_connect_ingest()
 
 
-def run_meili():
+def meili_connect_ingest():
     # Convert scraper final result to meili PK-wise JSONL
-    from scripts.convert_for_meili import run_meili_converter
-    run_meili_converter()
+    from scripts.convert_for_meili import convert_files
+    convert_files()
     # Ingest file into Meili
     from meili_manager import MeiliManager
     meili = MeiliManager()
     try:
         meili.connect()  # Meili supposedly already running
-        meili.ingest_ndjson(PATHS["path_meili_final"])
+        from app.utils import meili_ingest_helper
+        meili_ingest_helper.ingest_ndjson(index_name=MEILI["index"], file_path=PATHS["path_meili_final"])
         logger.info(f"Finished ingesting meili data into {meili.url}/{meili.index_name}.")
-        meili.ingest_ndjson(PATHS["path_top_result"])
+        meili_ingest_helper.ingest_ndjson(index_name=MEILI["top_index"], file_path=PATHS["path_meili_top"])
         logger.info(f"Finished ingesting meili data into {meili.url}/{meili.top_index_name}.")
     except Exception as e:
         logger.error(f"Cannot connect to Meili: {e}")

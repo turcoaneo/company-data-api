@@ -51,6 +51,8 @@ PATHS = {
         merged.get("PATHS_BEST_METRIC", str(get_project_root() / "results/best_metric.json"))),
     "path_top_result": str(
         merged.get("PATHS_TOP_RESULT", str(get_project_root() / "results/top_result.jsonl"))),
+    "path_meili_top": str(
+        merged.get("PATHS_MEILI_TOP", str(get_project_root() / "results/meili_top.jsonl"))),
     "path_data_sample": str(
         merged.get("PATHS_DATA_SAMPLE", str(get_project_root() / "data/sample-websites-company-names.csv"))),
     "path_api_input": str(
