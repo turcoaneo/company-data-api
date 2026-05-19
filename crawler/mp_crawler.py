@@ -48,8 +48,30 @@ async def _crawl_chunk(chunk_id: int, domains: List[str], output_dir: Path) -> N
 def _worker_process(chunk_id: int, domains: List[str], output_dir: str) -> None:
     import threading
     logger.info("*" * 80)
-    logger.info(f"[chunk {chunk_id}] Running {log_thread_id(threading.get_ident(), 'scraper_chunk')}")
-    asyncio.run(_crawl_chunk(chunk_id, domains, Path(output_dir)))
+    thread_id = log_thread_id(threading.get_ident(), 'scraper_chunk')
+    logger.info(f"[chunk {chunk_id}] Running {thread_id}")
+
+    try:
+        asyncio.run(_crawl_chunk(chunk_id, domains, Path(output_dir)))
+    finally:
+        # --- GRACEFUL SHUTDOWN FIX ---
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            logger.error(f"RuntimeError for gracefully shutting down chunk id {chunk_id}, thread id {thread_id}: {e}")
+            return  # loop already closed
+
+        pending = asyncio.all_tasks(loop)
+        for task in pending:
+            task.cancel()
+
+        try:
+            loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+        except Exception as e:
+            logger.error(f"Error for gracefully shutting down chunk id {chunk_id}, thread id {thread_id}: {e}")
+
+        loop.stop()
+        loop.close()
 
 
 def _load_partial_results(output_dir: Path) -> List[dict]:
