@@ -57,7 +57,7 @@ def _worker_process(chunk_id: int, domains: List[str], output_dir: str) -> None:
         # --- GRACEFUL SHUTDOWN FIX ---
         try:
             loop = asyncio.get_event_loop()
-        except RuntimeError:
+        except RuntimeError as e:
             logger.error(f"RuntimeError for gracefully shutting down chunk id {chunk_id}, thread id {thread_id}: {e}")
             return  # loop already closed
 

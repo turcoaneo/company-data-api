@@ -6,8 +6,10 @@ import time
 import meilisearch
 import requests
 
-MEILI_URL = "http://localhost:7700"
-INDEX_NAME = "companies"
+from app.utils.env_vars import MEILI
+
+MEILI_URL = MEILI["url"]
+INDEX_NAME = MEILI["index"]
 
 
 class MeiliManager:
@@ -120,16 +122,8 @@ class MeiliManager:
     # ---------------------------------------------------------
 
     def ingest_ndjson(self, file_path: str):
-        with open(file_path, "rb") as f:
-            resp = requests.post(
-                f"{self.url}/indexes/{self.index_name}/documents",
-                params={"primaryKey": "id"},
-                data=f,
-                headers={"Content-Type": "application/x-ndjson"}
-            )
-
-        print("Status:", resp.status_code)
-        print("Response:", resp.text)
+        from app.utils.meili_ingest_helper import ingest_ndjson
+        return ingest_ndjson(self.url, self.index_name, file_path)
 
     # ---------------------------------------------------------
     # 7) FULL BOOTSTRAP (start + configure)
@@ -141,3 +135,7 @@ class MeiliManager:
         self.connect()
         self.create_and_configure_index()
         print("Meili bootstrap complete.")
+
+
+if __name__ == "__main__":
+    MeiliManager().bootstrap()

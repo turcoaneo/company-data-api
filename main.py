@@ -2,7 +2,7 @@
 
 from multiprocessing import Process
 from app import create_app
-from app.utils.env_vars import APP_ENV, SCRAPER_CONFIG
+from app.utils.env_vars import APP_ENV, SCRAPER_CONFIG, MEILI
 from app.utils.logger_util import get_logger
 from app.utils.monitor_resources import start_monitor_daemon
 from cron_jobs.scraper_job import start_scraper_loop
@@ -28,9 +28,10 @@ if __name__ == "__main__":
     logger.info(f"APP_ENV = {APP_ENV}, binding to port {exposed_port}")
 
     # 1) Start + configure Meili
-    from meili_manager import MeiliManager
-    meili = MeiliManager()
-    meili.bootstrap()
+    if MEILI["internal_bootstrap"]:
+        from meili_manager import MeiliManager
+        meili = MeiliManager()
+        meili.bootstrap()
 
     # 2) Start scraper in separate process
     looped = SCRAPER_CONFIG["looped"]

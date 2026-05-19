@@ -25,8 +25,11 @@ def run_meili():
     # Ingest file into Meili
     from meili_manager import MeiliManager
     meili = MeiliManager()
-    meili.connect()  # Meili already running
-    meili.ingest_ndjson(PATHS["path_meili_final"])
+    try:
+        meili.connect()  # Meili supposedly already running
+        meili.ingest_ndjson(PATHS["path_meili_final"])
+    except Exception as e:
+        logger.error(f"Cannot connect to Meili: {e}")
 
 
 def run_scraper_crawler():

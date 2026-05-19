@@ -26,6 +26,12 @@ SCRAPER_CONFIG = {
     "domains_in_parallel": int(merged.get("SCRAPER_MAX_DOMAINS_IN_PARALLEL", 8)),
 }
 
+MEILI = {
+    "url": str(merged.get("MEILI_URL", str(get_project_root() / "http://localhost:7700"))),
+    "index": str(merged.get("MEILI_INDEX", str(get_project_root() / "companies"))),
+    "internal_bootstrap": merged.get("MEILI_BOOTSTRAP_INTERNAL", "False") == "True",
+}
+
 PATHS = {
     "path_bad_urls": str(merged.get("PATHS_BAD_URLS", str(get_project_root() / "results/bad_urls.txt"))),
     "path_bad_urls_report_csv":
