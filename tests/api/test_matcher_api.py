@@ -114,3 +114,49 @@ class TestMatcherAPI:
             assert resp.json() == [
                 {"input": {"name": "Acme"}, "output": {"id": "123"}}
             ]
+
+    # ---------------------------------------------------------
+    # /api/match-top/sample
+    # ---------------------------------------------------------
+    def test_match_top_sample(self):
+        from matcher import api
+
+        mock_service = MagicMock()
+        mock_service.match_sample_top.return_value = [
+            {"input": {"name": "Acme"}, "output": {"id": "top123"}}
+        ]
+
+        with patch.object(api, "service", mock_service):
+            resp = self.client.get("/api/match-top/sample")
+            assert resp.status_code == 200
+            assert resp.json() == [
+                {"input": {"name": "Acme"}, "output": {"id": "top123"}}
+            ]
+
+    # ---------------------------------------------------------
+    # NEGATIVE: /api/match-top returns no match
+    # ---------------------------------------------------------
+    def test_match_top_not_found(self):
+        from matcher import api
+
+        mock_service = MagicMock()
+        mock_service.match_top.return_value = None
+
+        with patch.object(api, "service", mock_service):
+            resp = self.client.post("/api/match-top", json={"name": "Ghost"})
+            assert resp.status_code == 200
+            assert resp.json() == {"message": "No match found"}
+
+    # ---------------------------------------------------------
+    # NEGATIVE: /api/match-top/sample empty result
+    # ---------------------------------------------------------
+    def test_match_top_sample_empty(self):
+        from matcher import api
+
+        mock_service = MagicMock()
+        mock_service.match_sample_top.return_value = []
+
+        with patch.object(api, "service", mock_service):
+            resp = self.client.get("/api/match-top/sample")
+            assert resp.status_code == 200
+            assert resp.json() == []

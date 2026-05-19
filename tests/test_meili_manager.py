@@ -52,7 +52,7 @@ class TestMeiliManager:
             mock_instance = MagicMock()
             mock_client.return_value = mock_instance
 
-            self.manager.connect()
+            self.manager.connect_to_meili()
 
             assert self.manager.client is mock_instance
             mock_instance.index.assert_called_with("top_result_companies")
@@ -70,7 +70,7 @@ class TestMeiliManager:
 
         self.manager.client = mock_client
 
-        self.manager.create_and_configure_index()
+        self.manager._create_and_configure_index()
 
         mock_client.create_index.assert_called_once()
         mock_index.update_searchable_attributes.assert_called_once()

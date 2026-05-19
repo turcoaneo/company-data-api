@@ -63,6 +63,44 @@ class MatcherService:
         return None
 
     # ---------------------------------------------------------
+    # SAMPLE MATCH (default index)
+    # ---------------------------------------------------------
+    def match_sample(self):
+        return self._match_sample_against_index(self.index)
+
+    # ---------------------------------------------------------
+    # SAMPLE MATCH (top index)
+    # ---------------------------------------------------------
+    def match_sample_top(self):
+        return self._match_sample_against_index(self.top_index)
+
+    # ---------------------------------------------------------
+    # INTERNAL: sample matching for any index
+    # ---------------------------------------------------------
+    def _match_sample_against_index(self, index):
+        from app.utils.env_vars import PATHS
+        from pathlib import Path
+        input_path = Path(PATHS["path_api_input"])
+        assert input_path.exists(), "Sample CSV missing"
+
+        import csv
+        results = []
+
+        with open(input_path, newline="", encoding="utf-8") as f:
+            reader: csv.DictReader = csv.DictReader(f)
+            for row in reader:
+                payload = {
+                    "name": row.get("input name") or None,
+                    "phone": row.get("input phone") or None,
+                    "website": row.get("input website") or None,
+                    "facebook": row.get("input_facebook") or None,
+                }
+                hit = self._match_against_index(index, **payload)
+                results.append({"input": payload, "output": hit})
+
+        return results
+
+    # ---------------------------------------------------------
     # SEARCH
     # ---------------------------------------------------------
     def search(self, query: str, limit=10):
@@ -88,38 +126,12 @@ class MatcherService:
         )
 
     # ---------------------------------------------------------
-    # SAMPLE MATCH
-    # ---------------------------------------------------------
-    def match_sample(self):
-        from app.utils.env_vars import PATHS
-        input_path = PATHS["path_api_input"]
-        assert input_path.exists(), "Sample CSV missing"
-
-        results = []
-
-        with open(input_path, newline="", encoding="utf-8") as f:
-            import csv
-            reader: csv.DictReader = csv.DictReader(f)
-
-            for row in reader:
-                payload = {
-                    "name": row.get("input name") or None,
-                    "phone": row.get("input phone") or None,
-                    "website": row.get("input website") or None,
-                    "facebook": row.get("input_facebook") or None,
-                }
-                hit = self.match(**payload)
-                results.append({"input": payload, "output": hit})
-
-        return results
-
-    # ---------------------------------------------------------
     # INTERNAL SEARCH
     # ---------------------------------------------------------
     @staticmethod
-    def _search_single(index, query: str, fields: list[str]):
+    def _search_single(index, query_param: str, fields: list[str]):
         result = index.search(
-            query,
+            query_param,
             {
                 "limit": 1,
                 "attributesToSearchOn": fields,

@@ -13,7 +13,7 @@ logger = get_logger("scraper_job")
 
 @elapsed_time("run_scraper")
 def run_job():
-    run_scraper_crawler()
+    # run_scraper_crawler()
 
     meili_connect_ingest()
 
@@ -26,7 +26,7 @@ def meili_connect_ingest():
     from meili_manager import MeiliManager
     meili = MeiliManager()
     try:
-        meili.connect()  # Meili supposedly already running
+        meili.connect_to_meili()  # Meili supposedly already running
         from app.utils import meili_ingest_helper
         meili_ingest_helper.ingest_ndjson(index_name=MEILI["index"], file_path=PATHS["path_meili_final"])
         logger.info(f"Finished ingesting meili data into {meili.url}/{meili.index_name}.")

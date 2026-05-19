@@ -56,5 +56,5 @@ PATHS = {
     "path_data_sample": str(
         merged.get("PATHS_DATA_SAMPLE", str(get_project_root() / "data/sample-websites-company-names.csv"))),
     "path_api_input": str(
-        merged.get("PATHS_API_INPUT", str(get_project_root() / "results/api-input-sample.csv"))),
+        merged.get("PATHS_API_INPUT", str(get_project_root() / "data/api-input-sample.csv"))),
 }

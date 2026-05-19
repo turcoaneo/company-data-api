@@ -60,3 +60,12 @@ def suggest(prefix: str, limit: int = 5):
 )
 def match_sample():
     return service.match_sample()
+
+@matcher_router.get(
+    "/match-top/sample",
+    summary="Run sample matcher benchmark using TOP index",
+    description="Runs the matcher against the sample CSV using the TOP index."
+)
+def match_sample_top():
+    return service.match_sample_top()
+
