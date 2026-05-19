@@ -31,6 +31,20 @@ class TestMatcherAPI:
             yield  # let the tests run
 
     # ---------------------------------------------------------
+    # /api/match-top
+    # ---------------------------------------------------------
+    def test_match_top(self):
+        from matcher import api
+
+        mock_service = MagicMock()
+        mock_service.match_top.return_value = {"id": "top123"}
+
+        with patch.object(api, "service", mock_service):
+            resp = self.client.post("/api/match-top", json={"name": "Acme"})
+            assert resp.status_code == 200
+            assert resp.json() == {"id": "top123"}
+
+    # ---------------------------------------------------------
     # /api/match
     # ---------------------------------------------------------
     def test_match_company_found(self):
