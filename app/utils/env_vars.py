@@ -29,6 +29,7 @@ SCRAPER_CONFIG = {
 MEILI = {
     "url": str(merged.get("MEILI_URL", str(get_project_root() / "http://localhost:7700"))),
     "index": str(merged.get("MEILI_INDEX", str(get_project_root() / "companies"))),
+    "top_index": str(merged.get("MEILI_TOP_INDEX", str(get_project_root() / "top_result_companies"))),
     "internal_bootstrap": merged.get("MEILI_BOOTSTRAP_INTERNAL", "False") == "True",
 }
 

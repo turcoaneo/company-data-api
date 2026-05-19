@@ -54,7 +54,7 @@ class TestMeiliManager:
             self.manager.connect()
 
             assert self.manager.client is mock_instance
-            mock_instance.index.assert_called_with("companies")
+            mock_instance.index.assert_called_with("top_result_companies")
             assert self.manager.index == mock_instance.index.return_value
 
     # ---------------------------------------------------------

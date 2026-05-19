@@ -28,12 +28,12 @@ class TestMatcherService:
     # ---------------------------------------------------------
     def test_search_single_hit(self, svc):
         svc._mock_index.search.return_value = {"hits": [{"id": "123"}]}
-        hit = svc._search_single("acme", ["company_commercial_name"])
+        hit = svc._search_single(svc.index, "acme", ["company_commercial_name"])
         assert hit == {"id": "123"}
 
     def test_search_single_no_hit(self, svc):
         svc._mock_index.search.return_value = {"hits": []}
-        hit = svc._search_single("acme", ["company_commercial_name"])
+        hit = svc._search_single(svc.index, "acme", ["company_commercial_name"])
         assert hit is None
 
     # ---------------------------------------------------------

@@ -10,14 +10,17 @@ from app.utils.env_vars import MEILI
 
 MEILI_URL = MEILI["url"]
 INDEX_NAME = MEILI["index"]
+TOP_RESUlT_INDEX_NAME = MEILI["top_index"]
 
 
 class MeiliManager:
-    def __init__(self, url: str = MEILI_URL, index_name: str = INDEX_NAME):
+    def __init__(self, url: str = MEILI_URL, index_name: str = INDEX_NAME, top_index_name: str = TOP_RESUlT_INDEX_NAME):
         self.url = url
         self.index_name = index_name
+        self.top_index_name = top_index_name
         self.client = None
         self.index = None
+        self.top_index = None
 
     # ---------------------------------------------------------
     # 1) HEALTH CHECK
@@ -63,6 +66,7 @@ class MeiliManager:
     def connect(self):
         self.client = meilisearch.Client(self.url)
         self.index = self.client.index(self.index_name)
+        self.top_index = self.client.index(self.top_index_name)
 
     # ---------------------------------------------------------
     # 5) CREATE + CONFIGURE INDEX

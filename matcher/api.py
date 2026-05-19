@@ -25,6 +25,16 @@ def match_company(req: MatchRequest):
     return hit or {"message": "No match found"}
 
 
+@matcher_router.post(
+    "/match-top",
+    summary="Match a company using the TOP index",
+    description="Attempts to match a company using the top-ranked Meili index."
+)
+def match_top(req: MatchRequest):
+    hit = service.match_top(req.name, req.website, req.phone, req.facebook)
+    return hit or {"message": "No match found"}
+
+
 @matcher_router.get(
     "/search",
     summary="Search companies",

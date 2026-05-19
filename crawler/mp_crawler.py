@@ -45,33 +45,38 @@ async def _crawl_chunk(chunk_id: int, domains: List[str], output_dir: Path) -> N
     logger.info(f"[chunk {chunk_id}] Saved {len(results)} results to {partial_path}")
 
 
+# /crawler/mp_scraper.py
+
 def _worker_process(chunk_id: int, domains: List[str], output_dir: str) -> None:
     import threading
     logger.info("*" * 80)
     thread_id = log_thread_id(threading.get_ident(), 'scraper_chunk')
     logger.info(f"[chunk {chunk_id}] Running {thread_id}")
 
-    try:
-        asyncio.run(_crawl_chunk(chunk_id, domains, Path(output_dir)))
-    finally:
-        # --- GRACEFUL SHUTDOWN FIX ---
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError as e:
-            logger.error(f"RuntimeError for gracefully shutting down chunk id {chunk_id}, thread id {thread_id}: {e}")
-            return  # loop already closed
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
+    try:
+        # Run the crawl on this dedicated loop
+        loop.run_until_complete(_crawl_chunk(chunk_id, domains, Path(output_dir)))
+    except Exception as e:
+        logger.error(f"[chunk {chunk_id}] Worker crashed: {e}", exc_info=True)
+    finally:
+        # --- GRACEFUL SHUTDOWN ---
         pending = asyncio.all_tasks(loop)
         for task in pending:
             task.cancel()
 
-        try:
-            loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
-        except Exception as e:
-            logger.error(f"Error for gracefully shutting down chunk id {chunk_id}, thread id {thread_id}: {e}")
+        if pending:
+            try:
+                loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+            except Exception as e:
+                logger.error(
+                    f"Error while awaiting pending tasks for chunk {chunk_id}, thread {thread_id}: {e}"
+                )
 
-        loop.stop()
         loop.close()
+        logger.info(f"[chunk {chunk_id}] Event loop closed for {thread_id}")
 
 
 def _load_partial_results(output_dir: Path) -> List[dict]:

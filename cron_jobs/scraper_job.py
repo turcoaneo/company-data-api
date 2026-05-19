@@ -28,6 +28,9 @@ def run_meili():
     try:
         meili.connect()  # Meili supposedly already running
         meili.ingest_ndjson(PATHS["path_meili_final"])
+        logger.info(f"Finished ingesting meili data into {meili.url}/{meili.index_name}.")
+        meili.ingest_ndjson(PATHS["path_top_result"])
+        logger.info(f"Finished ingesting meili data into {meili.url}/{meili.top_index_name}.")
     except Exception as e:
         logger.error(f"Cannot connect to Meili: {e}")
 
