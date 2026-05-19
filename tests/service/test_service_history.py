@@ -38,10 +38,7 @@ class TestServiceHistory:
             encoding="utf-8"
         )
 
-        # Patch working directory so service reads tmp file
-        monkeypatch.chdir(tmp_path)
-
-        summary = get_history_summary()
+        summary = get_history_summary(str(history))
 
         assert "20260516_090820" in summary
         assert summary["20260516_090820"]["phones"] == 370

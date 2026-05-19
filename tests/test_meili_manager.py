@@ -9,7 +9,8 @@ class TestMeiliManager:
 
     @pytest.fixture(autouse=True)
     def setup_manager(self):
-        self.manager = MeiliManager(url="http://localhost:7700", index_name="companies")
+        self.manager = MeiliManager(url="http://localhost:7700", index_name="companies",
+                                    top_index_name="top_result_companies")
 
     # ---------------------------------------------------------
     # HEALTH CHECK

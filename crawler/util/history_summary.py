@@ -6,7 +6,7 @@ from pathlib import Path
 from app.utils.env_vars import PATHS
 
 
-def load_history_summary(history_path: str = PATHS["path_history_result"]) -> dict:
+def load_history_summary(history_path: str = None) -> dict:
     """
     Returns a dict:
     {
@@ -20,6 +20,8 @@ def load_history_summary(history_path: str = PATHS["path_history_result"]) -> di
         ...,
     }
     """
+    if history_path is None:
+        history_path = PATHS["path_history_result"]
     path = Path(history_path)
     if not path.exists():
         return {}
