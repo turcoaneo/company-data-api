@@ -13,7 +13,7 @@ logger = get_logger("scraper_job")
 
 @elapsed_time("run_scraper")
 def run_job():
-    # run_scraper_crawler()
+    run_scraper_crawler()
 
     meili_connect_ingest()
 
