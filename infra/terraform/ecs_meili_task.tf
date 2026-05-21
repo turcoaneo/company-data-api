@@ -2,8 +2,8 @@ resource "aws_ecs_task_definition" "meili" {
   family                   = "meili-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "512"
-  memory                   = "1024"
+  cpu                      = "256"
+  memory                   = "512"
 
   container_definitions = jsonencode([
     {

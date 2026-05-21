@@ -42,7 +42,7 @@ variable "cpu" {
 
 variable "memory" {
   type        = string
-  default     = "4096"
+  default     = "3072"
   description = "Fargate task memory (MiB)"
 }
 
