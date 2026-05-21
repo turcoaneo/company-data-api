@@ -68,4 +68,9 @@ Invoke-WebRequest "http://localhost:7700/tasks/7" | Select-Object -Expand Conten
 Invoke-WebRequest "http://localhost:7700/indexes/companies/documents?limit=3" | Select-Object -Expand Content
 ```
 
+## Terraform AWS
+
+terraform init
+terraform plan -var-file=dev.tfvars
+terraform apply -var-file=dev.tfvars
 

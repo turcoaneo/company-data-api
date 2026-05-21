@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: company-api
+    image: company-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - meili
+    environment:
+      APP_ENV: "local"
+      MEILI_URL: "http://meili:7700"
+    ports:
+      - "8000:8000"
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+  meili:
+    container_name: meilisearch
+    image: getmeili/meilisearch:v1.7
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data
+    ports:
+      - "7700:7700"
+    restart: unless-stopped
+
+volumes:
+  meili_data:
