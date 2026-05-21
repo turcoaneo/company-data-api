@@ -69,8 +69,19 @@ Invoke-WebRequest "http://localhost:7700/indexes/companies/documents?limit=3" | 
 ```
 
 ## Terraform AWS
+### Create S3 bucket for file persistence
+aws s3api create-bucket --bucket company-data-api-tf-state --region eu-north-1 --create-bucket-configuration LocationConstraint=eu-north-1
+### DynamoDB for versioning
+aws dynamodb create-table --table-name company-data-api-tf-locks --attribute-definitions \
+AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST
 
+### Ops
 terraform init
-terraform plan -var-file=dev.tfvars
-terraform apply -var-file=dev.tfvars
+terraform validate
+
+terraform plan -var-file="dev.tfvars"
+
+terraform apply -var-file="dev.tfvars" -auto-approve
+
+terraform destroy -var-file="dev.tfvars" -auto-approve
 

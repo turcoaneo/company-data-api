@@ -13,3 +13,4 @@ pandas
 brotli
 requests
 meilisearch
+# boto3
