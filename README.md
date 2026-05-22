@@ -4,7 +4,7 @@ Veridion-style tech challenge: crawl websites, extract company signals, index th
 
 ## Stack
 
-- Python 3.11+
+- Python 3.13+
 - FastAPI (with built-in OpenAPI/Swagger UI at `/docs`)
 - aiohttp + selectolax for crawling/parsing
 - Docker, AWS Fargate (via Terraform), GitHub Actions (CI/CD)
@@ -20,68 +20,69 @@ pip install -r requirements.txt
 
 ## Run API
 
+### Running the API locally
+#### Option A — Using PyCharm (recommended)
+Two run configurations are already included:
+
+1. “Main – API and Scraper Job”
+ - Runs the FastAPI server and the periodic scraper job.
+
+ - Entry point: company-data-api/main.py
+
+ - Uvicorn on port 8000
+
+ - Swagger UI: http://localhost:8000/docs
+
+2. “Meili bootstrap”
+ - Initializes Meilisearch with your processed dataset.
+
+ - Entry point: company-data-api/meili_manager.py
+
+ - Creates index, uploads documents, verifies ingestion
+
+ - Open PyCharm → Run/Debug Configurations → select → Run.
+
+#### Option B — Using terminal
+1. “Main – API and Scraper Job”
 ```bash
 uvicorn main:app --reload
 # Swagger UI: http://localhost:8000/docs
 ```
 
+2. “Meili bootstrap”
+```shell
+python scripts/convert_for_meili.py
+```
+
+
 ## Run tests
 
+### Usual tests
 ```bash
 pytest --ignore=tests/benchmark 
 ```
 
-## Prepare Meilisearch
-### Start Meilisearch in Docker
-```powershell
-docker run -d --name ms -p 7700:7700 getmeili/meilisearch:v1.7
-```
-
-### Add ID for Meili index
-```shell
-python .\scripts\convert_for_meili.py
-```
-
-### Create index
-```shell
-Invoke-WebRequest -Method DELETE "http://localhost:7700/indexes/companies"
-```
-
-### Ingest into Meili
-```shell
-Invoke-WebRequest -Method POST `
-  -Uri "http://localhost:7700/indexes/companies/documents?primaryKey=id" `
-  -ContentType "application/x-ndjson" `
-  -InFile "D:\DEV\Python\company-data-api\meili_final.jsonl"
-```
-
+### Usual tests + benchmark if Meili is up
 ```bash
-curl -X POST "http://localhost:7700/indexes/companies/documents?primaryKey=id" \
-     -H "Content-Type: application/x-ndjson" \
-     --data-binary @meili_final.jsonl
+pytest
 ```
 
-### Verify Meili
-```shell
-Invoke-WebRequest "http://localhost:7700/tasks/7" | Select-Object -Expand Content
+## GitHub Actions — Terraform Infrastructure
+Workflow: https://github.com/turcoaneo/company-data-api/actions/workflows/terraform.yml
 
-Invoke-WebRequest "http://localhost:7700/indexes/companies/documents?limit=3" | Select-Object -Expand Content
-```
+### Run Apply
+ - Open the workflow page
 
-## Terraform AWS
-### Create S3 bucket for file persistence
-aws s3api create-bucket --bucket company-data-api-tf-state --region eu-north-1 --create-bucket-configuration LocationConstraint=eu-north-1
-### DynamoDB for versioning
-aws dynamodb create-table --table-name company-data-api-tf-locks --attribute-definitions \
-AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --billing-mode PAY_PER_REQUEST
+ - Click Run workflow
 
-### Ops
-terraform init
-terraform validate
+ - Select branch
 
-terraform plan -var-file="dev.tfvars"
+ - Choose apply
 
-terraform apply -var-file="dev.tfvars" -auto-approve
+ - Run
 
-terraform destroy -var-file="dev.tfvars" -auto-approve
+### Run Destroy
+ - Same steps, but choose destroy.
 
+### Permissions
+ - Anyone with Triage access can safely trigger these workflows.
