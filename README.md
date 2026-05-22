@@ -45,7 +45,7 @@ Two run configurations are already included:
 #### Option B — Using terminal
 1. “Main – API and Scraper Job”
 ```bash
-uvicorn main:app --reload
+./scripts/start_app_cron.sh
 # Swagger UI: http://localhost:8000/docs
 ```
 
