@@ -59,8 +59,8 @@ Two run configurations are already included:
 ```
 
 3. "Stop the app"
- - Press CTRL+C on terminal (Powershell, GitBash, Shell)
- - In Windows the terminal must be closed to terminate all processes
+ - Press CTRL+C and Enter on terminal (Powershell, GitBash, Shell)
+ - In Windows the PS terminal must be closed to terminate all processes, just to be sure
 
 ## Run tests
 
