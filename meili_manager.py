@@ -39,12 +39,15 @@ class MeiliManager:
     @staticmethod
     def start_meili():
         print("Starting Meilisearch via Docker...")
+
         subprocess.Popen([
             "docker", "run", "--rm",
+            "--name", "ms",
             "-p", "7700:7700",
             "-e", "MEILI_NO_ANALYTICS=true",
             "getmeili/meilisearch:v1.7"
         ])
+
         print("Meilisearch container started.")
 
     # ---------------------------------------------------------

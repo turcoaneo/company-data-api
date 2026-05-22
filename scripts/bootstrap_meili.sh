@@ -7,12 +7,28 @@
 MEILI_URL="http://localhost:7700"
 INDEX_MAIN="companies"
 INDEX_TOP="companies_top"
+CONTAINER_NAME="ms"
 
-echo "🛑 Removing old Meili container (if exists)..."
-docker rm -f ms >/dev/null 2>&1
+echo "Checking for existing Meilisearch container..."
 
-echo "🚀 Starting Meilisearch..."
-docker run -d --name ms -p 7700:7700 -e MEILI_NO_ANALYTICS=true getmeili/meilisearch:v1.7 >/dev/null
+# Check if container exists AND is running
+if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "✔ Meilisearch container '${CONTAINER_NAME}' is already running. Skipping bootstrap."
+    exit 0
+fi
+
+# Check if container exists but is stopped
+if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
+    echo "✔ Found existing stopped container '${CONTAINER_NAME}'. Starting it..."
+    docker start "${CONTAINER_NAME}" >/dev/null
+else
+    echo "🚀 Starting new Meilisearch container '${CONTAINER_NAME}'..."
+    docker run -d \
+        --name "${CONTAINER_NAME}" \
+        -p 7700:7700 \
+        -e MEILI_NO_ANALYTICS=true \
+        getmeili/meilisearch:v1.7 >/dev/null
+fi
 
 # --------------------------------------------
 # Wait until Meili is ready

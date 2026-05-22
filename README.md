@@ -19,6 +19,8 @@ pip install -r requirements.txt
 ```
 
 ## Run API
+### Swagger UI: http://localhost:8000/docs
+### Swagger UI: https://company-data-api.cassis.solutions/docs
 
 ### Running the API locally
 #### Option A — Using PyCharm (recommended)
@@ -42,18 +44,23 @@ Two run configurations are already included:
 
  - Open PyCharm → Run/Debug Configurations → select → Run.
 
+3. "Stop the app"
+ - Press CTRL+F2 twice to terminate both FastAPI and the Cron
+
 #### Option B — Using terminal
 1. “Main – API and Scraper Job”
 ```bash
 ./scripts/start_app_cron.sh
-# Swagger UI: http://localhost:8000/docs
 ```
 
 2. “Meili bootstrap”
 ```shell
-shell ./scripts/bootstrap_meili.sh
+./scripts/bootstrap_meili.sh
 ```
 
+3. "Stop the app"
+ - Press CTRL+C on terminal (Powershell, GitBash, Shell)
+ - In Windows the terminal must be closed to terminate all processes
 
 ## Run tests
 
@@ -75,7 +82,7 @@ Workflow: https://github.com/turcoaneo/company-data-api/actions/workflows/terraf
 
  - Click Run workflow
 
- - Select branch
+ - Select branch - main
 
  - Choose apply
 

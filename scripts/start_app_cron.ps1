@@ -17,5 +17,26 @@ if (Test-Path $venv) {
 $env:PYTHONUNBUFFERED = "1"
 $env:APP_ENV = "local"
 
-# Start application
-python main.py
+# Start python in SAME console (foreground)
+# but capture its PID using Get-Process
+$pythonProcess = Start-Process -FilePath "python" -ArgumentList "main.py" -PassThru -NoNewWindow
+
+$pythonPid = $pythonProcess.Id
+Write-Host "Application started with PID $pythonPid"
+
+# Ctrl+C handler
+$null = Register-EngineEvent ConsoleCancelEvent -Action {
+    Write-Host "Stopping application..."
+
+    # Kill entire process tree
+    taskkill /PID $pythonPid /T /F | Out-Null 2>&1
+
+    # Extra safety
+    Stop-Process -Id $pythonPid -Force -ErrorAction SilentlyContinue
+
+    Write-Host "Application stopped."
+    exit
+}
+
+# Wait for python to exit
+Wait-Process -Id $pythonPid
