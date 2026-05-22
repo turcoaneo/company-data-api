@@ -51,7 +51,7 @@ uvicorn main:app --reload
 
 2. “Meili bootstrap”
 ```shell
-python scripts/bootstrap_meili.sh
+shell ./scripts/bootstrap_meili.sh
 ```
 
 
