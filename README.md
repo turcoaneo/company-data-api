@@ -22,7 +22,7 @@ pip install -r requirements.txt
 ### Swagger UI: http://localhost:8000/docs
 ### Swagger UI: https://company-data-api.cassis.solutions/docs
 
-### Running the API locally
+### Running locally
 #### Option A — Using PyCharm (recommended)
 Two run configurations are already included:
 
@@ -52,8 +52,11 @@ Two run configurations are already included:
 ```bash
 ./scripts/start_app_cron.sh
 ```
+```shell
+.\scripts\start_app_cron.ps1
+```
 
-2. “Meili bootstrap”
+2. “Meili bootstrap” (GitBash, Shell)
 ```shell
 ./scripts/bootstrap_meili.sh
 ```
@@ -74,7 +77,7 @@ pytest --ignore=tests/benchmark
 pytest
 ```
 
-## GitHub Actions — Terraform Infrastructure
+## GitHub Actions — AWS Terraform Infrastructure
 Workflow: https://github.com/turcoaneo/company-data-api/actions/workflows/terraform.yml
 
 ### Run Apply
