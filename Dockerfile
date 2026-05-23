@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 🔥 Force rebuild (dummy line)
-RUN echo "rebuild-trigger-20260523"
+RUN echo "rebuild-port-80-20260523"
 
 # Copy project
 COPY . .
@@ -19,7 +19,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose FastAPI port
-EXPOSE 8000
+EXPOSE 80
 
 # Start FastAPI + Cron threads
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
