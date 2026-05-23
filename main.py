@@ -29,6 +29,7 @@ if __name__ == "__main__":
 
     # 1) Start + configure Meili
     if MEILI["internal_bootstrap"]:
+        logger.info(f"Starting internal bootstrap process for Meili")
         from meili_manager import MeiliManager
         meili = MeiliManager()
         meili.bootstrap()
