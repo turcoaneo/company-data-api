@@ -12,7 +12,7 @@ env_specific = dotenv_values(f".env.{os.environ.get('APP_ENV', 'test')}")
 merged = {**base_env, **env_specific, **os.environ}
 APP_ENV = merged.get("APP_ENV", "test")
 
-LOG_LEVEL = merged.get("LOG_LEVEL", "warning")
+LOG_LEVEL = merged.get("LOG_LEVEL", "info")
 
 SCRAPER_CONFIG = {
     "write_files": merged.get("SCRAPER_WRITE_FILES", "True") == "True",

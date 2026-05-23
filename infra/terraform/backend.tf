@@ -12,7 +12,7 @@ terraform {
     bucket         = "company-data-api-tf-state"
     key            = "terraform.tf-state"
     region         = "eu-north-1"
-    dynamodb_table = "company-data-api-tf-locks"
+    use_lockfile   = true
     encrypt        = true
   }
 }
