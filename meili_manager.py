@@ -4,7 +4,7 @@ import time
 import meilisearch
 import requests
 
-from app.utils.env_vars import MEILI
+from app.utils.env_vars import MEILI, APP_ENV
 
 MEILI_URL = MEILI["url"]
 INDEX_NAME = MEILI["index"]
@@ -179,8 +179,13 @@ class MeiliManager:
     # 8) FULL BOOTSTRAP
     # ---------------------------------------------------------
     def bootstrap(self):
-        if not self.is_running():
-            self.start_meili()
+        # Skip Docker logic in AWS
+        if APP_ENV not in ("uat", "prod"):
+            if not self.is_running():
+                self.start_meili()
+        else:
+            print(f"APP_ENV={APP_ENV}: Skipping Docker startup logic.")
+
         self.wait_until_ready()
         self.connect_to_meili()
         self.create_and_configure_indexes()
