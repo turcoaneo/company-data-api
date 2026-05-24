@@ -155,7 +155,7 @@ def run_scraper_multiprocess(num_chunks: int = 8, output_dir: str = "data") -> N
     logger.info(f"Loaded {len(all_results)} total results from partial files")
 
     logger.info("Merging partial results with input CSV...")
-    merged_output_path = merge_scraper_results(str(input_csv), all_results, output_dir)
+    merged_output_path = merge_scraper_results(input_csv, all_results, output_dir)
     logger.info(f"Merged results saved to {merged_output_path}")
 
     asyncio.run(_run_qa_pipeline(merged_output_path))

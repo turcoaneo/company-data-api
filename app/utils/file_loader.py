@@ -46,12 +46,26 @@ class FileLoader:
         from app.utils.env_vars import S3_BUCKET
         bucket = S3_BUCKET
 
+        # WRITE MODE
+        if "w" in mode:
+            buffer = StringIO()
+
+            def close_and_upload():
+                buffer.seek(0)
+                self.s3.put_object(
+                    Bucket=bucket,
+                    Key=path,
+                    Body=buffer.getvalue().encode(encoding)
+                )
+
+            buffer.close = close_and_upload
+            return buffer
+
+        # READ MODE
         obj = self.s3.get_object(Bucket=bucket, Key=path)
         body = obj["Body"].read()
 
-        # Binary mode
         if "b" in mode:
             return BytesIO(body)
 
-        # Text mode
         return StringIO(body.decode(encoding))
