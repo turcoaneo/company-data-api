@@ -17,7 +17,8 @@ def _count_contacts(jsonl_path: Path):
     if not jsonl_path.exists():
         return phones, socials
 
-    with jsonl_path.open("r", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(str(jsonl_path), "r", encoding="utf-8") as f:
         for line in f:
             try:
                 obj = json.loads(line)
@@ -72,7 +73,8 @@ def record_run(start_ts: str, duration: float, config: list, final_res_file: str
     else:
         existing = []
 
-    with history_path.open("w", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(str(history_path), "w", encoding="utf-8") as f:
         f.write(json.dumps(entry) + "\n")
         for line in existing:
             f.write(line + "\n")

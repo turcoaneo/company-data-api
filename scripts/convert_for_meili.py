@@ -8,7 +8,6 @@ from app.utils.env_vars import PATHS
 inp = PATHS["path_final_result"]
 out = PATHS["path_meili_final"]
 
-
 top_inp = PATHS["path_top_result"]
 top_out = PATHS["path_meili_top"]
 
@@ -19,8 +18,10 @@ def convert_files():
 
 
 def run_meili_converter(input_file, output_file):
-    with open(input_file, "r", encoding="utf-8") as fin, open(output_file, "w", encoding="utf-8") as file_out:
-        for line in fin:
+    from app.utils.file_loader import FileLoader
+    with (FileLoader().open_file(input_file, "r", encoding="utf-8") as file_in,
+          FileLoader().open_file(output_file, "w", encoding="utf-8") as file_out):
+        for line in file_in:
             line = line.strip()
             if not line:
                 continue

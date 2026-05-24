@@ -28,7 +28,8 @@ def _count_jsonl_contacts(path: Path):
     if not path.exists():
         return phones, socials, sites_with_contacts, phones_and_socials
 
-    with path.open("r", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(str(path), "r", encoding="utf-8") as f:
         for line in f:
             try:
                 obj = json.loads(line)
@@ -60,14 +61,15 @@ def compute_scraper_metrics(
         initial_jsonl_path: str,
         final_jsonl_path: str
 ):
+    from app.utils.file_loader import FileLoader
     # 1. Total sites
-    with open(input_csv_path, "r", encoding="utf-8") as f:
+    with FileLoader().open_file(input_csv_path, "r", encoding="utf-8") as f:
         total_sites = sum(1 for _ in csv.reader(f)) - 1
 
     # 2. Unreachable + missing
     bad_urls = set()
     if Path(bad_urls_path).exists():
-        with open(bad_urls_path, "r", encoding="utf-8") as f:
+        with FileLoader().open_file(bad_urls_path, "r", encoding="utf-8") as f:
             for line in f:
                 d = line.strip()
                 if d:
@@ -75,7 +77,7 @@ def compute_scraper_metrics(
 
     missing_contacts = set()
     if Path(missing_contacts_path).exists():
-        with open(missing_contacts_path, "r", encoding="utf-8") as f:
+        with FileLoader().open_file(missing_contacts_path, "r", encoding="utf-8") as f:
             for line in f:
                 d = line.strip()
                 if d:

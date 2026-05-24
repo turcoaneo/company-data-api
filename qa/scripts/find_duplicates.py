@@ -12,7 +12,8 @@ with open(path, "r", encoding="utf-8") as f:
             continue
         try:
             obj = json.loads(line)
-        except Exception:
+        except Exception as e:
+            print(f"Exception when parsing: {e}")
             continue
 
         key = obj.get("id") or obj.get("domain")

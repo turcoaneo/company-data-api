@@ -96,8 +96,9 @@ def job_wrapper():
 
 
 async def run_bad_urls_check(path=PATHS["path_bad_urls"], csv_out="qa/qa_bad_urls_report.csv"):
-    with open(path, "r", encoding="utf-8") as f:
-        domains = [line.strip() for line in f if line.strip()]
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(path, "r", encoding="utf-8") as f:
+        domains: list[str] = [line.strip() for line in f if line.strip()]
 
     logger.info(f"Testing {len(domains)} domains from bad_urls.txt...")
 
@@ -106,7 +107,7 @@ async def run_bad_urls_check(path=PATHS["path_bad_urls"], csv_out="qa/qa_bad_url
     results = await asyncio.gather(*tasks)
 
     # CSV export
-    with open(csv_out, "w+", newline="", encoding="utf-8") as f:
+    with FileLoader().open_file(csv_out, "w+", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=["domain", "status", "protocol", "reason"])
         writer.writeheader()
         for r in results:

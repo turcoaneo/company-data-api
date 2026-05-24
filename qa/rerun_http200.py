@@ -15,7 +15,8 @@ def load_http_200_domains(json_path: str):
     """
     import json
 
-    with open(json_path, "r", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     # Ensure key exists and is a list

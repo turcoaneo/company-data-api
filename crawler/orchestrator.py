@@ -131,11 +131,12 @@ class CrawlerOrchestrator:
                     else:
                         missing_contacts.append(domain)
 
+        from app.utils.file_loader import FileLoader
         # Append unreachable
         if SCRAPER_CONFIG["write_files"]:
             if path_bad_urls is None:
                 path_bad_urls = PATHS["path_bad_urls"]
-            with open(path_bad_urls, "a", encoding="utf-8") as f:
+            with FileLoader().open_file(path_bad_urls, "a", encoding="utf-8") as f:
                 for b in unreachable:
                     f.write(b + "\n")
 
@@ -143,7 +144,7 @@ class CrawlerOrchestrator:
         if SCRAPER_CONFIG["write_files"]:
             if path_missing_contacts is None:
                 path_missing_contacts = PATHS["path_missing_contacts"]
-            with open(path_missing_contacts, "a", encoding="utf-8") as f:
+            with FileLoader().open_file(path_missing_contacts, "a", encoding="utf-8") as f:
                 for b in missing_contacts:
                     f.write(b + "\n")
 

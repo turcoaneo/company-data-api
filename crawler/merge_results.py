@@ -122,31 +122,6 @@ def _extract_domain(rec: dict) -> str:
     return _normalize_host(url)
 
 
-# def _clean_record(rec: dict) -> dict:
-#     """
-#     Produce a clean record for final JSONL.
-#     Removes url, normalizes domain, keeps only allowed fields.
-#     """
-#     domain = _extract_domain(rec)
-#
-#     clean = {
-#         "domain": domain,
-#         "phones": rec.get("phones", []),
-#         "socials": rec.get("socials", []),
-#     }
-#
-#     # Preserve company fields if present
-#     for field in (
-#             "company_commercial_name",
-#             "company_legal_name",
-#             "company_all_available_names",
-#     ):
-#         if field in rec:
-#             clean[field] = rec[field]
-#
-#     return clean
-
-
 def merge_two_runs(first_path: str, second_results: list[dict], final_path: str) -> None:
     """
     Merge first-pass JSONL with second-pass results.
@@ -159,7 +134,8 @@ def merge_two_runs(first_path: str, second_results: list[dict], final_path: str)
     # -------------------------
     # Load first-pass
     # -------------------------
-    with open(first_path, "r", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(first_path, "r", encoding="utf-8") as f:
         for line in f:
             rec = json.loads(line)
             key = _extract_domain(rec)
@@ -213,6 +189,6 @@ def merge_two_runs(first_path: str, second_results: list[dict], final_path: str)
     # -------------------------
     # Write final JSONL
     # -------------------------
-    with open(final_path, "w", encoding="utf-8") as f:
+    with FileLoader().open_file(final_path, "w", encoding="utf-8") as f:
         for rec in first.values():
             f.write(json.dumps(rec) + "\n")

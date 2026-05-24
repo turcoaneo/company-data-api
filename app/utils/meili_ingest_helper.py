@@ -10,7 +10,8 @@ FILE_PATH = PATHS["path_meili_final"]
 
 
 def ingest_ndjson(url: str = MEILI_URL, index_name: str = INDEX_NAME, file_path: str = FILE_PATH):
-    with open(file_path, "rb") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(file_path, "rb") as f:
         resp = requests.post(
             f"{url}/indexes/{index_name}/documents",
             params={"primaryKey": "id"},

@@ -5,6 +5,7 @@ import json
 import re
 from collections import defaultdict
 
+from app.utils.file_loader import FileLoader
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 
@@ -84,14 +85,14 @@ async def classify_csv_to_json_sync(csv_path, json_out):
             }
             """
     categories = defaultdict(list)
-    with open(csv_path, "r", encoding="utf-8") as f:
+    with FileLoader().open_file(csv_path, "r", encoding="utf-8") as f:
         reader: csv.DictReader = csv.DictReader(f)
         for row in reader:
             domain = row["domain"]
             reason = row["reason"]
             category = classify_reason(reason)
             categories[category].append(domain)
-    with open(json_out, "w", encoding="utf-8") as f:
+    with FileLoader().open_file(json_out, "w", encoding="utf-8") as f:
         json.dump(categories, f, indent=2)
     logger.info(f"Classification JSON written to {json_out}")
     return categories
@@ -99,7 +100,7 @@ async def classify_csv_to_json_sync(csv_path, json_out):
 
 def load_http_200_domains(json_path):
     import json
-    with open(json_path, "r", encoding="utf-8") as f:
+    with FileLoader().open_file(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     return [

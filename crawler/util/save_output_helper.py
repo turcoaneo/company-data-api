@@ -8,7 +8,8 @@ def save_jsonl(lines: list[str], output_dir: str = "data") -> Path:
     ts = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     output_path = Path(output_dir) / f"results_{ts}.jsonl"
 
-    with open(output_path, "w", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(str(output_path), "w", encoding="utf-8") as f:
         for line in lines:
             f.write(line + "\n")
 

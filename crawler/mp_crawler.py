@@ -25,7 +25,8 @@ def _split_into_chunks(items: List[str], num_chunks: int) -> List[List[str]]:
 
 
 def _write_partial_jsonl(path: Path, rows: List[dict]) -> None:
-    with path.open("w", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(str(path), "w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps(r) + "\n")
 
@@ -82,7 +83,8 @@ def _worker_process(chunk_id: int, domains: List[str], output_dir: str) -> None:
 def _load_partial_results(output_dir: Path) -> List[dict]:
     all_results: List[dict] = []
     for path in sorted(output_dir.glob("partial_results_*.jsonl")):
-        with path.open("r", encoding="utf-8") as f:
+        from app.utils.file_loader import FileLoader
+        with FileLoader().open_file(str(path), "r", encoding="utf-8") as f:
             for line in f:
                 all_results.append(json.loads(line))
     return all_results

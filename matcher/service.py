@@ -86,7 +86,8 @@ class MatcherService:
         import csv
         results = []
 
-        with open(input_path, newline="", encoding="utf-8") as f:
+        from app.utils.file_loader import FileLoader
+        with FileLoader().open_file(str(input_path), "r", newline="", encoding="utf-8") as f:
             reader: csv.DictReader = csv.DictReader(f)
             for row in reader:
                 payload = {

@@ -28,7 +28,8 @@ def load_history_summary(history_path: str = None) -> dict:
 
     summary = {}
 
-    with path.open("r", encoding="utf-8") as f:
+    from app.utils.file_loader import FileLoader
+    with FileLoader().open_file(str(path), "r", encoding="utf-8") as f:
         for line in f:
             if not line.strip():
                 continue
