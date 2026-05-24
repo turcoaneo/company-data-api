@@ -14,7 +14,6 @@ resource "aws_ecs_task_definition" "meili" {
       portMappings = [
         {
           containerPort = 7700
-          hostPort      = 7700
           protocol      = "tcp"
         }
       ]

@@ -50,7 +50,6 @@ resource "aws_ecs_task_definition" "this" {
       }]
 
       environment = [
-        { name = "MEILI_URL", value = "http://meili.local:7700" },
         { name = "APP_ENV",   value = "uat" }
       ]
 
