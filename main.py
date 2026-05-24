@@ -24,7 +24,7 @@ def start_scraper_process(interval_sec: int = 1200, is_looped: bool = True):
 
 if __name__ == "__main__":
     exposed_port = 80 if APP_ENV in ["uat", "prod"] else 8000
-    logger = get_logger("main_app_and_cron")
+    logger = get_logger()
     logger.info(f"APP_ENV = {APP_ENV}, binding to port {exposed_port}")
 
     # 1) Start + configure Meili

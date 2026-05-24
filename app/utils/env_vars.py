@@ -28,7 +28,7 @@ MEILI = {
     "url": str(merged.get("MEILI_URL", str("http://localhost:7700"))),
     "index": str(merged.get("MEILI_INDEX", str("companies"))),
     "top_index": str(merged.get("MEILI_TOP_INDEX", str("top_result_companies"))),
-    "internal_bootstrap": merged.get("MEILI_BOOTSTRAP_INTERNAL", "False") == "True",
+    "internal_bootstrap": merged.get("MEILI_BOOTSTRAP_INTERNAL", "True") == "True",
 }
 
 PATHS = {
