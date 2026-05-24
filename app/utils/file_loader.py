@@ -48,39 +48,17 @@ class FileLoader:
 
         # WRITE MODE
         if "w" in mode:
-            buffer = StringIO()
+            return S3WriteBuffer(self.s3, bucket, path, encoding)
 
-            def close_and_upload():
-                buffer.seek(0)
-                self.s3.put_object(
-                    Bucket=bucket,
-                    Key=path,
-                    Body=buffer.getvalue().encode(encoding)
-                )
-
-            buffer.close = close_and_upload
-            return buffer
-
-        # APPEND MODE (must come BEFORE read)
+        # APPEND MODE
         if "a" in mode:
             try:
                 obj = self.s3.get_object(Bucket=bucket, Key=path)
                 existing = obj["Body"].read().decode(encoding)
-            except Exception:
+            except Exception as e:
+                print(f"Error appending in {path}: {e}")
                 existing = ""
-
-            buffer = StringIO(existing)
-
-            def close_and_upload():
-                buffer.seek(0)
-                self.s3.put_object(
-                    Bucket=bucket,
-                    Key=path,
-                    Body=buffer.getvalue().encode(encoding)
-                )
-
-            buffer.close = close_and_upload
-            return buffer
+            return S3WriteBuffer(self.s3, bucket, path, encoding, initial=existing)
 
         # READ MODE
         obj = self.s3.get_object(Bucket=bucket, Key=path)
@@ -90,3 +68,28 @@ class FileLoader:
             return BytesIO(body)
 
         return StringIO(body.decode(encoding))
+
+
+class S3WriteBuffer:
+    def __init__(self, s3, bucket, key, encoding="utf-8", initial=""):
+        from io import StringIO
+        self.s3 = s3
+        self.bucket = bucket
+        self.key = key
+        self.encoding = encoding
+        self.buffer = StringIO(initial)
+
+    def write(self, data):
+        return self.buffer.write(data)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.buffer.seek(0)
+        self.s3.put_object(
+            Bucket=self.bucket,
+            Key=self.key,
+            Body=self.buffer.getvalue().encode(self.encoding)
+        )
+        self.buffer.close()
