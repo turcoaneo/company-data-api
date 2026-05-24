@@ -28,9 +28,9 @@ class TestMeiliManager:
     # AUTO-START (docker run)
     # ---------------------------------------------------------
     def test_start_meili(self):
-        with patch("subprocess.Popen") as mock_popen:
+        with patch("subprocess.run") as mock_run:
             self.manager.start_meili()
-            mock_popen.assert_called_once()
+            mock_run.assert_called_once()
 
     # ---------------------------------------------------------
     # WAIT UNTIL READY
@@ -70,7 +70,7 @@ class TestMeiliManager:
 
         self.manager.client = mock_client
 
-        self.manager._create_and_configure_index()
+        self.manager._create_and_configure_index(self.manager.index_name)
 
         mock_client.create_index.assert_called_once()
         mock_index.update_searchable_attributes.assert_called_once()
