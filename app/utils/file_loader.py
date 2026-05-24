@@ -68,4 +68,27 @@ class FileLoader:
         if "b" in mode:
             return BytesIO(body)
 
+        # APPEND MODE
+        if "a" in mode:
+            # Read existing content (if any)
+            try:
+                obj = self.s3.get_object(Bucket=bucket, Key=path)
+                existing = obj["Body"].read().decode(encoding)
+            except Exception as e:
+                print(f"Error on appending: {e}")
+                existing = ""
+
+            buffer = StringIO(existing)
+
+            def close_and_upload():
+                buffer.seek(0)
+                self.s3.put_object(
+                    Bucket=bucket,
+                    Key=path,
+                    Body=buffer.getvalue().encode(encoding)
+                )
+
+            buffer.close = close_and_upload
+            return buffer
+
         return StringIO(body.decode(encoding))
