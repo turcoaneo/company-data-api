@@ -32,7 +32,7 @@ resource "aws_lb" "this" {
   subnets            = module.vpc.public_subnets
 }
 
-resource "aws_lb_target_group" "this" {
+resource "aws_lb_target_group" "app_lb" {
   name        = "tg-company-api"
   port        = var.app_port
   protocol    = "HTTP"
@@ -51,7 +51,7 @@ resource "aws_lb_listener" "http" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.this.arn
+    target_group_arn = aws_lb_target_group.app_lb.arn
   }
 }
 
@@ -64,7 +64,7 @@ resource "aws_lb_listener" "https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.this.arn
+    target_group_arn = aws_lb_target_group.app_lb.arn
   }
 }
 

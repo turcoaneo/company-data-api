@@ -1,4 +1,4 @@
-resource "aws_ecs_cluster" "this" {
+resource "aws_ecs_cluster" "app_cluster" {
   name = var.ecs_cluster_name
 }
 
@@ -27,7 +27,7 @@ resource "aws_cloudwatch_log_group" "logs" {
   retention_in_days = 7
 }
 
-resource "aws_ecs_task_definition" "this" {
+resource "aws_ecs_task_definition" "app_task_def" {
   family                   = "company-data-api-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -43,19 +43,21 @@ resource "aws_ecs_task_definition" "this" {
       image     = var.app_image
       essential = true
 
-      portMappings = [{
-        containerPort = var.app_port
-        hostPort = var.app_port
-        protocol      = "tcp"
-      }]
+      portMappings = [
+        {
+          containerPort = var.app_port
+          hostPort      = var.app_port
+          protocol      = "tcp"
+        }
+      ]
 
       environment = [
-        { name = "APP_ENV",   value = "uat" }
+        { name = "APP_ENV", value = "uat" }
       ]
 
       logConfiguration = {
         logDriver = "awslogs"
-        options = {
+        options   = {
           awslogs-group         = aws_cloudwatch_log_group.logs.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "app"
@@ -63,19 +65,26 @@ resource "aws_ecs_task_definition" "this" {
         }
       }
     },
+
     {
       name      = "meili"
       image     = var.meili_image
       essential = true
 
-      portMappings = [{
-        containerPort = 7700
-        protocol      = "tcp"
-      }]
+      portMappings = [
+        {
+          containerPort = 7700
+          protocol      = "tcp"
+        }
+      ]
+
+      environment = [
+        { name = "MEILI_NO_ANALYTICS", value = "true" }
+      ]
 
       logConfiguration = {
         logDriver = "awslogs"
-        options = {
+        options   = {
           awslogs-group         = aws_cloudwatch_log_group.logs.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "meili"
@@ -86,10 +95,10 @@ resource "aws_ecs_task_definition" "this" {
   ])
 }
 
-resource "aws_ecs_service" "this" {
+resource "aws_ecs_service" "app_service" {
   name            = var.ecs_service_name
-  cluster         = aws_ecs_cluster.this.id
-  task_definition = aws_ecs_task_definition.this.arn
+  cluster         = aws_ecs_cluster.app_cluster.id
+  task_definition = aws_ecs_task_definition.app_task_def.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
@@ -100,7 +109,7 @@ resource "aws_ecs_service" "this" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.this.arn
+    target_group_arn = aws_lb_target_group.app_lb.arn
     container_name   = "app"
     container_port   = var.app_port
   }
