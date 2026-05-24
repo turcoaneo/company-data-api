@@ -4,8 +4,6 @@ import os
 
 from dotenv import dotenv_values
 
-from app.utils.path_util import get_project_root
-
 # Load base + environment-specific config
 base_env = dotenv_values(".env")
 env_specific = dotenv_values(f".env.{os.environ.get('APP_ENV', 'test')}")
@@ -34,27 +32,27 @@ MEILI = {
 }
 
 PATHS = {
-    "path_bad_urls": str(merged.get("PATHS_BAD_URLS", str(get_project_root() / "results/bad_urls.txt"))),
+    "path_bad_urls": str(merged.get("PATHS_BAD_URLS", "s3://company-api-bucket/results/bad_urls.txt")),
     "path_bad_urls_report_csv":
-        str(merged.get("PATHS_BAD_URLS_REPORT_CSV", str(get_project_root() / "results/bad_urls_report.csv"))),
+        str(merged.get("PATHS_BAD_URLS_REPORT_CSV", "s3://company-api-bucket/results/bad_urls_report.csv")),
     "path_bad_urls_report_json":
-        str(merged.get("PATHS_BAD_URLS_REPORT_JSON", str(get_project_root() / "results/bad_urls_report.json"))),
+        str(merged.get("PATHS_BAD_URLS_REPORT_JSON", "s3://company-api-bucket/results/bad_urls_report.json")),
     "path_missing_contacts": str(
-        merged.get("PATHS_MISSING_CONTACTS", str(get_project_root() / "results/missing_contacts.txt"))),
+        merged.get("PATHS_MISSING_CONTACTS", "s3://company-api-bucket/results/missing_contacts.txt")),
     "path_final_result": str(
-        merged.get("PATHS_FINAL_RESULT", str(get_project_root() / "results/final_result.jsonl"))),
+        merged.get("PATHS_FINAL_RESULT", "s3://company-api-bucket/results/final_result.jsonl")),
     "path_history_result": str(
-        merged.get("PATHS_HISTORY_RESULT", str(get_project_root() / "results/history_runs.jsonl"))),
+        merged.get("PATHS_HISTORY_RESULT", "s3://company-api-bucket/results/history_runs.jsonl")),
     "path_meili_final": str(
-        merged.get("PATHS_MEILI_FINAL", str(get_project_root() / "results/meili_final.jsonl"))),
+        merged.get("PATHS_MEILI_FINAL", "s3://company-api-bucket/results/meili_final.jsonl")),
     "path_best_metric": str(
-        merged.get("PATHS_BEST_METRIC", str(get_project_root() / "results/best_metric.json"))),
+        merged.get("PATHS_BEST_METRIC", "s3://company-api-bucket/results/best_metric.json")),
     "path_top_result": str(
-        merged.get("PATHS_TOP_RESULT", str(get_project_root() / "results/top_result.jsonl"))),
+        merged.get("PATHS_TOP_RESULT", "s3://company-api-bucket/results/top_result.jsonl")),
     "path_meili_top": str(
-        merged.get("PATHS_MEILI_TOP", str(get_project_root() / "results/meili_top.jsonl"))),
+        merged.get("PATHS_MEILI_TOP", "s3://company-api-bucket/results/meili_top.jsonl")),
     "path_data_sample": str(
-        merged.get("PATHS_DATA_SAMPLE", str(get_project_root() / "data/sample-websites-company-names.csv"))),
+        merged.get("PATHS_DATA_SAMPLE", "s3://company-api-bucket/data/sample-websites-company-names.csv")),
     "path_api_input": str(
-        merged.get("PATHS_API_INPUT", str(get_project_root() / "data/api-input-sample.csv"))),
+        merged.get("PATHS_API_INPUT", "s3://company-api-bucket/data/api-input-sample.csv")),
 }
