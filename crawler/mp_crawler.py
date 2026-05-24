@@ -1,4 +1,4 @@
-# /crawler/mp_scraper.py
+# /crawler/mp_crawler.py
 
 import asyncio
 import json
@@ -7,10 +7,13 @@ from multiprocessing import Process
 from pathlib import Path
 from typing import List
 
-from app.utils.env_vars import PATHS
+import boto3
+
+from app.utils.env_vars import PATHS, APP_ENV, S3_BUCKET
 from app.utils.loader import load_sites_from_config
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import log_thread_id
+from app.utils.file_loader import FileLoader
 from crawler.merge_results import merge_scraper_results
 from crawler.orchestrator import CrawlerOrchestrator
 
@@ -24,14 +27,14 @@ def _split_into_chunks(items: List[str], num_chunks: int) -> List[List[str]]:
     return [items[i:i + size] for i in range(0, len(items), size)]
 
 
-def _write_partial_jsonl(path: Path, rows: List[dict]) -> None:
-    from app.utils.file_loader import FileLoader
-    with FileLoader().open_file(str(path), "w", encoding="utf-8") as f:
+def _write_partial_jsonl(path: str, rows: List[dict]) -> None:
+    fl = FileLoader()
+    with fl.open_file(path, "w", encoding="utf-8") as f:
         for r in rows:
             f.write(json.dumps(r) + "\n")
 
 
-async def _crawl_chunk(chunk_id: int, domains: List[str], output_dir: Path) -> None:
+async def _crawl_chunk(chunk_id: int, domains: List[str], output_dir: str) -> None:
     logger.info(f"[chunk {chunk_id}] Starting crawl for {len(domains)} domains")
     orch = CrawlerOrchestrator()
 
@@ -41,12 +44,10 @@ async def _crawl_chunk(chunk_id: int, domains: List[str], output_dir: Path) -> N
         logger.error(f"[chunk {chunk_id}] Scraper crashed: {e}", exc_info=True)
         return
 
-    partial_path = output_dir / f"partial_results_{chunk_id}.jsonl"
+    partial_path = f"{output_dir}/partial_results_{chunk_id}.jsonl"
     _write_partial_jsonl(partial_path, results)
     logger.info(f"[chunk {chunk_id}] Saved {len(results)} results to {partial_path}")
 
-
-# /crawler/mp_scraper.py
 
 def _worker_process(chunk_id: int, domains: List[str], output_dir: str) -> None:
     import threading
@@ -58,12 +59,10 @@ def _worker_process(chunk_id: int, domains: List[str], output_dir: str) -> None:
     asyncio.set_event_loop(loop)
 
     try:
-        # Run the crawl on this dedicated loop
-        loop.run_until_complete(_crawl_chunk(chunk_id, domains, Path(output_dir)))
+        loop.run_until_complete(_crawl_chunk(chunk_id, domains, output_dir))
     except Exception as e:
         logger.error(f"[chunk {chunk_id}] Worker crashed: {e}", exc_info=True)
     finally:
-        # --- GRACEFUL SHUTDOWN ---
         pending = asyncio.all_tasks(loop)
         for task in pending:
             task.cancel()
@@ -72,22 +71,36 @@ def _worker_process(chunk_id: int, domains: List[str], output_dir: str) -> None:
             try:
                 loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
             except Exception as e:
-                logger.error(
-                    f"Error while awaiting pending tasks for chunk {chunk_id}, thread {thread_id}: {e}"
-                )
+                logger.error(f"Error while awaiting pending tasks for chunk {chunk_id}, thread {thread_id}: {e}")
 
         loop.close()
         logger.info(f"[chunk {chunk_id}] Event loop closed for {thread_id}")
 
 
-def _load_partial_results(output_dir: Path) -> List[dict]:
-    all_results: List[dict] = []
-    for path in sorted(output_dir.glob("partial_results_*.jsonl")):
-        from app.utils.file_loader import FileLoader
-        with FileLoader().open_file(str(path), "r", encoding="utf-8") as f:
-            for line in f:
-                all_results.append(json.loads(line))
-    return all_results
+def _load_partial_results(output_dir: str) -> List[dict]:
+    fl = FileLoader()
+    results = []
+
+    if APP_ENV == "local":
+        for path in sorted(Path(output_dir).glob("partial_results_*.jsonl")):
+            with fl.open_file(str(path), "r", encoding="utf-8") as f:
+                for line in f:
+                    results.append(json.loads(line))
+        return results
+
+    # UAT/PROD → S3
+    s3 = boto3.client("s3")
+    prefix = output_dir.rstrip("/") + "/"
+
+    resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
+    for obj in resp.get("Contents", []):
+        key = obj["Key"]
+        if "partial_results_" in key:
+            with fl.open_file(key, "r", encoding="utf-8") as f:
+                for line in f:
+                    results.append(json.loads(line))
+
+    return results
 
 
 async def _run_qa_pipeline(merged_output_path: Path) -> None:
@@ -100,14 +113,12 @@ async def _run_qa_pipeline(merged_output_path: Path) -> None:
         path=PATHS["path_bad_urls"],
         csv_out=PATHS["path_bad_urls_report_csv"]
     )
-    logger.info("MP Pipeline - QA unreachable-domain report saved to bad_urls_report.csv")
 
     logger.info("Classifying unreachable domains...")
     await classify_csv_to_json(
         csv_path=PATHS["path_bad_urls_report_csv"],
         json_out=PATHS["path_bad_urls_report_json"]
     )
-    logger.info("Unreachable-domain classification saved to bad_urls_report.json")
 
     scraper_final_path = PATHS["path_final_result"]
     logger.info("Re-running HTTP-200 unreachable domains...")
@@ -116,6 +127,7 @@ async def _run_qa_pipeline(merged_output_path: Path) -> None:
         first_pass_output_path=str(merged_output_path),
         final_path=scraper_final_path
     )
+
     logger.info(f"Final merged results saved to {scraper_final_path}")
 
 
@@ -123,18 +135,15 @@ def run_scraper_multiprocess(num_chunks: int = 8, output_dir: str = "data") -> N
     logger.info("*" * 100)
     logger.info("Running scraper in multiprocessing mode")
 
-    from app.utils.env_vars import PATHS
     input_csv = PATHS["path_data_sample"]
     sites = load_sites_from_config(str(input_csv))
     logger.info(f"Loaded {len(sites)} sites")
 
     chunks = _split_into_chunks(sites, num_chunks)
-    out_dir = Path(output_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
 
     procs: List[Process] = []
     for idx, chunk in enumerate(chunks):
-        p = Process(target=_worker_process, args=(idx, chunk, str(out_dir)))
+        p = Process(target=_worker_process, args=(idx, chunk, output_dir))
         p.start()
         procs.append(p)
 
@@ -142,14 +151,13 @@ def run_scraper_multiprocess(num_chunks: int = 8, output_dir: str = "data") -> N
         p.join()
 
     logger.info("All chunks finished. Loading partial results...")
-    all_results = _load_partial_results(out_dir)
+    all_results = _load_partial_results(output_dir)
     logger.info(f"Loaded {len(all_results)} total results from partial files")
 
     logger.info("Merging partial results with input CSV...")
     merged_output_path = merge_scraper_results(str(input_csv), all_results, output_dir)
     logger.info(f"Merged results saved to {merged_output_path}")
 
-    # Run QA + second pass
     asyncio.run(_run_qa_pipeline(merged_output_path))
 
     logger.info("Multiprocess scraper run finished successfully")
