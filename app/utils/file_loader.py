@@ -61,21 +61,12 @@ class FileLoader:
             buffer.close = close_and_upload
             return buffer
 
-        # READ MODE
-        obj = self.s3.get_object(Bucket=bucket, Key=path)
-        body = obj["Body"].read()
-
-        if "b" in mode:
-            return BytesIO(body)
-
-        # APPEND MODE
+        # APPEND MODE (must come BEFORE read)
         if "a" in mode:
-            # Read existing content (if any)
             try:
                 obj = self.s3.get_object(Bucket=bucket, Key=path)
                 existing = obj["Body"].read().decode(encoding)
-            except Exception as e:
-                print(f"Error on appending: {e}")
+            except Exception:
                 existing = ""
 
             buffer = StringIO(existing)
@@ -90,5 +81,12 @@ class FileLoader:
 
             buffer.close = close_and_upload
             return buffer
+
+        # READ MODE
+        obj = self.s3.get_object(Bucket=bucket, Key=path)
+        body = obj["Body"].read()
+
+        if "b" in mode:
+            return BytesIO(body)
 
         return StringIO(body.decode(encoding))
