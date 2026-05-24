@@ -59,6 +59,7 @@ resource "aws_ecs_task_definition" "this" {
           awslogs-group         = aws_cloudwatch_log_group.logs.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "app"
+          awslogs-create-group  = "true"
         }
       }
     },
@@ -78,6 +79,7 @@ resource "aws_ecs_task_definition" "this" {
           awslogs-group         = aws_cloudwatch_log_group.logs.name
           awslogs-region        = var.aws_region
           awslogs-stream-prefix = "meili"
+          awslogs-create-group  = "true"
         }
       }
     }
