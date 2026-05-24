@@ -50,11 +50,10 @@ class FileLoader:
         return open(path, mode, encoding=encoding)
 
     def _open_s3(self, path: str, mode: str, encoding: str):
-        parsed = urlparse(path)
-        bucket = parsed.netloc
-        key = parsed.path.lstrip("/")
+        from app.utils.env_vars import S3_BUCKET
+        bucket = S3_BUCKET
 
-        obj = self.s3.get_object(Bucket=bucket, Key=key)
+        obj = self.s3.get_object(Bucket=bucket, Key=path)
         body = obj["Body"].read()
 
         # Binary mode

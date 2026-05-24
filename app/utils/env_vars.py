@@ -32,27 +32,29 @@ MEILI = {
 }
 
 PATHS = {
-    "path_bad_urls": str(merged.get("PATHS_BAD_URLS", "s3://company-api-bucket/results/bad_urls.txt")),
+    "path_bad_urls": str(merged.get("PATHS_BAD_URLS", "results/bad_urls.txt")),
     "path_bad_urls_report_csv":
-        str(merged.get("PATHS_BAD_URLS_REPORT_CSV", "s3://company-api-bucket/results/bad_urls_report.csv")),
+        str(merged.get("PATHS_BAD_URLS_REPORT_CSV", "results/bad_urls_report.csv")),
     "path_bad_urls_report_json":
-        str(merged.get("PATHS_BAD_URLS_REPORT_JSON", "s3://company-api-bucket/results/bad_urls_report.json")),
+        str(merged.get("PATHS_BAD_URLS_REPORT_JSON", "results/bad_urls_report.json")),
     "path_missing_contacts": str(
-        merged.get("PATHS_MISSING_CONTACTS", "s3://company-api-bucket/results/missing_contacts.txt")),
+        merged.get("PATHS_MISSING_CONTACTS", "results/missing_contacts.txt")),
     "path_final_result": str(
-        merged.get("PATHS_FINAL_RESULT", "s3://company-api-bucket/results/final_result.jsonl")),
+        merged.get("PATHS_FINAL_RESULT", "results/final_result.jsonl")),
     "path_history_result": str(
-        merged.get("PATHS_HISTORY_RESULT", "s3://company-api-bucket/results/history_runs.jsonl")),
+        merged.get("PATHS_HISTORY_RESULT", "results/history_runs.jsonl")),
     "path_meili_final": str(
-        merged.get("PATHS_MEILI_FINAL", "s3://company-api-bucket/results/meili_final.jsonl")),
+        merged.get("PATHS_MEILI_FINAL", "results/meili_final.jsonl")),
     "path_best_metric": str(
-        merged.get("PATHS_BEST_METRIC", "s3://company-api-bucket/results/best_metric.json")),
+        merged.get("PATHS_BEST_METRIC", "results/best_metric.json")),
     "path_top_result": str(
-        merged.get("PATHS_TOP_RESULT", "s3://company-api-bucket/results/top_result.jsonl")),
+        merged.get("PATHS_TOP_RESULT", "results/top_result.jsonl")),
     "path_meili_top": str(
-        merged.get("PATHS_MEILI_TOP", "s3://company-api-bucket/results/meili_top.jsonl")),
+        merged.get("PATHS_MEILI_TOP", "results/meili_top.jsonl")),
     "path_data_sample": str(
-        merged.get("PATHS_DATA_SAMPLE", "s3://company-api-bucket/data/sample-websites-company-names.csv")),
+        merged.get("PATHS_DATA_SAMPLE", "data/sample-websites-company-names.csv")),
     "path_api_input": str(
-        merged.get("PATHS_API_INPUT", "s3://company-api-bucket/data/api-input-sample.csv")),
+        merged.get("PATHS_API_INPUT", "data/api-input-sample.csv")),
 }
+
+S3_BUCKET = merged.get("S3_BUCKET", "company-api-bucket")

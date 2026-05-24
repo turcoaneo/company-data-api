@@ -27,7 +27,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: latest
         run: |
-          docker build \
+          docker build --no-cache\
             -t $ECR_REGISTRY/company-api-repo:$IMAGE_TAG \
             -f Dockerfile \
             .
