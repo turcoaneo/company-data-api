@@ -1,6 +1,5 @@
 # app/utils/file_loader.py
 
-import os
 from io import BytesIO, StringIO
 from typing import TextIO
 
@@ -14,7 +13,8 @@ class FileLoader:
     """
 
     def __init__(self, app_env: str | None = None):
-        self.app_env = app_env or os.getenv("APP_ENV", "local")
+        from app.utils.env_vars import APP_ENV
+        self.app_env = app_env if app_env else APP_ENV
         self.s3 = boto3.client("s3")
 
     def open_file(
@@ -30,8 +30,7 @@ class FileLoader:
         """
 
         # --- S3 HANDLING ---
-        from app.utils.env_vars import APP_ENV
-        if not APP_ENV == "local":
+        if self.app_env not in ["local", "test"]:
             return self._open_s3(path, mode, encoding)
 
         # --- LOCAL FILE HANDLING ---

@@ -23,7 +23,7 @@ class TestFileLoader:
     @mock_s3
     def test_open_s3_file(self):
         # Arrange
-        bucket = "test-bucket"
+        bucket = "company-api-bucket"
         key = "folder/sample.txt"
         content = "hello from s3"
 
@@ -32,7 +32,7 @@ class TestFileLoader:
         s3.put_object(Bucket=bucket, Key=key, Body=content.encode("utf-8"))
 
         loader = FileLoader(app_env="uat")
-        s3_path = f"s3://{bucket}/{key}"
+        s3_path = f"{key}"
 
         # Act
         with loader.open_file(s3_path, "r") as f:
@@ -44,7 +44,7 @@ class TestFileLoader:
     @mock_s3
     def test_open_s3_binary(self):
         # Arrange
-        bucket = "test-bucket"
+        bucket = "company-api-bucket"
         key = "folder/data.bin"
         data = b"\x00\x01\x02"
 
@@ -53,7 +53,7 @@ class TestFileLoader:
         s3.put_object(Bucket=bucket, Key=key, Body=data)
 
         loader = FileLoader(app_env="uat")
-        s3_path = f"s3://{bucket}/{key}"
+        s3_path = f"{key}"
 
         # Act
         with loader.open_file(s3_path, "rb") as f:
