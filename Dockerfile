@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # 🔥 Force rebuild (dummy line)
-RUN echo "rebuild-port-80-20260523"
+RUN echo "rebuild-boto-20260524"
 
 # Copy project
 COPY . .
