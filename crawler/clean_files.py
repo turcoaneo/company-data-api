@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import List
 
 import boto3
-from botocore.exceptions import ClientError
 
 from app.utils.env_vars import PATHS, APP_ENV, S3_BUCKET
 from app.utils.logger_util import get_logger
@@ -25,9 +24,6 @@ PATTERNS_TO_CLEAN = [
     "data/partial_results_*",
     "data/results_*",
 ]
-
-# S3 config
-s3 = boto3.client("s3")
 
 
 def is_s3_mode() -> bool:
@@ -67,9 +63,11 @@ def _clean_local_files(base_dir: str, files_to_clean: List[str], patterns: List[
 # -------------------------------------------------------------------
 def _clean_s3_files(files_to_clean: List[str], patterns: List[str]):
     # Remove exact files
+    s3_client = boto3.client("s3")
     for key in files_to_clean:
+        from botocore.exceptions import ClientError
         try:
-            s3.delete_object(Bucket=S3_BUCKET, Key=key)
+            s3_client.delete_object(Bucket=S3_BUCKET, Key=key)
             logger.info(f"Deleted S3 object: {key}")
         except ClientError as e:
             if e.response["Error"]["Code"] != "NoSuchKey":
@@ -79,12 +77,12 @@ def _clean_s3_files(files_to_clean: List[str], patterns: List[str]):
     for pattern in patterns:
         prefix = pattern.split("/")[0]  # e.g. "data"
         try:
-            resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
+            resp = s3_client.list_objects_v2(Bucket=S3_BUCKET, Prefix=prefix)
             for obj in resp.get("Contents", []):
                 key = obj["Key"]
                 if Path(key).match(pattern):
                     try:
-                        s3.delete_object(Bucket=S3_BUCKET, Key=key)
+                        s3_client.delete_object(Bucket=S3_BUCKET, Key=key)
                         logger.info(f"Deleted S3 object: {key}")
                     except Exception as e:
                         logger.error(f"Error deleting S3 object {key}: {e}")
