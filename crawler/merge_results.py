@@ -63,26 +63,21 @@ def dataframe_to_jsonl_lines(df: pd.DataFrame) -> list[str]:
 # ---------------------------------------------------------
 # 5. High-level orchestrator (LOCAL + S3)
 # ---------------------------------------------------------
-def merge_scraper_results(input_csv: str, results: list, output_dir: str = "data") -> Path:
+def merge_scraper_results(input_csv: str, results: list, output_dir: str = "data") -> str:
     df_input = load_input_df(input_csv)
     df_results = build_results_df(results)
     merged = merge_dataframes(df_input, df_results)
     lines = dataframe_to_jsonl_lines(merged)
 
-    final_path = f"{output_dir}/merged_results.jsonl"
-
-    fl = FileLoader()
-    with fl.open_file(final_path, "w", encoding="utf-8") as f:
-        for line in lines:
-            f.write(line + "\n")
-
-    return Path(final_path)
+    # Use the unified S3/local writer with timestamp
+    from crawler.util.save_output_helper import save_jsonl
+    return save_jsonl(lines, output_dir)
 
 
 # ---------------------------------------------------------
 # 6. Async wrapper
 # ---------------------------------------------------------
-async def async_merge_scraper_results(input_csv: str, results: list, output_dir: str = "data") -> Path:
+async def async_merge_scraper_results(input_csv: str, results: list, output_dir: str = "data") -> str:
     import asyncio
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, lambda: merge_scraper_results(input_csv, results, output_dir))

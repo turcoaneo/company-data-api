@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 # noinspection PyPackageRequirements
 import pandas as pd
@@ -66,7 +67,8 @@ class TestMergeScraperResults:
     def test_output_file_created(self, input_csv, scraper_results, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
 
-        output_path = merge_scraper_results(str(input_csv), scraper_results, output_dir=str(tmp_path))
+        result_path = merge_scraper_results(str(input_csv), scraper_results, output_dir=str(tmp_path))
+        output_path = Path(result_path)
 
         assert output_path.exists()
         assert output_path.suffix == ".jsonl"
@@ -77,7 +79,8 @@ class TestMergeScraperResults:
     def test_merged_content(self, input_csv, scraper_results, tmp_path, monkeypatch):
         monkeypatch.chdir(tmp_path)
 
-        output_path = merge_scraper_results(str(input_csv), scraper_results, output_dir=str(tmp_path))
+        result_path = merge_scraper_results(str(input_csv), scraper_results, output_dir=str(tmp_path))
+        output_path = Path(result_path)
 
         lines = output_path.read_text().splitlines()
         assert len(lines) == 3  # same number of rows as input CSV
@@ -109,7 +112,8 @@ class TestMergeScraperResults:
         # scraper returns only one domain, missing fields
         results = [{"url": "bostonzen.org"}]
 
-        output_path = merge_scraper_results(str(input_csv), results, output_dir=str(tmp_path))
+        result_path = merge_scraper_results(str(input_csv), results, output_dir=str(tmp_path))
+        output_path = Path(result_path)
         rows = [json.loads(line) for line in output_path.read_text().splitlines()]
 
         r1 = next(r for r in rows if r["domain"] == "bostonzen.org")
