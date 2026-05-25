@@ -1,3 +1,5 @@
+# REMOVE aws_route block — module already creates it
+
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
 }
@@ -9,10 +11,4 @@ resource "aws_nat_gateway" "nat" {
   tags = {
     Name = "company-nat-gateway"
   }
-}
-
-resource "aws_route" "private_nat_route" {
-  route_table_id         = module.vpc.private_route_table_ids[0]
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat.id
 }
