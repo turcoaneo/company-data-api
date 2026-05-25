@@ -98,7 +98,6 @@ class CrawlerOrchestrator:
             limit=100,  # max concurrent connections
             limit_per_host=10,  # avoid hammering same domain
             ttl_dns_cache=600,  # cache DNS longer
-            enable_cleanup_closed=True  # avoid "SSL closed" errors
         )
 
         async with aiohttp.ClientSession(connector=connector) as shared_session:

@@ -171,7 +171,8 @@ class TestCrawlerOrchestrator:
         orch = CrawlerOrchestrator(domain_concurrency=2, timeout=5)
 
         bad_file = tmp_path / "bad_urls.txt"
-        results = await orch.crawl([good_domain, bad_domain], str(bad_file))
+        miss_file = tmp_path / "missing_contacts.txt"
+        results = await orch.crawl([good_domain, bad_domain], str(bad_file), str(miss_file))
 
         assert len(results) == 1
         assert "+401234567" in results[0]["phones"]
