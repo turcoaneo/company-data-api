@@ -19,7 +19,7 @@ def load_http_200_domains(json_path: str) -> list[str]:
     with FileLoader().open_file(json_path, "r", encoding="utf-8") as f:
         content = f.read().strip()
         if not content:
-            return []  # or [] depending on expected type
+            return []
         data = json.loads(content)
 
     # Ensure key exists and is a list

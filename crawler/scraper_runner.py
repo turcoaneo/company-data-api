@@ -74,7 +74,7 @@ async def run_scraper():
 
     scraper_final_path = PATHS["path_final_result"]
     await rerun_http200_domains(
-        bad_urls_json_path=PATHS["path_bad_urls"],
+        bad_urls_json_path=PATHS["path_bad_urls_report_json"],
         first_pass_output_path=output_path,
         final_path=scraper_final_path
     )
