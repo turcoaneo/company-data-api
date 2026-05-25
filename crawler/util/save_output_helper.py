@@ -1,15 +1,22 @@
+# crawler/util/save_output_helper.py
+
 import asyncio
-from functools import partial
 from datetime import datetime, UTC
-from pathlib import Path
+from functools import partial
 
 
-def save_jsonl(lines: list[str], output_dir: str = "data") -> Path:
+def save_jsonl(lines: list[str], output_dir: str = "data") -> str:
+    """
+    Save JSONL lines to either local FS or S3 (depending on APP_ENV).
+    Returns the path/key as a string.
+    """
     ts = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-    output_path = Path(output_dir) / f"results_{ts}.jsonl"
+    output_path = f"{output_dir}/results_{ts}.jsonl"
 
     from app.utils.file_loader import FileLoader
-    with FileLoader().open_file(str(output_path), "w", encoding="utf-8") as f:
+    fl = FileLoader()
+
+    with fl.open_file(output_path, "w", encoding="utf-8") as f:
         for line in lines:
             f.write(line + "\n")
 

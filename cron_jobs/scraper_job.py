@@ -54,20 +54,19 @@ def run_scraper_crawler():
         logger.info('Scraping (multiprocess)')
         from crawler.mp_crawler import run_scraper_multiprocess
         run_scraper_multiprocess(num_chunks=chunks)
-    # Extract timestamp from results_YYYYMMDD_HHMMSS.jsonl
+
+    # Extract timestamp from latest results_YYYYMMDD_HHMMSS.jsonl (local or S3)
+    from app.service.service_metrics import find_latest_results_file
     import re
-    from pathlib import Path
-    results_files = list(Path(".").glob("data/results_*.jsonl"))
-    if results_files:
-        # pick the latest by timestamp in filename
-        latest = max(results_files, key=lambda p: p.stat().st_mtime)
-        m = re.search(r"results_(\d{8}_\d{6})\.jsonl", latest.name)
-        if m:
-            ts = m.group(1)
-        else:
-            ts = "unknown"
+
+    latest_file = find_latest_results_file()
+    if latest_file:
+        # Extract timestamp from filename
+        m = re.search(r"results_(\d{8}_\d{6})\.jsonl", latest_file)
+        ts = m.group(1) if m else "unknown"
     else:
         ts = "unknown"
+
     duration = time.time() - start_time
     # Record run history
     record_run(

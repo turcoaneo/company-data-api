@@ -16,7 +16,9 @@ class TestSaveJsonl:
             '{"domain": "test.com", "phones": []}'
         ]
 
-        output_path = save_jsonl(lines, output_dir=str(tmp_path))
+        result = save_jsonl(lines, output_dir=str(tmp_path))
+        from pathlib import Path
+        output_path = Path(result)
 
         assert output_path.exists()
 
