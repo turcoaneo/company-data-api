@@ -9,7 +9,7 @@ from crawler.orchestrator import CrawlerOrchestrator
 logger = get_logger()
 
 
-def load_http_200_domains(json_path: str):
+def load_http_200_domains(json_path: str) -> list[str]:
     """
     Load domains from the 'http_200' list in bad_urls_report.json.
     """
@@ -20,6 +20,9 @@ def load_http_200_domains(json_path: str):
         data = json.load(f)
 
     # Ensure key exists and is a list
+    if data is None or len(data) == 0:
+        logger.warning(f"Can't load http_200, file seems empty: {json_path}")
+        return list()
     domains = data.get("http_200", [])
     return [d.strip() for d in domains if isinstance(d, str) and d.strip()]
 
@@ -44,7 +47,7 @@ async def rerun_http200_domains(
         timeout=timeout
     )
 
-    second_pass_results = await orch.crawl(http200_domains)
+    second_pass_results = [] if len(http200_domains) == 0 else await orch.crawl(http200_domains)
 
     merge_two_runs(first_pass_output_path, second_pass_results, final_path)
 

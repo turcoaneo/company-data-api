@@ -112,4 +112,6 @@ resource "aws_ecs_service" "app_service" {
     container_name   = "app"
     container_port   = var.app_port
   }
+
+  depends_on = [aws_nat_gateway.nat]
 }

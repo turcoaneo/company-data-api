@@ -1,0 +1,14 @@
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = module.vpc.public_subnets[0]
+}
+
+resource "aws_route" "private_nat_route" {
+  route_table_id         = module.vpc.private_route_table_ids[0]
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat.id
+}
+
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+}
