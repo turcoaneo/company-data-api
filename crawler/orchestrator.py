@@ -94,7 +94,12 @@ class CrawlerOrchestrator:
         sem = asyncio.Semaphore(self.domains_in_parallel)
 
         # Shared connector for connection reuse
-        connector = aiohttp.TCPConnector(limit=0, ttl_dns_cache=300)
+        connector = aiohttp.TCPConnector(
+            limit=100,  # max concurrent connections
+            limit_per_host=10,  # avoid hammering same domain
+            ttl_dns_cache=600,  # cache DNS longer
+            enable_cleanup_closed=True  # avoid "SSL closed" errors
+        )
 
         async with aiohttp.ClientSession(connector=connector) as shared_session:
 

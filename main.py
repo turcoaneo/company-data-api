@@ -35,9 +35,14 @@ if __name__ == "__main__":
         meili.bootstrap()
 
     # 2) Start scraper in separate process
-    looped = SCRAPER_CONFIG["looped"]
-    interval_seconds = int(SCRAPER_CONFIG["interval"])
-    scraper_proc = start_scraper_process(interval_sec=interval_seconds, is_looped=looped)
+    is_runnable: bool = SCRAPER_CONFIG["cron_running"]
+    if is_runnable:
+        logger.info(f"Cron is running in {APP_ENV} ENV")
+        looped = SCRAPER_CONFIG["looped"]
+        interval_seconds = int(SCRAPER_CONFIG["interval"])
+        scraper_proc = start_scraper_process(interval_sec=interval_seconds, is_looped=looped)
+    else:
+        logger.info(f"Cron is NOT running in {APP_ENV} ENV")
 
     # 3) Start resource monitor
     start_monitor_daemon()
