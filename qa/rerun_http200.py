@@ -22,7 +22,7 @@ def load_http_200_domains(json_path: str) -> list[str]:
     # Ensure key exists and is a list
     if data is None or len(data) == 0:
         logger.warning(f"Can't load http_200, file seems empty: {json_path}")
-        return list()
+        return []
     domains = data.get("http_200", [])
     return [d.strip() for d in domains if isinstance(d, str) and d.strip()]
 
