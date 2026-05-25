@@ -115,6 +115,6 @@ resource "aws_ecs_service" "app_service" {
 
   depends_on = [
     aws_nat_gateway.nat,
-    aws_route.private_nat_routes
+    aws_route.private_nat_route
   ]
 }
