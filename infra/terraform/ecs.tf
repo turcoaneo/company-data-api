@@ -115,7 +115,7 @@ resource "aws_ecs_service" "app_service" {
 }
 
 resource "aws_eip" "nat_eip" {
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "nat" {
