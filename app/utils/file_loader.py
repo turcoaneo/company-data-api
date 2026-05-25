@@ -56,7 +56,7 @@ class FileLoader:
                 obj = self.s3.get_object(Bucket=bucket, Key=path)
                 existing = obj["Body"].read().decode(encoding)
             except Exception as e:
-                print(f"Error appending in {path}: {e}")
+                print(f"Could not append in {path}, maybe not yet available: {e}")
                 existing = ""
             return S3WriteBuffer(self.s3, bucket, path, encoding, initial=existing)
 
