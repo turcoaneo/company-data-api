@@ -113,5 +113,8 @@ resource "aws_ecs_service" "app_service" {
     container_port   = var.app_port
   }
 
-  depends_on = [aws_nat_gateway.nat]
+    depends_on = [
+    aws_lb_listener.http,
+    aws_lb_listener.https
+  ]
 }
