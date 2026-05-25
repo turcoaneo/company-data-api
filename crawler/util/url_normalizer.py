@@ -85,5 +85,5 @@ async def resolve_homepage(
             logger.debug(f"fetch_with_retries HTTP success for {http_url}, html_len={len(retry['html'] or '')}")
             return retry["html"] or "", http_url
 
-    logger.warning(f"Failed to resolve homepage for {base}")
+    logger.debug(f"Failed to resolve homepage for {base}")
     return None

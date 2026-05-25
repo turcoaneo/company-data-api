@@ -42,7 +42,7 @@ class CrawlerOrchestrator:
         else:
             await asyncio.sleep(random.uniform(0.05, 0.15))
 
-        logger.info(f"Starting crawl for domain: {domain}")
+        logger.debug(f"Starting crawl for domain: {domain}")
 
         # Normalize base
         base = domain.rstrip("/") if domain.startswith(("http://", "https://")) else f"https://{domain}".rstrip("/")
