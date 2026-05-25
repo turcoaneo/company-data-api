@@ -11,10 +11,8 @@ resource "aws_nat_gateway" "nat" {
   }
 }
 
-resource "aws_route" "private_nat_routes" {
-  for_each = toset(module.vpc.private_route_table_ids)
-
-  route_table_id         = each.value
+resource "aws_route" "private_nat_route" {
+  route_table_id         = module.vpc.private_route_table_ids[0]
   destination_cidr_block = "0.0.0.0/0"
   nat_gateway_id         = aws_nat_gateway.nat.id
 }
