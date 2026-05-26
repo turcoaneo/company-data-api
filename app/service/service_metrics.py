@@ -34,8 +34,8 @@ def run_metrics():
     from app.utils.env_vars import PATHS
     initial_jsonl = find_latest_results_file()
     if not initial_jsonl:
-        # fallback for first run or missing files
-        initial_jsonl = "results_latest.jsonl"
+        print("Can't find latest jsonl")
+        return {}
 
     return compute_latest_and_top_metrics(
         input_csv_path=PATHS["path_data_sample"],
