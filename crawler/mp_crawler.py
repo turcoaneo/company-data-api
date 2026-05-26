@@ -103,7 +103,7 @@ def _load_partial_results(output_dir: str) -> List[dict]:
     return results
 
 
-async def _run_qa_pipeline(merged_output_path: Path) -> None:
+async def _run_qa_pipeline(merged_output_path: str) -> None:
     from qa.qa_bad_urls import run_bad_urls_check
     from qa.unreachable_classifier import classify_csv_to_json
     from qa.rerun_http200 import rerun_http200_domains

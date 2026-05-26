@@ -2,6 +2,7 @@
 
 import threading
 import time
+import asyncio
 
 from app.utils.env_vars import SCRAPER_CONFIG, PATHS, MEILI
 from app.utils.logger_util import get_logger
@@ -10,23 +11,28 @@ from crawler.scraper_runner import run_scraper
 
 logger = get_logger("scraper_job")
 
+# ---------------------------------------------------------
+# GLOBAL EVENT LOOP (persistent, reused forever)
+# ---------------------------------------------------------
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
 
 @elapsed_time("run_scraper")
 def run_job():
     run_scraper_crawler()
-
     meili_connect_ingest()
 
 
 def meili_connect_ingest():
-    # Convert scraper final result to meili PK-wise JSONL
     from scripts.convert_for_meili import convert_files
     convert_files()
-    # Ingest file into Meili
+
     from meili_manager import MeiliManager
     meili = MeiliManager()
+
     try:
-        meili.connect_to_meili()  # Meili supposedly already running
+        meili.connect_to_meili()
         from app.utils import meili_ingest_helper
         meili_ingest_helper.ingest_ndjson(index_name=MEILI["index"], file_path=PATHS["path_meili_final"])
         logger.info(f"Finished ingesting meili data into {meili.url}/{meili.index_name}.")
@@ -37,38 +43,43 @@ def meili_connect_ingest():
 
 
 def run_scraper_crawler():
-    import time
     from crawler.util.run_history import record_run
     from crawler.clean_files import clean_scraper_files
+    import re
+
     start_time = time.time()
     clean_scraper_files()
+
     chunks = SCRAPER_CONFIG["mp_chunks"]
     domain_conc = SCRAPER_CONFIG["domain_concurrency"]
     domains_parallel = SCRAPER_CONFIG["domains_in_parallel"]
-    # Run scraper
+
+    # -----------------------------
+    # SINGLE MODE (asyncio)
+    # -----------------------------
     if not chunks:
-        import asyncio
-        logger.info('Scraping (single)')
-        asyncio.run(run_scraper())
+        logger.info("Scraping (single, persistent loop)")
+        loop.run_until_complete(run_scraper())
+
+    # -----------------------------
+    # MULTIPROCESS MODE
+    # -----------------------------
     else:
-        logger.info('Scraping (multiprocess)')
+        logger.info("Scraping (multiprocess)")
         from crawler.mp_crawler import run_scraper_multiprocess
         run_scraper_multiprocess(num_chunks=chunks)
 
-    # Extract timestamp from latest results_YYYYMMDD_HHMMSS.jsonl (local or S3)
+    # Extract timestamp
     from app.service.service_metrics import find_latest_results_file
-    import re
-
     latest_file = find_latest_results_file()
     if latest_file:
-        # Extract timestamp from filename
         m = re.search(r"results_(\d{8}_\d{6})\.jsonl", latest_file)
         ts = m.group(1) if m else "unknown"
     else:
         ts = "unknown"
 
     duration = time.time() - start_time
-    # Record run history
+
     record_run(
         start_ts=ts,
         duration=duration,
@@ -93,14 +104,16 @@ if __name__ == "__main__":
     looped = SCRAPER_CONFIG["looped"]
     interval_seconds = int(SCRAPER_CONFIG["interval"])
     sleeping_time = int(SCRAPER_CONFIG["sleep_time"])
+
     logger.debug(
-        f"Starting scraper loop - looped: {looped}, interval_seconds: {interval_seconds},"
-        f"sleeping_time: {sleeping_time}")
+        f"Starting scraper loop - looped: {looped}, interval_seconds: {interval_seconds}, "
+        f"sleeping_time: {sleeping_time}"
+    )
 
     try:
         start_scraper_loop(interval_seconds, looped)
         while True:
-            time.sleep(sleeping_time)  # Keep main thread alive considering overall processing if looped=False
+            time.sleep(sleeping_time)
             if not looped:
                 break
     except KeyboardInterrupt:
