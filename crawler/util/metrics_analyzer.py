@@ -6,7 +6,9 @@ import re
 import shutil
 from pathlib import Path
 
-from app import get_logger
+from app.utils.logger_util import get_logger
+
+logger = get_logger()
 
 
 def _extract_id_from_path(path: str) -> str:
@@ -47,7 +49,7 @@ def _count_jsonl_contacts(path: Path):
             try:
                 obj = json.loads(line)
             except Exception as e:
-                get_logger().error(f"Metrics analyzer extract line error for {line}: {e}")
+                logger.error(f"Metrics analyzer extract line error for {line}: {e}")
                 continue
 
             has_phone = bool(obj.get("phones"))
@@ -160,7 +162,7 @@ def _load_top_metrics(top_metrics_path: Path) -> dict | None:
         try:
             return json.loads(top_metrics_path.read_text(encoding="utf-8"))
         except Exception as e:
-            get_logger().error(f"Top metrics could not be loaded: {e}")
+            logger.error(f"Top metrics could not be loaded: {e}")
             return None
 
     # UAT / PROD → S3
@@ -173,7 +175,7 @@ def _load_top_metrics(top_metrics_path: Path) -> dict | None:
     except s3.exceptions.NoSuchKey:
         return None
     except Exception as e:
-        get_logger().error(f"Top metrics could not be loaded from S3: {e}")
+        logger.error(f"Top metrics could not be loaded from S3: {e}")
         return None
 
 
@@ -222,8 +224,7 @@ def _copy_top_result(final_jsonl_path: str, top_result_path: Path) -> None:
             ContentType="application/jsonl",
         )
     except Exception as e:
-        from app.utils.logger_util import get_logger
-        get_logger().error(f"Could not copy top result on S3: {e}")
+        logger.error(f"Could not copy top result on S3: {e}")
 
 
 def compute_latest_and_top_metrics(
