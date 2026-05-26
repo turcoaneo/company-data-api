@@ -53,7 +53,7 @@ class FileLoader:
         # APPEND MODE
         if "a" in mode:
             try:
-                obj = self.s3.get_object(Bucket=bucket, Key=path, mode="a+")
+                obj = self.s3.get_object(Bucket=bucket, Key=path)
                 existing = obj["Body"].read().decode(encoding)
             except self.s3.exceptions.NoSuchKey:
                 existing = ""
