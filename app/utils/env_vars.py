@@ -18,6 +18,7 @@ SCRAPER_CONFIG = {
     "sync_saving": merged.get("SCRAPER_SYNC_SAVING", "True") == "True",
     "looped": merged.get("SCRAPER_JOB_LOOPED", "True") == "True",
     "cron_running": merged.get("SCRAPER_CRON_RUNNING", "False") == "True",
+    "scraper_single_running": merged.get("SCRAPER_SINGLE_RUNNING", "False") == "True",
     "sleep_time": int(merged.get("SCRAPER_SLEEPING_TIME", 5)),
     "interval": int(merged.get("SCRAPER_INTERVAL_SECONDS", 5)),
     "mp_chunks": int(merged.get("SCRAPER_MULTI_PROCESSING_CHUNKS", 8)),

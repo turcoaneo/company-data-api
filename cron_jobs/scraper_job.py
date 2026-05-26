@@ -1,6 +1,5 @@
 # /cron_jobs/scraper_job.py
 
-import threading
 import time
 
 from app.utils.env_vars import SCRAPER_CONFIG, PATHS, MEILI
@@ -83,7 +82,7 @@ def start_scraper_loop(interval_sec: int = 1200, is_looped: bool = True):
             if not is_looped:
                 break
 
-    threading.Thread(target=loop_cron_job, daemon=False).start()
+    loop_cron_job()
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ from app.utils import meili_ingest_helper
 from app.utils.env_vars import APP_ENV, SCRAPER_CONFIG, MEILI, PATHS
 from app.utils.logger_util import get_logger
 from app.utils.monitor_resources import start_monitor_daemon
-from cron_jobs.scraper_job import start_scraper_loop
+from cron_jobs.scraper_job import start_scraper_loop, run_job
 
 import uvicorn
 
@@ -53,6 +53,13 @@ if __name__ == "__main__":
         scraper_proc = start_scraper_process(interval_sec=interval_seconds, is_looped=looped)
     else:
         logger.info(f"Cron is NOT running in {APP_ENV} ENV")
+        if SCRAPER_CONFIG["scraper_single_running"]:
+            logger.info(f"Single scraper running in {APP_ENV} ENV")
+            simple_run_process = Process(
+                target=run_job,
+                daemon=False,
+            )
+            simple_run_process.start()
 
     # 3) Start resource monitor
     start_monitor_daemon()
