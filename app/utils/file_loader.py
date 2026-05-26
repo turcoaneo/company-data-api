@@ -53,10 +53,9 @@ class FileLoader:
         # APPEND MODE
         if "a" in mode:
             try:
-                obj = self.s3.get_object(Bucket=bucket, Key=path)
+                obj = self.s3.get_object(Bucket=bucket, Key=path, mode="a+")
                 existing = obj["Body"].read().decode(encoding)
-            except Exception as e:
-                print(f"Could not append in {path}, maybe not yet available: {e}")
+            except self.s3.exceptions.NoSuchKey:
                 existing = ""
             return S3WriteBuffer(self.s3, bucket, path, encoding, initial=existing)
 
