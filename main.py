@@ -2,12 +2,15 @@
 
 from multiprocessing import Process
 from app import create_app
-from app.utils.env_vars import APP_ENV, SCRAPER_CONFIG, MEILI
+from app.utils import meili_ingest_helper
+from app.utils.env_vars import APP_ENV, SCRAPER_CONFIG, MEILI, PATHS
 from app.utils.logger_util import get_logger
 from app.utils.monitor_resources import start_monitor_daemon
 from cron_jobs.scraper_job import start_scraper_loop
 
 import uvicorn
+
+from meili_manager import MeiliManager
 
 app = create_app()
 
@@ -28,11 +31,18 @@ if __name__ == "__main__":
     logger.info(f"APP_ENV = {APP_ENV}, binding to port {exposed_port}")
 
     # 1) Start + configure Meili
+    meili = MeiliManager()
     if MEILI["internal_bootstrap"]:
         logger.info(f"Starting internal bootstrap process for Meili")
-        from meili_manager import MeiliManager
-        meili = MeiliManager()
         meili.bootstrap()
+    else:
+        meili.connect_to_meili()
+    try:
+        meili_ingest_helper.ingest_ndjson(index_name=MEILI["index"], file_path=PATHS["path_meili_final"])
+        meili_ingest_helper.ingest_ndjson(index_name=MEILI["top_index"], file_path=PATHS["path_meili_top"])
+        logger.info(f"Meili inserts at bootstrap")
+    except Exception as e:
+        logger.error(f"Cannot insert to Meili at bootstrap: {e}")
 
     # 2) Start scraper in separate process
     is_runnable: bool = SCRAPER_CONFIG["cron_running"]
