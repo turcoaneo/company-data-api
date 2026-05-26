@@ -6,7 +6,7 @@ import time
 from app.utils.env_vars import SCRAPER_CONFIG, PATHS, MEILI
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
-from crawler.scraper_runner import run_scraper
+from crawler.clean_files import clean_scraper_files
 
 logger = get_logger("scraper_job")
 
@@ -39,21 +39,17 @@ def meili_connect_ingest():
 def run_scraper_crawler():
     import time
     from crawler.util.run_history import record_run
-    from crawler.clean_files import clean_scraper_files
     start_time = time.time()
     clean_scraper_files()
     chunks = SCRAPER_CONFIG["mp_chunks"]
     domain_conc = SCRAPER_CONFIG["domain_concurrency"]
     domains_parallel = SCRAPER_CONFIG["domains_in_parallel"]
+
     # Run scraper
-    if not chunks:
-        import asyncio
-        logger.info('Scraping (single)')
-        asyncio.run(run_scraper())
-    else:
-        logger.info('Scraping (multiprocess)')
-        from crawler.mp_crawler import run_scraper_multiprocess
-        run_scraper_multiprocess(num_chunks=chunks)
+    logger.info('Scraping (multiprocess)')
+    from crawler.mp_crawler import run_scraper_multiprocess
+    run_scraper_multiprocess(num_chunks=chunks)
+
     # Extract timestamp from results_YYYYMMDD_HHMMSS.jsonl
     import re
     from pathlib import Path
