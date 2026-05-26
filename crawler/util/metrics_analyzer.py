@@ -244,8 +244,9 @@ def compute_latest_and_top_metrics(
         final_jsonl_path=final_jsonl_path,
     )
 
-    top_metrics_file = Path(top_metrics_path)
-    top_result_file = Path(top_result_path)
+    from app.utils.env_vars import APP_ENV
+    top_metrics_file = Path(top_metrics_path) if APP_ENV in ["local", "test"] else top_metrics_path
+    top_result_file = Path(top_result_path) if APP_ENV in ["local", "test"] else top_result_path
 
     existing_top = _load_top_metrics(top_metrics_file)
 
