@@ -36,13 +36,13 @@ variable "app_port" {
 
 variable "cpu" {
   type        = string
-  default     = "1024"
+  default     = "512"
   description = "Fargate task CPU units"
 }
 
 variable "memory" {
   type        = string
-  default     = "3072"
+  default     = "1024"
   description = "Fargate task memory (MiB)"
 }
 
