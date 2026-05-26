@@ -2,7 +2,7 @@
 
 import time
 
-from app.utils.env_vars import SCRAPER_CONFIG, PATHS, MEILI
+from app.utils.env_vars import SCRAPER_CONFIG, PATHS, MEILI, APP_ENV, S3_BUCKET
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 from crawler.clean_files import clean_scraper_files
@@ -51,8 +51,14 @@ def run_scraper_crawler():
 
     # Extract timestamp from results_YYYYMMDD_HHMMSS.jsonl
     import re
-    from pathlib import Path
-    results_files = list(Path(".").glob("data/results_*.jsonl"))
+    if APP_ENV in ["local", "test"]:
+        from pathlib import Path
+        results_files = list(Path(".").glob("data/results_*.jsonl"))
+    else:
+        import boto3
+        s3 = boto3.client("s3")
+        results_files = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix="data/results_")
+
     if results_files:
         # pick the latest by timestamp in filename
         latest = max(results_files, key=lambda p: p.stat().st_mtime)

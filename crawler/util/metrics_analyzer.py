@@ -6,37 +6,48 @@ import re
 import shutil
 from pathlib import Path
 
+from app import get_logger
+
 
 def _extract_id_from_path(path: str) -> str:
     """
+    Works for both local paths and S3 keys.
     Extracts run ID from results_YYYYMMDD_HHMMSS.jsonl.
-    If no match, returns the filename without extension.
     """
-    name = Path(path).name
+    name = path.split("/")[-1]  # handles S3 keys
     m = re.search(r"results_(\d{8}_\d{6})\.jsonl", name)
     if m:
         return m.group(1)
-    return Path(path).stem
+    return name.replace(".jsonl", "")
 
 
 def _count_jsonl_contacts(path: Path):
-    phones = 0
-    socials = 0
-    sites_with_contacts = 0
-    phones_and_socials = 0
-
-    if not path.exists():
-        return phones, socials, sites_with_contacts, phones_and_socials
-
+    from app.utils.env_vars import APP_ENV, S3_BUCKET
     from app.utils.file_loader import FileLoader
+
+    phones = socials = sites_with_contacts = phones_and_socials = 0
+
+    # LOCAL / TEST
+    if APP_ENV in ["local", "test"]:
+        if not path.exists():
+            return phones, socials, sites_with_contacts, phones_and_socials
+
+    # UAT / PROD → check S3 existence
+    else:
+        import boto3
+        s3 = boto3.client("s3")
+        try:
+            s3.head_object(Bucket=S3_BUCKET, Key=str(path))
+        except s3.exceptions.ClientError:
+            return phones, socials, sites_with_contacts, phones_and_socials
+
+    # Read via FileLoader (works for both local + S3)
     with FileLoader().open_file(str(path), "r", encoding="utf-8") as f:
         for line in f:
             try:
                 obj = json.loads(line)
             except Exception as e:
-                from app.utils.logger_util import get_logger
-                logger = get_logger()
-                logger.error(f"Metrics analyzer extract line error for {line}: {e}")
+                get_logger().error(f"Metrics analyzer extract line error for {line}: {e}")
                 continue
 
             has_phone = bool(obj.get("phones"))
@@ -140,25 +151,79 @@ def compute_scraper_metrics(
 
 
 def _load_top_metrics(top_metrics_path: Path) -> dict | None:
-    if not top_metrics_path.exists():
-        return None
+    from app.utils.env_vars import APP_ENV, S3_BUCKET
+
+    # LOCAL / TEST → filesystem
+    if APP_ENV in ["local", "test"]:
+        if not top_metrics_path.exists():
+            return None
+        try:
+            return json.loads(top_metrics_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            get_logger().error(f"Top metrics could not be loaded: {e}")
+            return None
+
+    # UAT / PROD → S3
+    import boto3
+    s3 = boto3.client("s3")
     try:
-        return json.loads(top_metrics_path.read_text(encoding="utf-8"))
+        obj = s3.get_object(Bucket=S3_BUCKET, Key=str(top_metrics_path))
+        data = obj["Body"].read().decode("utf-8")
+        return json.loads(data)
+    except s3.exceptions.NoSuchKey:
+        return None
     except Exception as e:
-        from app.utils.logger_util import get_logger
-        logger = get_logger()
-        logger.error(f"Top metrics could not be loaded: {e}")
+        get_logger().error(f"Top metrics could not be loaded from S3: {e}")
         return None
 
 
 def _save_top_metrics(top_metrics_path: Path, metrics: dict) -> None:
-    top_metrics_path.write_text(json.dumps(metrics, ensure_ascii=False, indent=2), encoding="utf-8")
+    from app.utils.env_vars import APP_ENV, S3_BUCKET
+
+    data = json.dumps(metrics, ensure_ascii=False, indent=2)
+
+    # LOCAL / TEST
+    if APP_ENV in ["local", "test"]:
+        top_metrics_path.write_text(data, encoding="utf-8")
+        return
+
+    # UAT / PROD → S3
+    import boto3
+    s3 = boto3.client("s3")
+    s3.put_object(
+        Bucket=S3_BUCKET,
+        Key=str(top_metrics_path),
+        Body=data.encode("utf-8"),
+        ContentType="application/json",
+    )
 
 
 def _copy_top_result(final_jsonl_path: str, top_result_path: Path) -> None:
-    src = Path(final_jsonl_path)
-    if src.exists():
-        shutil.copyfile(src, top_result_path)
+    from app.utils.env_vars import APP_ENV, S3_BUCKET
+
+    # LOCAL / TEST
+    if APP_ENV in ["local", "test"]:
+        src = Path(final_jsonl_path)
+        if src.exists():
+            shutil.copyfile(src, top_result_path)
+        return
+
+    # UAT / PROD → S3
+    import boto3
+    s3 = boto3.client("s3")
+
+    try:
+        obj = s3.get_object(Bucket=S3_BUCKET, Key=final_jsonl_path)
+        body = obj["Body"].read()
+        s3.put_object(
+            Bucket=S3_BUCKET,
+            Key=str(top_result_path),
+            Body=body,
+            ContentType="application/jsonl",
+        )
+    except Exception as e:
+        from app.utils.logger_util import get_logger
+        get_logger().error(f"Could not copy top result on S3: {e}")
 
 
 def compute_latest_and_top_metrics(
