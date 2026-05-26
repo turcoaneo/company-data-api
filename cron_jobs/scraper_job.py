@@ -78,6 +78,13 @@ def run_scraper_crawler():
         ts = m.group(1) if m else "unknown"
     else:
         ts = "unknown"
+    duration = time.time() - start_time
+    # Record run history
+    record_run(
+        start_ts=ts,
+        duration=duration,
+        config=[chunks, domain_conc, domains_parallel]
+    )
 
 
 def start_scraper_loop(interval_sec: int = 1200, is_looped: bool = True):
