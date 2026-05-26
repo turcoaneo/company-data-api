@@ -53,29 +53,31 @@ def run_scraper_crawler():
     import re
     if APP_ENV in ["local", "test"]:
         from pathlib import Path
-        results_files = list(Path(".").glob("data/results_*.jsonl"))
+        results_files = list(Path("data").glob("results_*.jsonl"))
+
+        if results_files:
+            latest = max(results_files, key=lambda p: p.stat().st_mtime)
+            name = latest.name
+        else:
+            name = None
+
     else:
         import boto3
         s3 = boto3.client("s3")
-        results_files = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix="data/results_")
+        resp = s3.list_objects_v2(Bucket=S3_BUCKET, Prefix="data/results_")
 
-    if results_files:
-        # pick the latest by timestamp in filename
-        latest = max(results_files, key=lambda p: p.stat().st_mtime)
-        m = re.search(r"results_(\d{8}_\d{6})\.jsonl", latest.name)
-        if m:
-            ts = m.group(1)
+        if "Contents" in resp and resp["Contents"]:
+            # pick latest by LastModified
+            latest = max(resp["Contents"], key=lambda o: o["LastModified"])
+            name = latest["Key"].split("/")[-1]  # extract filename
         else:
-            ts = "unknown"
+            name = None
+
+    if name:
+        m = re.search(r"results_(\d{8}_\d{6})\.jsonl", name)
+        ts = m.group(1) if m else "unknown"
     else:
         ts = "unknown"
-    duration = time.time() - start_time
-    # Record run history
-    record_run(
-        start_ts=ts,
-        duration=duration,
-        config=[chunks, domain_conc, domains_parallel]
-    )
 
 
 def start_scraper_loop(interval_sec: int = 1200, is_looped: bool = True):
