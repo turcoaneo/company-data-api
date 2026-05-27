@@ -240,10 +240,17 @@ def compute_latest_and_top_metrics(
     )
 
     if latest_score > top_score:
+        # New best run → update top_result.jsonl + best_metric.json
         _copy_top_result(final_jsonl_path, top_result_path)
         latest["id"] = _extract_id_from_path(initial_jsonl_path)
         _save_top_metrics(top_metrics_path, latest)
+
+        # NEW: also generate Meili top file
+        from scripts.convert_for_meili import run_meili_converter
+        run_meili_converter(final_jsonl_path, PATHS["path_meili_top"])
+
         top = latest
+
     else:
         top = existing_top if existing_top is not None else latest
 
