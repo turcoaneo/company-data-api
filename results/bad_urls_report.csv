@@ -1,8 +1,11 @@
 domain,status,protocol,reason
 redrhinomovers.com,unreachable,,HTTPS: Connection error: Cannot connect to host redrhinomovers.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host redrhinomovers.com:80 ssl:False [getaddrinfo failed]
 asuzus.com,unreachable,,HTTPS: Connection error: Cannot connect to host asuzus.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host asuzus.com:80 ssl:False [getaddrinfo failed]
+esihealthcaresolutions.com,reachable,https,HTTP 200
 jonfoxmusic.com,unreachable,,HTTPS: Connection error: Cannot connect to host jonfoxmusic.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host jonfoxmusic.com:80 ssl:False [getaddrinfo failed]
+clarionstl.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host clarionstl.com:80 ssl:False [getaddrinfo failed]
 globaltrustbnk.com,unreachable,,HTTPS: 403 Forbidden (Cloudflare bot protection) | HTTP: 403 Forbidden (Cloudflare bot protection)
+romanolawpllc.com,reachable,https,HTTP 200
 bodegaunclick.com,unreachable,,HTTPS: Connection error: Cannot connect to host bodegaunclick.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host bodegaunclick.com:80 ssl:False [getaddrinfo failed]
 hunterdecuir24.com,unreachable,,HTTPS: Connection error: Cannot connect to host hunterdecuir24.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hunterdecuir24.com:80 ssl:False [getaddrinfo failed]
 tvwelove.com,unreachable,,HTTPS: Connection error: Cannot connect to host tvwelove.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host tvwelove.com:80 ssl:False [getaddrinfo failed]
@@ -60,7 +63,7 @@ montcapitalpartners.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Ca
 focusmedicalbillingservices.com,unreachable,,HTTPS: Connection error: Cannot connect to host focusmedicalbillingservices.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host focusmedicalbillingservices.com:80 ssl:False [getaddrinfo failed]
 creativehealthplans.com,unreachable,,HTTPS: Connection error: Cannot connect to host creativehealthplans.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host creativehealthplans.com:80 ssl:False [getaddrinfo failed]
 fitcivic.com,unreachable,,HTTPS: Connection error: Cannot connect to host fitcivic.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host fitcivic.com:80 ssl:False [getaddrinfo failed]
-smv-inc.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
+smv-inc.com,unreachable,,HTTPS: Timeout | HTTP: HTTP 500
 stevensfamilyfarm.webs.com,unreachable,,HTTPS: Connection error: Cannot connect to host stevensfamilyfarm.webs.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host stevensfamilyfarm.webs.com:80 ssl:False [getaddrinfo failed]
 divinemomentsdaycare.com,unreachable,,HTTPS: Connection error: Cannot connect to host divinemomentsdaycare.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host divinemomentsdaycare.com:80 ssl:False [getaddrinfo failed]
 whaleygfx.com,unreachable,,HTTPS: Connection error: Cannot connect to host whaleygfx.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host whaleygfx.com:80 ssl:False [getaddrinfo failed]
@@ -72,8 +75,8 @@ internationalmediasupply.com,unreachable,,HTTPS: Connection error: Cannot connec
 ancientcityappraisals.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
 caring-hands-seniorsolutionsgroupinc.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 toptok.info,unreachable,,HTTPS: Connection error: Cannot connect to host toptok.info:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host toptok.info:80 ssl:False [getaddrinfo failed]
+stickerdreams.com,reachable,https,HTTP 200
 webranium.co.uk,unreachable,,HTTPS: Connection error: Cannot connect to host webranium.co.uk:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host webranium.co.uk:80 ssl:False [getaddrinfo failed]
-americanguardrailsupply.com,unreachable,,HTTPS: HTTP 436 | HTTP: HTTP 436
 fedorovfilms.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 masterguyscardetail.com,unreachable,,HTTPS: Connection error: Cannot connect to host masterguyscardetail.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host masterguyscardetail.com:80 ssl:False [getaddrinfo failed]
 coloradolivingblog.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
@@ -82,11 +85,14 @@ uniqueservices.us,unreachable,,HTTPS: Connection error: Cannot connect to host u
 sandiegorealestatejobs.net,unreachable,,HTTPS: Connection error: Cannot connect to host sandiegorealestatejobs.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sandiegorealestatejobs.net:80 ssl:False [getaddrinfo failed]
 belanshion.com,unreachable,,HTTPS: Connection error: Cannot connect to host belanshion.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host belanshion.com:80 ssl:False [getaddrinfo failed]
 aesgoldmine.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
+nynjelevator.com,reachable,https,HTTP 200
 romangalloway.com,unreachable,,HTTPS: Connection error: Cannot connect to host romangalloway.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host romangalloway.com:80 ssl:False [getaddrinfo failed]
 safetychain.com,unreachable,,"HTTPS: Other error: ClientResponseError: 400, message='Got more than 8190 bytes when reading: b""default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' blob: https://staging.safetychai..."".', url='https://safetychain.com' | HTTP: Other error: ClientResponseError: 400, message='Got more than 8190 bytes when reading: b""default-src \'self\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' blob: https://staging.safetychai..."".', url='https://safetychain.com/'"
 flatpondpublishing.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
 hallmemphis.org,unreachable,,HTTPS: Connection error: Cannot connect to host hallmemphis.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hallmemphis.org:80 ssl:False [getaddrinfo failed]
 kalamazoomijobs.com,unreachable,,HTTPS: Connection error: Cannot connect to host kalamazoomijobs.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host kalamazoomijobs.com:80 ssl:False [getaddrinfo failed]
+mingchienliang.com,reachable,https,HTTP 200
+mlfcare.org,reachable,https,HTTP 200
 nymphyacht.com,unreachable,,HTTPS: Connection error: Cannot connect to host nymphyacht.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host nymphyacht.com:80 ssl:False [getaddrinfo failed]
 alphaquorumstore.com,unreachable,,HTTPS: Connection error: Cannot connect to host alphaquorumstore.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host alphaquorumstore.com:80 ssl:False [getaddrinfo failed]
 baxland.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host www.baxland.com:80 ssl:False [getaddrinfo failed]
@@ -101,121 +107,13 @@ kiplearningandactivitycenter.com,unreachable,,HTTPS: Connection error: Cannot co
 thecheapghostwriter.com,unreachable,,HTTPS: Connection error: Cannot connect to host thecheapghostwriter.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host thecheapghostwriter.com:80 ssl:False [getaddrinfo failed]
 flash-wingo.com,unreachable,,HTTPS: Connection error: Cannot connect to host flash-wingo.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host flash-wingo.com:80 ssl:False [getaddrinfo failed]
 getrazuzz.com,unreachable,,HTTPS: Connection error: Cannot connect to host getrazuzz.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host getrazuzz.com:80 ssl:False [getaddrinfo failed]
-wibidata.com,unreachable,,HTTPS: HTTP 436 | HTTP: HTTP 436
+wibidata.com,unreachable,,HTTPS: Timeout | HTTP: HTTP 436
 edgeinsurance.biz,unreachable,,HTTPS: Connection error: Cannot connect to host edgeinsurance.biz:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host edgeinsurance.biz:80 ssl:False [getaddrinfo failed]
+anthonymarlowe.com,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
 cindywalker.com,unreachable,,HTTPS: Connection error: Cannot connect to host cindywalker.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host cindywalker.com:80 ssl:False [getaddrinfo failed]
 sustainableracine.org,unreachable,,HTTPS: Connection error: Cannot connect to host sustainableracine.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sustainableracine.org:80 ssl:False [getaddrinfo failed]
 d-l-roofing-and-construction-llc.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 sagacitystays.com,unreachable,,HTTPS: Connection error: Cannot connect to host sagacitystays.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sagacitystays.com:80 ssl:False [getaddrinfo failed]
-al-advertising-diet-store.com,unreachable,,HTTPS: Connection error: Cannot connect to host al-advertising-diet-store.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host al-advertising-diet-store.com:80 ssl:False [getaddrinfo failed]
-artworkbydoyle.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host artworkbydoyle.com:80 ssl:False [getaddrinfo failed]
-bc-hinger.com,unreachable,,HTTPS: Connection error: Cannot connect to host bc-hinger.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host bc-hinger.com:80 ssl:False [getaddrinfo failed]
-beautyblueprintllc.com,unreachable,,HTTPS: Connection error: Cannot connect to host beautyblueprintllc.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host beautyblueprintllc.com:80 ssl:False [getaddrinfo failed]
-reveportraits.com,unreachable,,HTTPS: Connection error: Cannot connect to host reveportraits.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host reveportraits.com:80 ssl:False [getaddrinfo failed]
-rustyskate.com,unreachable,,HTTPS: HTTP 409 | HTTP: HTTP 409
-feltgoodmusic.com,unreachable,,HTTPS: Connection error: Cannot connect to host feltgoodmusic.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host feltgoodmusic.com:80 ssl:False [getaddrinfo failed]
-lionsteelstructuresco.com,unreachable,,HTTPS: Connection error: Cannot connect to host lionsteelstructuresco.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host lionsteelstructuresco.com:80 ssl:False [getaddrinfo failed]
-royaltycleaningva.co,unreachable,,HTTPS: Connection error: Cannot connect to host royaltycleaningva.co:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host royaltycleaningva.co:80 ssl:False [getaddrinfo failed]
-childcarecompany.org,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-ageanabrett.com,unreachable,,HTTPS: Connection error: Cannot connect to host ageanabrett.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ageanabrett.com:80 ssl:False [getaddrinfo failed]
-crossroadsrvpk.com,unreachable,,HTTPS: Connection error: Cannot connect to host crossroadsrvpk.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host crossroadsrvpk.com:80 ssl:False [getaddrinfo failed]
-nationalcapitalfitday.com,unreachable,,HTTPS: Connection error: Cannot connect to host nationalcapitalfitday.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host nationalcapitalfitday.com:80 ssl:False [getaddrinfo failed]
-ordercrustandbuns.com,unreachable,,HTTPS: Connection error: Cannot connect to host ordercrustandbuns.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ordercrustandbuns.com:80 ssl:False [getaddrinfo failed]
-daveandtracy.org,unreachable,,HTTPS: Connection error: Cannot connect to host daveandtracy.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host daveandtracy.org:80 ssl:False [getaddrinfo failed]
-when2heartsbeatas1.org,unreachable,,HTTPS: Connection error: Cannot connect to host when2heartsbeatas1.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host when2heartsbeatas1.org:80 ssl:False [getaddrinfo failed]
-galleongc.com,unreachable,,HTTPS: Connection error: Cannot connect to host galleongc.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host galleongc.com:80 ssl:False [getaddrinfo failed]
-simplicitymovers.com,unreachable,,HTTPS: Connection error: Cannot connect to host simplicitymovers.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host simplicitymovers.com:80 ssl:False [getaddrinfo failed]
-smartdivorcestrategy.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
-boyettrecovery.com,unreachable,,HTTPS: Connection error: Cannot connect to host boyettrecovery.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host boyettrecovery.com:80 ssl:False [getaddrinfo failed]
-littlefeetforestschool.org,unreachable,,HTTPS: Connection error: Cannot connect to host littlefeetforestschool.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host littlefeetforestschool.org:80 ssl:False [getaddrinfo failed]
-nationalcarousels158.com,unreachable,,HTTPS: Connection error: Cannot connect to host nationalcarousels158.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host nationalcarousels158.com:80 ssl:False [getaddrinfo failed]
-2020relining.com,unreachable,,HTTPS: Connection error: Cannot connect to host 2020relining.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host 2020relining.com:80 ssl:False [getaddrinfo failed]
-ellen4wcsd.com,unreachable,,HTTPS: Connection error: Cannot connect to host ellen4wcsd.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ellen4wcsd.com:80 ssl:False [getaddrinfo failed]
-themorvarid.com,unreachable,,HTTPS: Connection error: Cannot connect to host themorvarid.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host themorvarid.com:80 ssl:False [getaddrinfo failed]
-thephotoboothunlimited.com,unreachable,,HTTPS: Connection error: Cannot connect to host thephotoboothunlimited.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host thephotoboothunlimited.com:80 ssl:False [getaddrinfo failed]
-advertiserandmarketersplatform.com,unreachable,,HTTPS: Connection error: Cannot connect to host advertiserandmarketersplatform.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host advertiserandmarketersplatform.com:80 ssl:False [getaddrinfo failed]
-greenissue.eu,unreachable,,HTTPS: Connection error: Cannot connect to host greenissue.eu:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host greenissue.eu:80 ssl:False [getaddrinfo failed]
-river-valley-rv-park-tx.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-saipanyc.com,unreachable,,HTTPS: Connection error: Cannot connect to host saipanyc.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host saipanyc.com:80 ssl:False [getaddrinfo failed]
-angelabrite.com,unreachable,,HTTPS: Connection error: Cannot connect to host angelabrite.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host angelabrite.com:80 ssl:False [getaddrinfo failed]
-clovercutsandcolor.com,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
-serenapezzato.com,unreachable,,HTTPS: Connection error: Cannot connect to host serenapezzato.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host serenapezzato.com:80 ssl:False [getaddrinfo failed]
-king-alexander.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host king-alexander.com:80 ssl:False [getaddrinfo failed]
-northsidemeadows.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
-rivertownslp.com,unreachable,,HTTPS: Connection error: Cannot connect to host rivertownslp.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host rivertownslp.com:80 ssl:False [getaddrinfo failed]
-bloggingforextrader.com,unreachable,,HTTPS: Connection error: Cannot connect to host bloggingforextrader.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host bloggingforextrader.com:80 ssl:False [getaddrinfo failed]
-green-graphixz-clothing-company.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-50ggirls.com,unreachable,,HTTPS: Connection error: Cannot connect to host 50ggirls.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host 50ggirls.com:80 ssl:False [getaddrinfo failed]
-roland4fairview.com,unreachable,,HTTPS: Connection error: Cannot connect to host roland4fairview.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host roland4fairview.com:80 ssl:False [getaddrinfo failed]
-car.hk,unreachable,,HTTPS: Timeout | HTTP: Timeout
-drmeganseltz.com,unreachable,,HTTPS: Connection error: Cannot connect to host www.drmeganseltz.com:443 ssl:False [The specified network name is no longer available] | HTTP: HTTP 503
-petexplain.com,unreachable,,HTTPS: Connection error: Cannot connect to host petexplain.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host petexplain.com:80 ssl:False [getaddrinfo failed]
-rainbowphillyweddingofficiants.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
-hiddenforestdesign.com,unreachable,,HTTPS: Connection error: Cannot connect to host hiddenforestdesign.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hiddenforestdesign.com:80 ssl:False [getaddrinfo failed]
-jahmakingsconstruction.com,unreachable,,HTTPS: Connection error: Cannot connect to host jahmakingsconstruction.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host jahmakingsconstruction.com:80 ssl:False [getaddrinfo failed]
-journey2beme.com,unreachable,,HTTPS: Connection error: Cannot connect to host journey2beme.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host journey2beme.com:80 ssl:False [getaddrinfo failed]
-3lnotary.com,unreachable,,HTTPS: Connection error: Cannot connect to host 3lnotary.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host 3lnotary.com:80 ssl:False [getaddrinfo failed]
-limitlesscounselingservices.com,unreachable,,HTTPS: Connection error: Cannot connect to host limitlesscounselingservices.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host limitlesscounselingservices.com:80 ssl:False [getaddrinfo failed]
-trusted-home-inspection.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-dotsandcubes.com,unreachable,,HTTPS: Connection error: Cannot connect to host dotsandcubes.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host dotsandcubes.com:80 ssl:False [getaddrinfo failed]
-gkama.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host gkama.com:80 ssl:False [getaddrinfo failed]
-realtorhsu.net,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-shah-impex.com,unreachable,,HTTPS: SSL error: Cannot connect to host shah-impex.com:443 ssl:False [[SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1032)] | HTTP: SSL error: Cannot connect to host shah-impex.com:443 ssl:False [[SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1032)]
-yogawithorly.com,unreachable,,HTTPS: Connection error: Cannot connect to host yogawithorly.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host yogawithorly.com:80 ssl:False [getaddrinfo failed]
-putitontheglass.com,unreachable,,HTTPS: Connection error: Cannot connect to host putitontheglass.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host putitontheglass.com:80 ssl:False [getaddrinfo failed]
-d30ufu6vr9yoyg.cloudfront.net,unreachable,,HTTPS: Connection error: Cannot connect to host d30ufu6vr9yoyg.cloudfront.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host d30ufu6vr9yoyg.cloudfront.net:80 ssl:False [getaddrinfo failed]
-godsministryfellowship.com,unreachable,,HTTPS: Connection error: Cannot connect to host godsministryfellowship.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host godsministryfellowship.com:80 ssl:False [getaddrinfo failed]
-homeworkninjas.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
-myacem.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
-par1cleaners.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-acupuncture-oriental-massage.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-greenbikerentals.com,unreachable,,HTTPS: Connection error: Cannot connect to host greenbikerentals.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host greenbikerentals.com:80 ssl:False [getaddrinfo failed]
-riolentoranch.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host riolentoranch.com:80 ssl:False [getaddrinfo failed]
-teambuildergroup.com,unreachable,,HTTPS: 403 Forbidden (Cloudflare bot protection) | HTTP: 403 Forbidden (Cloudflare bot protection)
-castoreclothing.com,unreachable,,HTTPS: Connection error: Cannot connect to host castoreclothing.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host castoreclothing.com:80 ssl:False [getaddrinfo failed]
-palaciopet.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
-artandglamstudio.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-fayreconsulting.com,unreachable,,HTTPS: Connection error: Cannot connect to host fayreconsulting.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host fayreconsulting.com:80 ssl:False [getaddrinfo failed]
-sanchez-lawn-care-and-landscaping-services.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-hometheatersystemgainesville.com,unreachable,,HTTPS: Connection error: Cannot connect to host hometheatersystemgainesville.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hometheatersystemgainesville.com:80 ssl:False [getaddrinfo failed]
-pestcontrolmodestoca.org,unreachable,,HTTPS: Connection error: Cannot connect to host pestcontrolmodestoca.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host pestcontrolmodestoca.org:80 ssl:False [getaddrinfo failed]
-horizon-international.com,unreachable,,HTTPS: Connection error: Cannot connect to host horizon-international.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host horizon-international.com:80 ssl:False [getaddrinfo failed]
-lukesmma.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host lukesmma.com:80 ssl:False [getaddrinfo failed]
-celebaesthetics.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
-coastaldefense.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-sewardlostlakelodge.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host sewardlostlakelodge.com:80 ssl:False [getaddrinfo failed]
-skgfitness.training,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
-crazy.builders,unreachable,,HTTPS: Connection error: Cannot connect to host crazy.builders:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host crazy.builders:80 ssl:False [getaddrinfo failed]
-littleredfarmhousegifts.net,unreachable,,HTTPS: Connection error: Cannot connect to host littleredfarmhousegifts.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host littleredfarmhousegifts.net:80 ssl:False [getaddrinfo failed]
-reflexdelivery.com,unreachable,,HTTPS: 403 Forbidden (Cloudflare bot protection) | HTTP: HTTP 409
-cherrycreektributaries.com,unreachable,,HTTPS: Connection error: Cannot connect to host cherrycreektributaries.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host cherrycreektributaries.com:80 ssl:False [getaddrinfo failed]
-marriagecounselingmemphis.com,unreachable,,HTTPS: Connection error: Cannot connect to host marriagecounselingmemphis.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host marriagecounselingmemphis.com:80 ssl:False [getaddrinfo failed]
-deliverance-ministry-new-york.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
-glovemitten.com,unreachable,,HTTPS: Connection error: Cannot connect to host glovemitten.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host glovemitten.com:80 ssl:False [getaddrinfo failed]
-myfocuspsych.com,unreachable,,HTTPS: Connection error: Cannot connect to host myfocuspsych.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host myfocuspsych.com:80 ssl:False [getaddrinfo failed]
-quick9.io,unreachable,,HTTPS: Connection error: Cannot connect to host quick9.io:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host quick9.io:80 ssl:False [getaddrinfo failed]
-winningham-iron-metal.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-sammycarlosdelicatessencatering.net,unreachable,,HTTPS: Connection error: Cannot connect to host sammycarlosdelicatessencatering.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sammycarlosdelicatessencatering.net:80 ssl:False [getaddrinfo failed]
-ftworthepoxyflooring.com,unreachable,,HTTPS: Connection error: Cannot connect to host ftworthepoxyflooring.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ftworthepoxyflooring.com:80 ssl:False [getaddrinfo failed]
-hellorichmond.net,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
-carolynlewismed.com,unreachable,,HTTPS: Connection error: Cannot connect to host carolynlewismed.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host carolynlewismed.com:80 ssl:False [getaddrinfo failed]
-dionisioducusin.com,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
-hitsforhomeless.com,unreachable,,HTTPS: Connection error: Cannot connect to host hitsforhomeless.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hitsforhomeless.com:80 ssl:False [getaddrinfo failed]
-wadeloans.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
-millarandsons.net,reachable,https,HTTP 200
-parklandhairclinic.info,unreachable,,HTTPS: Connection error: Cannot connect to host parklandhairclinic.info:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host parklandhairclinic.info:80 ssl:False [getaddrinfo failed]
-slrslingshotrentals.com,unreachable,,HTTPS: Connection error: Cannot connect to host slrslingshotrentals.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host slrslingshotrentals.com:80 ssl:False [getaddrinfo failed]
-sunnirey.shop,unreachable,,HTTPS: Connection error: Cannot connect to host sunnirey.shop:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sunnirey.shop:80 ssl:False [getaddrinfo failed]
-gambittechconsulting.com,unreachable,,HTTPS: Connection error: Cannot connect to host gambittechconsulting.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host gambittechconsulting.com:80 ssl:False [getaddrinfo failed]
-the-chimneymasters.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-rightstudents.org,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
-topbricole.site,unreachable,,HTTPS: Connection error: Cannot connect to host topbricole.site:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host topbricole.site:80 ssl:False [getaddrinfo failed]
-carolynsnails.com,unreachable,,HTTPS: Connection error: Cannot connect to host carolynsnails.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host carolynsnails.com:80 ssl:False [getaddrinfo failed]
-globalonefinancialsolutions.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
-handymanexpressservice.net,unreachable,,HTTPS: Connection error: Cannot connect to host handymanexpressservice.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host handymanexpressservice.net:80 ssl:False [getaddrinfo failed]
-myparee.com,unreachable,,HTTPS: Connection error: Cannot connect to host myparee.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host myparee.com:80 ssl:False [getaddrinfo failed]
-toothfairycleaningservice.com,unreachable,,HTTPS: Connection error: Cannot connect to host toothfairycleaningservice.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host toothfairycleaningservice.com:80 ssl:False [getaddrinfo failed]
-central-texas-mobile-notary-notary-public.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 melatee.com,unreachable,,HTTPS: Connection error: Cannot connect to host melatee.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host melatee.com:80 ssl:False [getaddrinfo failed]
 creativebusinessassociates.com,unreachable,,HTTPS: Connection error: Cannot connect to host creativebusinessassociates.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host creativebusinessassociates.com:80 ssl:False [getaddrinfo failed]
 cumberland-river.com,unreachable,,HTTPS: Connection error: Cannot connect to host cumberland-river.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host cumberland-river.com:80 ssl:False [getaddrinfo failed]
@@ -235,6 +133,7 @@ completecaredevelopmentcenter.com,unreachable,,HTTPS: Connection error: Cannot c
 kaleofamilies.org,unreachable,,HTTPS: Connection error: Cannot connect to host kaleofamilies.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host kaleofamilies.org:80 ssl:False [getaddrinfo failed]
 beagibbons.com,unreachable,,HTTPS: Connection error: Cannot connect to host beagibbons.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host beagibbons.com:80 ssl:False [getaddrinfo failed]
 getranx.com,unreachable,,HTTPS: SSL error: Cannot connect to host getranx.com:443 ssl:False [[SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1032)] | HTTP: HTTP 503
+roux30a.com,reachable,https,HTTP 200
 1laurellane.com,unreachable,,HTTPS: Connection error: Cannot connect to host 1laurellane.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host 1laurellane.com:80 ssl:False [getaddrinfo failed]
 motherssoontobe.com,unreachable,,HTTPS: Connection error: Cannot connect to host motherssoontobe.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host motherssoontobe.com:80 ssl:False [getaddrinfo failed]
 palla-siding-and-windows.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
@@ -245,6 +144,7 @@ torget.org,unreachable,,HTTPS: Connection error: Cannot connect to host torget.o
 amwindowcleaning.org,unreachable,,HTTPS: Connection error: Cannot connect to host amwindowcleaning.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host amwindowcleaning.org:80 ssl:False [getaddrinfo failed]
 wombatworks.org,unreachable,,HTTPS: HTTP 451 | HTTP: HTTP 451
 alpha-research-associates-research-institute.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+buchanan-edwards.online,unreachable,,HTTPS: Timeout | HTTP: HTTP 502
 busiup.com,unreachable,,HTTPS: Connection error: Cannot connect to host busiup.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host busiup.com:80 ssl:False [getaddrinfo failed]
 graciejoplin.com,unreachable,,HTTPS: Connection error: Cannot connect to host graciejoplin.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host graciejoplin.com:80 ssl:False [getaddrinfo failed]
 scienceeducators.org,unreachable,,HTTPS: Connection error: Cannot connect to host scienceeducators.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host scienceeducators.org:80 ssl:False [getaddrinfo failed]
@@ -301,7 +201,6 @@ moorecapitalservices.net,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 beautifulbodybabes.com,unreachable,,HTTPS: Connection error: Cannot connect to host beautifulbodybabes.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host beautifulbodybabes.com:80 ssl:False [getaddrinfo failed]
 charlesmann-contracting.com,unreachable,,HTTPS: Connection error: Cannot connect to host charlesmann-contracting.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host charlesmann-contracting.com:80 ssl:False [getaddrinfo failed]
 growthfutures.net,unreachable,,HTTPS: Connection error: Cannot connect to host growthfutures.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host growthfutures.net:80 ssl:False [getaddrinfo failed]
-pearlcorker.wordpress.com,reachable,https,HTTP 200
 skinnerdaylilies.com,unreachable,,HTTPS: 403 Forbidden (Cloudflare bot protection) | HTTP: 403 Forbidden (Cloudflare bot protection)
 highwaydistribution.net,unreachable,,HTTPS: Connection error: Cannot connect to host highwaydistribution.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host highwaydistribution.net:80 ssl:False [getaddrinfo failed]
 shoplakebuoy.com,unreachable,,HTTPS: Connection error: Cannot connect to host shoplakebuoy.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host shoplakebuoy.com:80 ssl:False [getaddrinfo failed]
@@ -313,6 +212,7 @@ cedarwork.org,unreachable,,HTTPS: Connection error: Cannot connect to host cedar
 helixapartments.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
 richardsservicecenter.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 epertase.com,unreachable,,HTTPS: Connection error: Cannot connect to host epertase.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host epertase.com:80 ssl:False [getaddrinfo failed]
+id44.com,unreachable,,HTTPS: HTTP 530 | HTTP: HTTP 530
 laflosd.com,unreachable,,HTTPS: Connection error: Cannot connect to host laflosd.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host laflosd.com:80 ssl:False [getaddrinfo failed]
 tylerteaches.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 elijahvest.com,unreachable,,HTTPS: 403 Forbidden (Cloudflare bot protection) | HTTP: 403 Forbidden (Cloudflare bot protection)
@@ -328,7 +228,7 @@ brandibaileyphotos.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Can
 woodstocklodge246.org,unreachable,,HTTPS: Connection error: Cannot connect to host woodstocklodge246.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host woodstocklodge246.org:80 ssl:False [getaddrinfo failed]
 burkeoppenheim.com,unreachable,,HTTPS: Connection error: Cannot connect to host burkeoppenheim.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host burkeoppenheim.com:80 ssl:False [getaddrinfo failed]
 snugharborca.com,unreachable,,HTTPS: Connection error: Cannot connect to host snugharborca.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host snugharborca.com:80 ssl:False [getaddrinfo failed]
-nomadicbearproductions.com,reachable,https,HTTP 200
+thermalpd.com,reachable,https,HTTP 200
 nu-imagepainting.com,unreachable,,HTTPS: Connection error: Cannot connect to host nu-imagepainting.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host nu-imagepainting.com:80 ssl:False [getaddrinfo failed]
 southsidedentalcare-dentalclinic.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
 sacreativedesign.com,unreachable,,HTTPS: Connection error: Cannot connect to host sacreativedesign.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sacreativedesign.com:80 ssl:False [getaddrinfo failed]
@@ -347,3 +247,116 @@ belozapp.com,unreachable,,HTTPS: Connection error: Cannot connect to host beloza
 1stamc.com,unreachable,,HTTPS: SSL error: Cannot connect to host 1stamc.com:443 ssl:False [[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:1032)] | HTTP: 403 Forbidden (Unknown)
 parisfumc.org,unreachable,,HTTPS: Connection error: Cannot connect to host parisfumc.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host parisfumc.org:80 ssl:False [getaddrinfo failed]
 kusbeautyusa.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+al-advertising-diet-store.com,unreachable,,HTTPS: Connection error: Cannot connect to host al-advertising-diet-store.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host al-advertising-diet-store.com:80 ssl:False [getaddrinfo failed]
+artworkbydoyle.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host artworkbydoyle.com:80 ssl:False [getaddrinfo failed]
+bc-hinger.com,unreachable,,HTTPS: Connection error: Cannot connect to host bc-hinger.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host bc-hinger.com:80 ssl:False [getaddrinfo failed]
+beautyblueprintllc.com,unreachable,,HTTPS: Connection error: Cannot connect to host beautyblueprintllc.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host beautyblueprintllc.com:80 ssl:False [getaddrinfo failed]
+reveportraits.com,unreachable,,HTTPS: Connection error: Cannot connect to host reveportraits.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host reveportraits.com:80 ssl:False [getaddrinfo failed]
+rustyskate.com,unreachable,,HTTPS: HTTP 409 | HTTP: HTTP 409
+feltgoodmusic.com,unreachable,,HTTPS: Connection error: Cannot connect to host feltgoodmusic.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host feltgoodmusic.com:80 ssl:False [getaddrinfo failed]
+lionsteelstructuresco.com,unreachable,,HTTPS: Connection error: Cannot connect to host lionsteelstructuresco.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host lionsteelstructuresco.com:80 ssl:False [getaddrinfo failed]
+royaltycleaningva.co,unreachable,,HTTPS: Connection error: Cannot connect to host royaltycleaningva.co:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host royaltycleaningva.co:80 ssl:False [getaddrinfo failed]
+childcarecompany.org,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+ageanabrett.com,unreachable,,HTTPS: Connection error: Cannot connect to host ageanabrett.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ageanabrett.com:80 ssl:False [getaddrinfo failed]
+crossroadsrvpk.com,unreachable,,HTTPS: Connection error: Cannot connect to host crossroadsrvpk.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host crossroadsrvpk.com:80 ssl:False [getaddrinfo failed]
+nationalcapitalfitday.com,unreachable,,HTTPS: Connection error: Cannot connect to host nationalcapitalfitday.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host nationalcapitalfitday.com:80 ssl:False [getaddrinfo failed]
+ordercrustandbuns.com,unreachable,,HTTPS: Connection error: Cannot connect to host ordercrustandbuns.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ordercrustandbuns.com:80 ssl:False [getaddrinfo failed]
+seattlecandle.com,unreachable,,HTTPS: HTTP 436 | HTTP: HTTP 436
+daveandtracy.org,unreachable,,HTTPS: Connection error: Cannot connect to host daveandtracy.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host daveandtracy.org:80 ssl:False [getaddrinfo failed]
+when2heartsbeatas1.org,unreachable,,HTTPS: Connection error: Cannot connect to host when2heartsbeatas1.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host when2heartsbeatas1.org:80 ssl:False [getaddrinfo failed]
+galleongc.com,unreachable,,HTTPS: Connection error: Cannot connect to host galleongc.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host galleongc.com:80 ssl:False [getaddrinfo failed]
+simplicitymovers.com,unreachable,,HTTPS: Connection error: Cannot connect to host simplicitymovers.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host simplicitymovers.com:80 ssl:False [getaddrinfo failed]
+smartdivorcestrategy.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
+boyettrecovery.com,unreachable,,HTTPS: Connection error: Cannot connect to host boyettrecovery.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host boyettrecovery.com:80 ssl:False [getaddrinfo failed]
+littlefeetforestschool.org,unreachable,,HTTPS: Connection error: Cannot connect to host littlefeetforestschool.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host littlefeetforestschool.org:80 ssl:False [getaddrinfo failed]
+nationalcarousels158.com,unreachable,,HTTPS: Connection error: Cannot connect to host nationalcarousels158.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host nationalcarousels158.com:80 ssl:False [getaddrinfo failed]
+2020relining.com,unreachable,,HTTPS: Connection error: Cannot connect to host 2020relining.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host 2020relining.com:80 ssl:False [getaddrinfo failed]
+ellen4wcsd.com,unreachable,,HTTPS: Connection error: Cannot connect to host ellen4wcsd.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ellen4wcsd.com:80 ssl:False [getaddrinfo failed]
+themorvarid.com,unreachable,,HTTPS: Connection error: Cannot connect to host themorvarid.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host themorvarid.com:80 ssl:False [getaddrinfo failed]
+thephotoboothunlimited.com,unreachable,,HTTPS: Connection error: Cannot connect to host thephotoboothunlimited.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host thephotoboothunlimited.com:80 ssl:False [getaddrinfo failed]
+advertiserandmarketersplatform.com,unreachable,,HTTPS: Connection error: Cannot connect to host advertiserandmarketersplatform.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host advertiserandmarketersplatform.com:80 ssl:False [getaddrinfo failed]
+greenissue.eu,unreachable,,HTTPS: Connection error: Cannot connect to host greenissue.eu:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host greenissue.eu:80 ssl:False [getaddrinfo failed]
+river-valley-rv-park-tx.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+saipanyc.com,unreachable,,HTTPS: Connection error: Cannot connect to host saipanyc.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host saipanyc.com:80 ssl:False [getaddrinfo failed]
+angelabrite.com,unreachable,,HTTPS: Connection error: Cannot connect to host angelabrite.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host angelabrite.com:80 ssl:False [getaddrinfo failed]
+clovercutsandcolor.com,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
+serenapezzato.com,unreachable,,HTTPS: Connection error: Cannot connect to host serenapezzato.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host serenapezzato.com:80 ssl:False [getaddrinfo failed]
+king-alexander.com,unreachable,,HTTPS: Connection error: Cannot connect to host king-alexander.com:443 ssl:False [getaddrinfo failed] | HTTP: Timeout
+northsidemeadows.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
+rivertownslp.com,unreachable,,HTTPS: Connection error: Cannot connect to host rivertownslp.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host rivertownslp.com:80 ssl:False [getaddrinfo failed]
+bloggingforextrader.com,unreachable,,HTTPS: Connection error: Cannot connect to host bloggingforextrader.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host bloggingforextrader.com:80 ssl:False [getaddrinfo failed]
+green-graphixz-clothing-company.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+50ggirls.com,unreachable,,HTTPS: Connection error: Cannot connect to host 50ggirls.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host 50ggirls.com:80 ssl:False [getaddrinfo failed]
+roland4fairview.com,unreachable,,HTTPS: Connection error: Cannot connect to host roland4fairview.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host roland4fairview.com:80 ssl:False [getaddrinfo failed]
+car.hk,unreachable,,HTTPS: Timeout | HTTP: Timeout
+drmeganseltz.com,unreachable,,HTTPS: Connection error: Cannot connect to host drmeganseltz.com:443 ssl:False [The specified network name is no longer available] | HTTP: HTTP 503
+petexplain.com,unreachable,,HTTPS: Connection error: Cannot connect to host petexplain.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host petexplain.com:80 ssl:False [getaddrinfo failed]
+rainbowphillyweddingofficiants.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
+hiddenforestdesign.com,unreachable,,HTTPS: Connection error: Cannot connect to host hiddenforestdesign.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hiddenforestdesign.com:80 ssl:False [getaddrinfo failed]
+jahmakingsconstruction.com,unreachable,,HTTPS: Connection error: Cannot connect to host jahmakingsconstruction.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host jahmakingsconstruction.com:80 ssl:False [getaddrinfo failed]
+journey2beme.com,unreachable,,HTTPS: Connection error: Cannot connect to host journey2beme.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host journey2beme.com:80 ssl:False [getaddrinfo failed]
+3lnotary.com,unreachable,,HTTPS: Connection error: Cannot connect to host 3lnotary.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host 3lnotary.com:80 ssl:False [getaddrinfo failed]
+limitlesscounselingservices.com,unreachable,,HTTPS: Connection error: Cannot connect to host limitlesscounselingservices.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host limitlesscounselingservices.com:80 ssl:False [getaddrinfo failed]
+trusted-home-inspection.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+dotsandcubes.com,unreachable,,HTTPS: Connection error: Cannot connect to host dotsandcubes.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host dotsandcubes.com:80 ssl:False [getaddrinfo failed]
+gkama.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host gkama.com:80 ssl:False [getaddrinfo failed]
+realtorhsu.net,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+shah-impex.com,unreachable,,HTTPS: SSL error: Cannot connect to host shah-impex.com:443 ssl:False [[SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1032)] | HTTP: SSL error: Cannot connect to host shah-impex.com:443 ssl:False [[SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1032)]
+yogawithorly.com,unreachable,,HTTPS: Connection error: Cannot connect to host yogawithorly.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host yogawithorly.com:80 ssl:False [getaddrinfo failed]
+putitontheglass.com,unreachable,,HTTPS: Connection error: Cannot connect to host putitontheglass.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host putitontheglass.com:80 ssl:False [getaddrinfo failed]
+d30ufu6vr9yoyg.cloudfront.net,unreachable,,HTTPS: Connection error: Cannot connect to host d30ufu6vr9yoyg.cloudfront.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host d30ufu6vr9yoyg.cloudfront.net:80 ssl:False [getaddrinfo failed]
+godsministryfellowship.com,unreachable,,HTTPS: Connection error: Cannot connect to host godsministryfellowship.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host godsministryfellowship.com:80 ssl:False [getaddrinfo failed]
+homeworkninjas.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
+myacem.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
+par1cleaners.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+acupuncture-oriental-massage.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+greenbikerentals.com,unreachable,,HTTPS: Connection error: Cannot connect to host greenbikerentals.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host greenbikerentals.com:80 ssl:False [getaddrinfo failed]
+riolentoranch.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host riolentoranch.com:80 ssl:False [getaddrinfo failed]
+teambuildergroup.com,unreachable,,HTTPS: 403 Forbidden (Cloudflare bot protection) | HTTP: 403 Forbidden (Cloudflare bot protection)
+castoreclothing.com,unreachable,,HTTPS: Connection error: Cannot connect to host castoreclothing.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host castoreclothing.com:80 ssl:False [getaddrinfo failed]
+artandglamstudio.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+fayreconsulting.com,unreachable,,HTTPS: Connection error: Cannot connect to host fayreconsulting.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host fayreconsulting.com:80 ssl:False [getaddrinfo failed]
+sanchez-lawn-care-and-landscaping-services.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+carissahannumtherapy.com,reachable,https,HTTP 200
+hometheatersystemgainesville.com,unreachable,,HTTPS: Connection error: Cannot connect to host hometheatersystemgainesville.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hometheatersystemgainesville.com:80 ssl:False [getaddrinfo failed]
+pestcontrolmodestoca.org,unreachable,,HTTPS: Connection error: Cannot connect to host pestcontrolmodestoca.org:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host pestcontrolmodestoca.org:80 ssl:False [getaddrinfo failed]
+horizon-international.com,unreachable,,HTTPS: Connection error: Cannot connect to host horizon-international.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host horizon-international.com:80 ssl:False [getaddrinfo failed]
+lukesmma.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host lukesmma.com:80 ssl:False [getaddrinfo failed]
+celebaesthetics.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
+coastaldefense.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+sewardlostlakelodge.com,unreachable,,HTTPS: Timeout | HTTP: Connection error: Cannot connect to host sewardlostlakelodge.com:80 ssl:False [getaddrinfo failed]
+ehardts.com,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
+skgfitness.training,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
+crazy.builders,unreachable,,HTTPS: Connection error: Cannot connect to host crazy.builders:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host crazy.builders:80 ssl:False [getaddrinfo failed]
+littleredfarmhousegifts.net,unreachable,,HTTPS: Connection error: Cannot connect to host littleredfarmhousegifts.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host littleredfarmhousegifts.net:80 ssl:False [getaddrinfo failed]
+msconfinance.com,reachable,https,HTTP 200
+reflexdelivery.com,unreachable,,HTTPS: 403 Forbidden (Cloudflare bot protection) | HTTP: HTTP 409
+cherrycreektributaries.com,unreachable,,HTTPS: Connection error: Cannot connect to host cherrycreektributaries.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host cherrycreektributaries.com:80 ssl:False [getaddrinfo failed]
+marriagecounselingmemphis.com,unreachable,,HTTPS: Connection error: Cannot connect to host marriagecounselingmemphis.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host marriagecounselingmemphis.com:80 ssl:False [getaddrinfo failed]
+deliverance-ministry-new-york.com,unreachable,,HTTPS: HTTP 500 | HTTP: HTTP 500
+glovemitten.com,unreachable,,HTTPS: Connection error: Cannot connect to host glovemitten.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host glovemitten.com:80 ssl:False [getaddrinfo failed]
+myfocuspsych.com,unreachable,,HTTPS: Connection error: Cannot connect to host myfocuspsych.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host myfocuspsych.com:80 ssl:False [getaddrinfo failed]
+quick9.io,unreachable,,HTTPS: Connection error: Cannot connect to host quick9.io:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host quick9.io:80 ssl:False [getaddrinfo failed]
+tefftfoundation.com,reachable,https,HTTP 200
+winningham-iron-metal.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+sammycarlosdelicatessencatering.net,unreachable,,HTTPS: Connection error: Cannot connect to host sammycarlosdelicatessencatering.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sammycarlosdelicatessencatering.net:80 ssl:False [getaddrinfo failed]
+ftworthepoxyflooring.com,unreachable,,HTTPS: Connection error: Cannot connect to host ftworthepoxyflooring.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host ftworthepoxyflooring.com:80 ssl:False [getaddrinfo failed]
+hellorichmond.net,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
+carolynlewismed.com,unreachable,,HTTPS: Connection error: Cannot connect to host carolynlewismed.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host carolynlewismed.com:80 ssl:False [getaddrinfo failed]
+dionisioducusin.com,unreachable,,HTTPS: 403 Forbidden (Unknown) | HTTP: 403 Forbidden (Unknown)
+hitsforhomeless.com,unreachable,,HTTPS: Connection error: Cannot connect to host hitsforhomeless.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host hitsforhomeless.com:80 ssl:False [getaddrinfo failed]
+wadeloans.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
+parklandhairclinic.info,unreachable,,HTTPS: Connection error: Cannot connect to host parklandhairclinic.info:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host parklandhairclinic.info:80 ssl:False [getaddrinfo failed]
+slrslingshotrentals.com,unreachable,,HTTPS: Connection error: Cannot connect to host slrslingshotrentals.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host slrslingshotrentals.com:80 ssl:False [getaddrinfo failed]
+libertybaptist.org,unreachable,,HTTPS: Timeout | HTTP: Timeout
+sunnirey.shop,unreachable,,HTTPS: Connection error: Cannot connect to host sunnirey.shop:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host sunnirey.shop:80 ssl:False [getaddrinfo failed]
+gambittechconsulting.com,unreachable,,HTTPS: Connection error: Cannot connect to host gambittechconsulting.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host gambittechconsulting.com:80 ssl:False [getaddrinfo failed]
+the-chimneymasters.com,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+rightstudents.org,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
+topbricole.site,unreachable,,HTTPS: Connection error: Cannot connect to host topbricole.site:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host topbricole.site:80 ssl:False [getaddrinfo failed]
+carolynsnails.com,unreachable,,HTTPS: Connection error: Cannot connect to host carolynsnails.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host carolynsnails.com:80 ssl:False [getaddrinfo failed]
+globalonefinancialsolutions.com,unreachable,,HTTPS: Timeout | HTTP: Timeout
+handymanexpressservice.net,unreachable,,HTTPS: Connection error: Cannot connect to host handymanexpressservice.net:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host handymanexpressservice.net:80 ssl:False [getaddrinfo failed]
+myparee.com,unreachable,,HTTPS: Connection error: Cannot connect to host myparee.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host myparee.com:80 ssl:False [getaddrinfo failed]
+toothfairycleaningservice.com,unreachable,,HTTPS: Connection error: Cannot connect to host toothfairycleaningservice.com:443 ssl:False [getaddrinfo failed] | HTTP: Connection error: Cannot connect to host toothfairycleaningservice.com:80 ssl:False [getaddrinfo failed]
+central-texas-mobile-notary-notary-public.business.site,unreachable,,HTTPS: HTTP 404 | HTTP: HTTP 404
