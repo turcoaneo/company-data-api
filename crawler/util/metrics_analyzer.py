@@ -6,7 +6,9 @@ import re
 import shutil
 from pathlib import Path
 
+from app.utils.env_vars import PATHS
 from app.utils.logger_util import get_logger
+from scripts.convert_for_meili import run_meili_converter
 
 logger = get_logger()
 
@@ -246,7 +248,6 @@ def compute_latest_and_top_metrics(
         _save_top_metrics(top_metrics_path, latest)
 
         # NEW: also generate Meili top file
-        from scripts.convert_for_meili import run_meili_converter
         run_meili_converter(final_jsonl_path, PATHS["path_meili_top"])
 
         top = latest

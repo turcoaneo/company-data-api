@@ -18,6 +18,8 @@ def run_job():
 
 
 def meili_connect_ingest():
+    from app.service.service_metrics import run_metrics
+    run_metrics()
     # Convert scraper final result to meili PK-wise JSONL
     from scripts.convert_for_meili import convert_files
     convert_files()

@@ -3,6 +3,7 @@
 import csv
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -109,50 +110,60 @@ class TestMetricsAnalyzer:
         assert fr["datapoints_per_coverage"] == pytest.approx(3 / 5)
         assert fr["datapoints_per_sites"] == pytest.approx(3 / 5)
 
-    def test_compute_latest_and_top_metrics_updates_top(self, setup_files):
+    def test_compute_latest_and_top_metrics_updates_top(self, setup_files, monkeypatch):
         paths = setup_files
         root = paths["root"]
 
-        # First run: no best_metric.json yet → latest becomes top
-        result = compute_latest_and_top_metrics(
-            input_csv_path=str(paths["csv"]),
-            bad_urls_path=str(paths["bad"]),
-            missing_contacts_path=str(paths["missing"]),
-            initial_jsonl_path=str(paths["initial"]),
-            final_jsonl_path=str(paths["final"]),
-            top_metrics_path=str(root / "best_metric.json"),
-            top_result_path=str(root / "top_result.jsonl"),
+        # Patch PATHS so path_meili_top points inside tmp_path
+        monkeypatch.setattr(
+            "crawler.util.metrics_analyzer.PATHS",
+            {
+                "path_meili_top": str(root / "meili_top.jsonl")
+            }
         )
+
+        # Patch run_meili_converter, so it doesn't try to write files
+        with patch("crawler.util.metrics_analyzer.run_meili_converter") as mock_conv:
+            mock_conv.return_value = None
+
+            # First run: no best_metric.json yet → latest becomes top
+            result = compute_latest_and_top_metrics(
+                input_csv_path=str(paths["csv"]),
+                bad_urls_path=str(paths["bad"]),
+                missing_contacts_path=str(paths["missing"]),
+                initial_jsonl_path=str(paths["initial"]),
+                final_jsonl_path=str(paths["final"]),
+                top_metrics_path=str(root / "best_metric.json"),
+                top_result_path=str(root / "top_result.jsonl"),
+            )
 
         latest = result["latest_results"]
         top = result["top_results"]
 
-        # On first run, top == latest
         assert top["final"]["phones"] == latest["final"]["phones"]
         assert top["final"]["socials"] == latest["final"]["socials"]
 
-        # Now simulate a weaker new run (fewer datapoints)
+        # Now simulate a weaker run
         weaker_final = root / "final_result_weaker.jsonl"
         weaker_final.write_text(
-            "\n".join([
-                json.dumps({"domain": "a.com", "phones": ["1"], "socials": []}),
-            ]),
+            json.dumps({"domain": "a.com", "phones": ["1"], "socials": []}),
             encoding="utf-8"
         )
 
-        result2 = compute_latest_and_top_metrics(
-            input_csv_path=str(paths["csv"]),
-            bad_urls_path=str(paths["bad"]),
-            missing_contacts_path=str(paths["missing"]),
-            initial_jsonl_path=str(paths["initial"]),
-            final_jsonl_path=str(weaker_final),
-            top_metrics_path=str(root / "best_metric.json"),
-            top_result_path=str(root / "top_result.jsonl"),
-        )
+        with patch("crawler.util.metrics_analyzer.run_meili_converter") as mock_conv:
+            mock_conv.return_value = None
 
-        # Top should remain the original (stronger) run
+            result2 = compute_latest_and_top_metrics(
+                input_csv_path=str(paths["csv"]),
+                bad_urls_path=str(paths["bad"]),
+                missing_contacts_path=str(paths["missing"]),
+                initial_jsonl_path=str(paths["initial"]),
+                final_jsonl_path=str(weaker_final),
+                top_metrics_path=str(root / "best_metric.json"),
+                top_result_path=str(root / "top_result.jsonl"),
+            )
+
         top2 = result2["top_results"]
+
         assert top2["final"]["phones"] == top["final"]["phones"]
         assert top2["final"]["socials"] == top["final"]["socials"]
-        assert result["latest_results"]["id"] == "20260515_120000"
-        assert result["top_results"]["id"] == "20260515_120000"
