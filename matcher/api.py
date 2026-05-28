@@ -35,6 +35,26 @@ def match_top(req: MatchRequest):
     return hit or {"message": "No match found"}
 
 
+@matcher_router.post(
+    "/match/sanitized",
+    summary="Sanitized match",
+    description="Match a company using sanitized inputs (ignores punctuation-only fields)."
+)
+def sanitized_match(req: MatchRequest):
+    hit = service.sanitized_match(req.name, req.website, req.phone, req.facebook)
+    return hit or {"message": "No match found"}
+
+
+@matcher_router.post(
+    "/match-top/sanitized",
+    summary="Sanitized match using TOP index",
+    description="Match a company using sanitized inputs against the TOP index."
+)
+def sanitized_match_top(req: MatchRequest):
+    hit = service.sanitized_match_top(req.name, req.website, req.phone, req.facebook)
+    return hit or {"message": "No match found"}
+
+
 @matcher_router.get(
     "/search",
     summary="Search companies",
@@ -61,6 +81,7 @@ def suggest(prefix: str, limit: int = 5):
 def match_sample():
     return service.match_sample()
 
+
 @matcher_router.get(
     "/match-top/sample",
     summary="Run sample matcher benchmark using TOP index",
@@ -68,4 +89,3 @@ def match_sample():
 )
 def match_sample_top():
     return service.match_sample_top()
-

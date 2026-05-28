@@ -140,3 +140,59 @@ class MatcherService:
             },
         )
         return result["hits"][0] if result["hits"] else None
+
+    # ---------------------------------------------------------
+    # NORMALIZATION
+    # ---------------------------------------------------------
+    @staticmethod
+    def _normalize_field(value: str | None) -> str | None:
+        """Return None for empty, whitespace, or punctuation-only values."""
+        if not value:
+            return None
+        cleaned = value.strip()
+        # If no alphanumeric characters → treat as None
+        import re
+        if not re.search(r"[A-Za-z0-9]", cleaned):
+            return None
+        return cleaned
+
+    # ---------------------------------------------------------
+    # SANITIZED MATCH (default index)
+    # ---------------------------------------------------------
+    def sanitized_match(self, name=None, website=None, phone=None, facebook=None):
+        return self.sanitized_match_against_index(
+            self.index,
+            name=name,
+            website=website,
+            phone=phone,
+            facebook=facebook,
+        )
+
+    # ---------------------------------------------------------
+    # SANITIZED MATCH (top index)
+    # ---------------------------------------------------------
+    def sanitized_match_top(self, name=None, website=None, phone=None, facebook=None):
+        return self.sanitized_match_against_index(
+            self.top_index,
+            name=name,
+            website=website,
+            phone=phone,
+            facebook=facebook,
+        )
+
+    # ---------------------------------------------------------
+    # INTERNAL: sanitized generic match logic
+    # ---------------------------------------------------------
+    def sanitized_match_against_index(self, index, name=None, website=None, phone=None, facebook=None):
+        name = self._normalize_field(name)
+        website = self._normalize_field(website)
+        phone = self._normalize_field(phone)
+        facebook = self._normalize_field(facebook)
+
+        return self._match_against_index(
+            index,
+            name=name,
+            website=website,
+            phone=phone,
+            facebook=facebook,
+        )
