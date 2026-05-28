@@ -63,3 +63,25 @@ class TestAppController:
         assert data["20260516_090820"]["isp_org"] == "AS8953"
 
         mock_service.assert_called_once()
+
+    # -----------------------------
+    # /scraper/anomalies
+    # -----------------------------
+    @patch("app.service.service_anomalies.get_contact_anomalies")
+    def test_get_contact_anomalies(self, mock_service, client):
+        mock_service.return_value = {
+            "too_many_phones": ["aaa.com"],
+            "too_many_socials": ["bbb.com"],
+            "socials_mismatch": ["ccc.com"],
+        }
+
+        response = client.get("/scraper/anomalies")
+
+        assert response.status_code == 200
+        data = response.json()
+
+        assert data["too_many_phones"] == ["aaa.com"]
+        assert data["too_many_socials"] == ["bbb.com"]
+        assert data["socials_mismatch"] == ["ccc.com"]
+
+        mock_service.assert_called_once()

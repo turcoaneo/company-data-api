@@ -1,3 +1,5 @@
+# api/scraper_router.py
+
 from fastapi import APIRouter
 
 scraper_router = APIRouter(
@@ -20,3 +22,13 @@ def run_and_get_metrics():
 def scraper_history_summary():
     from app.service.service_history import get_history_summary
     return get_history_summary()
+
+
+@scraper_router.get(
+    "/anomalies",
+    summary="Get contact extraction anomalies",
+    description="Returns domains with too many phones, too many socials, or mismatched socials."
+)
+def scraper_contact_anomalies():
+    from app.service.service_anomalies import get_contact_anomalies
+    return get_contact_anomalies()
