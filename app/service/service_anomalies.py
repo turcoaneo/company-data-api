@@ -1,9 +1,9 @@
 # app/service/service_anomalies.py
-
+from app.utils.env_vars import PATHS
 from qa.contact_anomaly_classifier import classify_contacts_jsonl
 
 
-def get_contact_anomalies(jsonl_path: str = "results/final_result.jsonl"):
+def get_contact_anomalies(jsonl_path: str = None):
     """
     Returns only the high‑level anomalies:
     {

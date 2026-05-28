@@ -31,4 +31,5 @@ def scraper_history_summary():
 )
 def scraper_contact_anomalies():
     from app.service.service_anomalies import get_contact_anomalies
-    return get_contact_anomalies()
+    from app.utils.env_vars import PATHS
+    return get_contact_anomalies(PATHS["path_top_result"])
