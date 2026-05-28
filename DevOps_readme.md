@@ -27,9 +27,9 @@ Invoke-WebRequest -Method POST `
 ```
 
 ```bash
-curl -X POST "http://localhost:7700/indexes/companies/documents?primaryKey=id" \
+curl -X POST "http://localhost:7700/indexes/top_result_companies/documents?primaryKey=id" \
      -H "Content-Type: application/x-ndjson" \
-     --data-binary @resultsmeili_final.jsonl
+     --data-binary @results/meili_top.jsonl
 ```
 
 ### Verify Meili
