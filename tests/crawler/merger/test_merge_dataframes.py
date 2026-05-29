@@ -2,11 +2,41 @@
 
 # noinspection PyPackageRequirements
 import pandas as pd
+import pytest
 
 from crawler.merge_results import merge_dataframes
 
 
 class TestMergeDataframes:
+
+    @pytest.mark.parametrize(
+        "raw,expected",
+        [
+            ("wine.com", "wine.com"),
+            ("www.wine.com", "wine.com"),
+            ("WWW.WINE.COM", "wine.com"),
+            ("w.wine.com", "w.wine.com"),  # must NOT strip the leading "w"
+            ("ww.wine.com", "ww.wine.com"),  # must NOT strip "ww."
+            ("www1.wine.com", "www1.wine.com"),  # must NOT strip "www1."
+            ("www.w.wine.com", "w.wine.com"),  # only the first www. is removed
+            ("www.www.wine.com", "www.wine.com"),  # again, only the first www.
+        ]
+    )
+    def test_normalize_domain_series(self, raw, expected):
+        df_input = pd.DataFrame({
+            "domain": [raw],
+            "company_commercial_name": ["Wine Co"]
+        })
+
+        df_results = pd.DataFrame({
+            "domain": [expected],
+            "phones": [["123"]]
+        })
+
+        merged = merge_dataframes(df_input, df_results)
+
+        assert merged.loc[0, "domain"] == expected
+        assert merged.loc[0, "company_commercial_name"] == "Wine Co"
 
     def test_merge_handles_www_in_input(self):
         df_input = pd.DataFrame({

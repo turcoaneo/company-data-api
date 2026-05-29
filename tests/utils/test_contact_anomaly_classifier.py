@@ -1,8 +1,8 @@
 # tests/test_contact_anomaly_classifier.py
 
 import json
-import tempfile
 import os
+import tempfile
 
 from qa.contact_anomaly_classifier import (
     classify_contacts_jsonl,
@@ -12,6 +12,27 @@ from qa.contact_anomaly_classifier import (
 
 
 class TestContactAnomalyClassifier:
+
+    def test_youtube_links_are_ignored_in_mismatch(self):
+        tokens = {"my-brand"}
+
+        socials = [
+            "https://youtube.com/@my-brand-channel",  # should be ignored
+            "https://youtu.be/xyz123",  # should be ignored
+        ]
+
+        # Simulate classifier loop
+        from qa.contact_anomaly_classifier import _is_youtube
+
+        mismatch = False
+        for s in socials:
+            if _is_youtube(s):
+                continue
+            if not social_matches_company(s, tokens):
+                mismatch = True
+                break
+
+        assert mismatch is False
 
     def test_extract_tokens(self):
         tokens = extract_tokens("my-domain.com", "My Domain Inc")

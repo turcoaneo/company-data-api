@@ -8,6 +8,8 @@ from app.utils.file_loader import FileLoader
 from app.utils.logger_util import get_logger
 from app.utils.timing_util import elapsed_time
 
+YOUTUBE_DOMAINS = ("youtube.com", "youtu.be")
+
 logger = get_logger()
 
 
@@ -46,9 +48,14 @@ def social_matches_company(social_url: str, tokens: set[str]) -> bool:
     return any(t in s for t in tokens)
 
 
+def _is_youtube(url: str) -> bool:
+    u = url.lower()
+    return any(d in u for d in YOUTUBE_DOMAINS)
+
+
 @elapsed_time("classify_contacts_jsonl")
 def classify_contacts_jsonl(
-        jsonl_path: str = "qa/final_result.jsonl",
+        jsonl_path: str = "results/final_result.jsonl",
         threshold_phones: int = 5,
         threshold_socials: int = 5,
         report_path: str = "qa/classify_contacts_report.json",
@@ -67,7 +74,7 @@ def classify_contacts_jsonl(
                 "tokens": [...],
                 "flags": ["too_many_phones", "socials_mismatch"]
             },
-            ...
+            ...,
         }
     }
     """
@@ -106,6 +113,8 @@ def classify_contacts_jsonl(
             # 3. Social mismatch
             mismatch = False
             for s in socials:
+                if _is_youtube(s):
+                    continue  # skip YouTube links entirely
                 if not social_matches_company(s, tokens):
                     mismatch = True
                     break
