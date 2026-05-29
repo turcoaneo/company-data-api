@@ -55,7 +55,7 @@ def _is_youtube(url: str) -> bool:
 
 @elapsed_time("classify_contacts_jsonl")
 def classify_contacts_jsonl(
-        jsonl_path: str = "results/final_result.jsonl",
+        jsonl_path: str = "results/top_result.jsonl",
         threshold_phones: int = 5,
         threshold_socials: int = 5,
         report_path: str = "qa/classify_contacts_report.json",
