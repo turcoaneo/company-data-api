@@ -10,37 +10,39 @@ class TestMergeDataframes:
 
     def test_merge_handles_www_in_input(self):
         df_input = pd.DataFrame({
-            "domain": ["www.example.com"],
+            "domain": ["www.wine.com"],
             "company_commercial_name": ["Example Co"]
         })
 
         df_results = pd.DataFrame({
-            "domain": ["example.com"],
+            "domain": ["wine.com"],
             "phones": [["123"]],
-            "socials": [["fb.com/example"]]
+            "socials": [["fb.com/wine"]]
         })
 
         merged = merge_dataframes(df_input, df_results)
 
+        assert merged.loc[0, "domain"] == "wine.com"
         assert merged.loc[0, "phones"] == ["123"]
-        assert merged.loc[0, "socials"] == ["fb.com/example"]
+        assert merged.loc[0, "socials"] == ["fb.com/wine"]
 
     def test_merge_handles_www_in_results(self):
         df_input = pd.DataFrame({
-            "domain": ["example.com"],
-            "company_commercial_name": ["Example Co"]
+            "domain": ["hero.com"],
+            "company_commercial_name": ["Hero Co"]
         })
 
         df_results = pd.DataFrame({
-            "domain": ["www.example.com"],
+            "domain": ["www.hero.com"],
             "phones": [["123"]],
-            "socials": [["fb.com/example"]]
+            "socials": [["fb.com/hero"]]
         })
 
         merged = merge_dataframes(df_input, df_results)
 
+        assert merged.loc[0, "domain"] == "hero.com"
         assert merged.loc[0, "phones"] == ["123"]
-        assert merged.loc[0, "socials"] == ["fb.com/example"]
+        assert merged.loc[0, "socials"] == ["fb.com/hero"]
 
     def test_merge_includes_scraped_fields(self):
         df_input = pd.DataFrame({

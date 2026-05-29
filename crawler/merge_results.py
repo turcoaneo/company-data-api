@@ -1,7 +1,6 @@
 # /crawler/merge_results.py
 
 import json
-from pathlib import Path
 
 import pandas as pd
 
@@ -36,9 +35,15 @@ def load_input_df(input_csv: str) -> pd.DataFrame:
 # ---------------------------------------------------------
 # 3. Pure function: merge input + results
 # ---------------------------------------------------------
+def _normalize_domain_series(s: pd.Series) -> pd.Series:
+    # lower + remove a single leading 'www.' only
+    return s.str.lower().str.replace(r"^www\.", "", regex=True)
+
+
 def merge_dataframes(df_input: pd.DataFrame, df_results: pd.DataFrame) -> pd.DataFrame:
-    df_input["domain"] = df_input["domain"].str.lower().str.lstrip("www.")
-    df_results["domain"] = df_results["domain"].str.lower().str.lstrip("www.")
+    df_input["domain"] = _normalize_domain_series(df_input["domain"])
+    df_results["domain"] = _normalize_domain_series(df_results["domain"])
+
     merged = df_input.merge(df_results, on="domain", how="left")
 
     for col in ["phones", "socials"]:
