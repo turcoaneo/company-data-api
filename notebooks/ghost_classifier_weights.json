@@ -1,27 +1,21 @@
 {
-  "bias": -1.8263552797797626,
+  "bias": 0.026449055431992146,
   "weights": {
-    "text_len": -1.2209018557678162,
-    "num_words": -1.3336886989108332,
-    "num_internal_links": -0.18533361568843368,
-    "has_phone": 0.0,
-    "has_email": 0.0,
-    "has_social": 0.0,
-    "title_matches_domain": 0.39210048007759923,
-    "has_parked_keywords": -0.0026617982046181544,
-    "has_scam_keywords": 0.0,
-    "is_empty_html": -0.03945939949387887
+    "num_internal_links": -0.178847694683882,
+    "entropy": -0.2151825724548269,
+    "text_density": -1.0934151947279218,
+    "heading_count": -0.22785727078599258,
+    "external_links": 0.0,
+    "keyword_density": 0.3497704175396225,
+    "is_empty_html": 0.08973206064530309
   },
   "feature_order": [
-    "text_len",
-    "num_words",
     "num_internal_links",
-    "has_phone",
-    "has_email",
-    "has_social",
-    "title_matches_domain",
-    "has_parked_keywords",
-    "has_scam_keywords",
+    "entropy",
+    "text_density",
+    "heading_count",
+    "external_links",
+    "keyword_density",
     "is_empty_html"
   ]
 }

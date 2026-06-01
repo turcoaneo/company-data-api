@@ -1,14 +1,14 @@
 # notebooks/df_classifier.py
 
-import re
+import math
+from collections import Counter
 from urllib.parse import urlparse
-
-# noinspection PyPackageRequirements
 from bs4 import BeautifulSoup
 
 PARKED_KEYWORDS = [
-    "buy this domain", "domain for sale", "parked", "aftermarket", "godaddy", "sedo", "afternic", "parkingcrew",
-    "bodis", "this domain is available",
+    "buy this domain", "domain for sale", "parked", "aftermarket",
+    "godaddy", "sedo", "afternic", "parkingcrew", "bodis",
+    "this domain is available",
 ]
 
 SCAM_KEYWORDS = [
@@ -16,13 +16,16 @@ SCAM_KEYWORDS = [
     "login required", "confirm your identity",
 ]
 
-SOCIAL_DOMAINS = [
-    "facebook.com", "instagram.com", "linkedin.com",
-    "twitter.com", "x.com", "tiktok.com", "youtube.com",
-]
 
-PHONE_RE = re.compile(r"\+?\d[\d\s().-]{7,}")
-EMAIL_RE = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")
+# ---------------------------------------------------------
+# Utility: Shannon entropy
+# ---------------------------------------------------------
+def text_entropy(text: str) -> float:
+    if not text:
+        return 0.0
+    counts = Counter(text)
+    total = len(text)
+    return -sum((c / total) * math.log2(c / total) for c in counts.values())
 
 
 class DFClassifier:
@@ -31,16 +34,17 @@ class DFClassifier:
         self.html = html or ""
         self.soup = BeautifulSoup(self.html, "html.parser")
 
-    # -----------------------------
-    # Feature extractors
-    # -----------------------------
+    # -----------------------------------------------------
+    # Visible text
+    # -----------------------------------------------------
     def extract_visible_text(self):
         for tag in self.soup(["script", "style", "noscript"]):
             tag.extract()
-        # text = self.soup.get_text(" ", strip=True)
-        text = self.soup.get_text(strip=True, types=tuple()).strip(" ")
-        return text
+        return self.soup.get_text(strip=True, types=tuple()).strip(" ")
 
+    # -----------------------------------------------------
+    # Internal links
+    # -----------------------------------------------------
     def count_internal_links(self):
         parsed = urlparse("https://" + self.domain)
         base_domain = parsed.netloc.split(":")[0]
@@ -56,11 +60,9 @@ class DFClassifier:
                     count += 1
         return count
 
-    def title_matches_domain(self, text):
-        title = (self.soup.title.string or "").lower() if self.soup.title else ""
-        domain_root = self.domain.split(".")[0].lower()
-        return int(domain_root in title or domain_root in text.lower())
-
+    # -----------------------------------------------------
+    # Keyword detectors
+    # -----------------------------------------------------
     @staticmethod
     def has_parked_keywords(text):
         t = text.lower()
@@ -71,51 +73,45 @@ class DFClassifier:
         t = text.lower()
         return int(any(k in t for k in SCAM_KEYWORDS))
 
-    def has_social(self):
-        for a in self.soup.find_all("a", href=True):
-            if any(s in a["href"] for s in SOCIAL_DOMAINS):
-                return 1
-        return 0
-
-    @staticmethod
-    def has_phone(text):
-        return int(bool(PHONE_RE.search(text)))
-
-    @staticmethod
-    def has_email(text):
-        return int(bool(EMAIL_RE.search(text)))
-
-    # -----------------------------
-    # Main extraction
-    # -----------------------------
+    # -----------------------------------------------------
+    # Main extraction — MINIMAL HOMEPAGE‑ROBUST FEATURES
+    # -----------------------------------------------------
     def extract_features(self):
         text = self.extract_visible_text()
         words = text.split()
+        text_len = len(text)
+        num_words = len(words)
+
+        entropy = text_entropy(text)
+        text_density = num_words / text_len if text_len > 0 else 0.0
+        heading_count = len(self.soup.find_all(["h1", "h2", "h3"]))
+
+        # external links = links NOT pointing to this domain
+        external_links = 0
+        for a in self.soup.find_all("a", href=True):
+            host = urlparse(a["href"]).hostname
+            if host and self.domain not in host:
+                external_links += 1
+
+        parked = self.has_parked_keywords(text)
+        scam = self.has_scam_keywords(text)
+        keyword_density = (parked + scam) / (num_words + 1)
 
         return {
-            "text_len": len(text),
-            "num_words": len(words),
             "num_internal_links": self.count_internal_links(),
-            "has_phone": self.has_phone(text),
-            "has_email": self.has_email(text),
-            "has_social": self.has_social(),
-            "title_matches_domain": self.title_matches_domain(text),
-            "has_parked_keywords": self.has_parked_keywords(text),
-            "has_scam_keywords": self.has_scam_keywords(text),
-            "is_empty_html": int(len(text) < 50),
+            "entropy": entropy,
+            "text_density": text_density,
+            "heading_count": heading_count,
+            "external_links": external_links,
+            "keyword_density": keyword_density,
+            "is_empty_html": int(text_len < 50),
         }
 
-    # -----------------------------
-    # Static helper: build DF row
-    # -----------------------------
+    # -----------------------------------------------------
+    # Static helper for DataFrame rows
+    # -----------------------------------------------------
     @staticmethod
     def build_feature_row(domain: str, html: str, label: int):
-        """
-        Convenience method used in notebooks:
-        - extracts semantic features
-        - attaches domain + label
-        - returns a clean dict for DataFrame rows
-        """
         clf = DFClassifier(domain, html)
         feats = clf.extract_features()
         feats["domain"] = domain
