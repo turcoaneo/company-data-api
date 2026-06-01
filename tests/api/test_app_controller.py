@@ -17,7 +17,7 @@ class TestAppController:
     # -----------------------------
     # /api/metrics
     # -----------------------------
-    @patch("app.service.service_metrics.compute_latest_and_top_metrics")
+    @patch("app.service.service_metrics.run_metrics")
     def test_get_metrics(self, mock_service, client):
         mock_service.return_value = {
             "coverage": 123,
