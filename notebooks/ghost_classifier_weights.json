@@ -1,16 +1,16 @@
 {
-  "bias": -0.3743844606720671,
+  "bias": -1.8263552797797626,
   "weights": {
-    "text_len": -0.7753233971605571,
-    "num_words": -1.280877162007167,
-    "num_internal_links": -0.9826263171957854,
+    "text_len": -1.2209018557678162,
+    "num_words": -1.3336886989108332,
+    "num_internal_links": -0.18533361568843368,
     "has_phone": 0.0,
     "has_email": 0.0,
     "has_social": 0.0,
-    "title_matches_domain": 0.6852425893685793,
-    "has_parked_keywords": 0.24212264195016442,
+    "title_matches_domain": 0.39210048007759923,
+    "has_parked_keywords": -0.0026617982046181544,
     "has_scam_keywords": 0.0,
-    "is_empty_html": -0.3088034030171068
+    "is_empty_html": -0.03945939949387887
   },
   "feature_order": [
     "text_len",
