@@ -3,6 +3,7 @@
 import math
 from collections import Counter
 from urllib.parse import urlparse
+# noinspection PyPackageRequirements
 from bs4 import BeautifulSoup
 
 PARKED_KEYWORDS = [
@@ -29,18 +30,21 @@ def text_entropy(text: str) -> float:
 
 
 class DFClassifier:
-    def __init__(self, domain: str, html: str):
+    def __init__(self, domain: str, html: str, feature_cols: list[str]):
         self.domain = domain
         self.html = html or ""
+        self.feature_cols = feature_cols
         self.soup = BeautifulSoup(self.html, "html.parser")
 
     # -----------------------------------------------------
     # Visible text
     # -----------------------------------------------------
     def extract_visible_text(self):
-        for tag in self.soup(["script", "style", "noscript"]):
+        # Work on a copy, so we don't destroy script tags needed for counting
+        soup_copy = BeautifulSoup(str(self.soup), "html.parser")
+        for tag in soup_copy(["script", "style", "noscript"]):
             tag.extract()
-        return self.soup.get_text(strip=True, types=tuple()).strip(" ")
+        return soup_copy.get_text(strip=True, types=tuple()).strip(" ")
 
     # -----------------------------------------------------
     # Internal links
@@ -74,7 +78,7 @@ class DFClassifier:
         return int(any(k in t for k in SCAM_KEYWORDS))
 
     # -----------------------------------------------------
-    # Main extraction — MINIMAL HOMEPAGE‑ROBUST FEATURES
+    # Main extraction — MINIMAL + NEW STRUCTURAL FEATURES
     # -----------------------------------------------------
     def extract_features(self):
         text = self.extract_visible_text()
@@ -97,22 +101,32 @@ class DFClassifier:
         scam = self.has_scam_keywords(text)
         keyword_density = (parked + scam) / (num_words + 1)
 
+        # NEW FEATURES
+        img_count = len(self.soup.find_all("img"))
+        script_count = len(self.soup.find_all("script"))
+        nav_present = int(bool(self.soup.find("nav")))
+
         return {
-            "num_internal_links": self.count_internal_links(),
-            "entropy": entropy,
-            "text_density": text_density,
-            "heading_count": heading_count,
-            "external_links": external_links,
-            "keyword_density": keyword_density,
-            "is_empty_html": int(text_len < 50),
+            self.feature_cols[0]: self.count_internal_links(),
+            self.feature_cols[1]: entropy,
+            self.feature_cols[2]: text_density,
+            self.feature_cols[3]: heading_count,
+            self.feature_cols[4]: external_links,
+            self.feature_cols[5]: keyword_density,
+            self.feature_cols[6]: int(text_len < 50),
+
+            # NEW structural features
+            self.feature_cols[7]: img_count,
+            self.feature_cols[8]: script_count,
+            self.feature_cols[9]: nav_present,
         }
 
     # -----------------------------------------------------
     # Static helper for DataFrame rows
     # -----------------------------------------------------
     @staticmethod
-    def build_feature_row(domain: str, html: str, label: int):
-        clf = DFClassifier(domain, html)
+    def build_feature_row(domain: str, html: str, label: int, feature_cols: list[str]) -> dict[str, int | float]:
+        clf = DFClassifier(domain, html, feature_cols)
         feats = clf.extract_features()
         feats["domain"] = domain
         feats["label"] = label

@@ -1,13 +1,16 @@
 {
-  "bias": 0.026449055431992146,
+  "bias": 0.0927505822953656,
   "weights": {
-    "num_internal_links": -0.178847694683882,
-    "entropy": -0.2151825724548269,
-    "text_density": -1.0934151947279218,
-    "heading_count": -0.22785727078599258,
+    "num_internal_links": -0.19242755511774168,
+    "entropy": -0.17991526867447633,
+    "text_density": -0.9951474725897865,
+    "heading_count": -0.24958740490418738,
     "external_links": 0.0,
-    "keyword_density": 0.3497704175396225,
-    "is_empty_html": 0.08973206064530309
+    "keyword_density": 0.3400377436717139,
+    "is_empty_html": 0.1038383751772463,
+    "img_count": -0.014029307924221754,
+    "script_count": 0.0,
+    "nav_present": 0.0
   },
   "feature_order": [
     "num_internal_links",
@@ -16,6 +19,9 @@
     "heading_count",
     "external_links",
     "keyword_density",
-    "is_empty_html"
+    "is_empty_html",
+    "img_count",
+    "script_count",
+    "nav_present"
   ]
 }
