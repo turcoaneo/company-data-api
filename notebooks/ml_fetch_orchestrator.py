@@ -55,6 +55,7 @@ async def fetch_html_orchestrator(session, domain, timeout=10):
         # Clean semantic HTML for ML
         from notebooks.html_cleaner import clean_html
         return clean_html(homepage_html)
+        # return homepage_html
 
     except Exception as e:
         print(f"[fetch_html_orchestrator] {domain} failed: {e}")
