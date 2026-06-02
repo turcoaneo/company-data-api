@@ -1,14 +1,14 @@
 {
-  "bias": 0.0927505822953656,
+  "bias": 1.1928067822929849,
   "weights": {
-    "num_internal_links": -0.19242755511774168,
-    "entropy": -0.17991526867447633,
-    "text_density": -0.9951474725897865,
-    "heading_count": -0.24958740490418738,
+    "num_internal_links": -0.040849531485372716,
+    "entropy": -0.49614178140422666,
+    "text_density": -0.6859684100117325,
+    "heading_count": -1.8384887089158632,
     "external_links": 0.0,
-    "keyword_density": 0.3400377436717139,
-    "is_empty_html": 0.1038383751772463,
-    "img_count": -0.014029307924221754,
+    "keyword_density": 0.13873767061142167,
+    "is_empty_html": 0.12306853320732385,
+    "img_count": -0.01446292140948455,
     "script_count": 0.0,
     "nav_present": 0.0
   },
