@@ -1,3 +1,5 @@
+# notebooks/df_classifier.py
+
 import math
 from collections import Counter
 from urllib.parse import urlparse
@@ -69,6 +71,31 @@ class DFClassifier:
         return soup_copy.get_text(strip=True, types=tuple()).strip(" ")
 
     # -----------------------------------------------------
+    # NEW: Robust body-content detector
+    # -----------------------------------------------------
+    def detect_body_content(self):
+        html_lower = self.html.lower()
+
+        # 1. If HTML literally contains a <body> tag
+        if "<body" in html_lower:
+            body = self.soup.body
+            if body:
+                text = body.get_text(strip=True)
+                if text:
+                    return 1
+            return 0
+
+        # 2. No <body> tag → check meaningful tags WITH text
+        meaningful_tags = ["p", "h1", "h2", "h3", "div", "section", "article"]
+        for tag in meaningful_tags:
+            el = self.soup.find(tag)
+            if el and el.get_text(strip=True):
+                return 1
+
+        # 3. No meaningful content
+        return 0
+
+    # -----------------------------------------------------
     # Internal links
     # -----------------------------------------------------
     def count_internal_links(self):
@@ -100,24 +127,6 @@ class DFClassifier:
     def is_registrar_domain(self):
         return int(any(r in self.domain for r in REGISTRAR_DOMAINS))
 
-    # NEW: robust body-content detector
-    def detect_body_content(self):
-        # 1. If HTML literally contains a <body> tag with text
-        if "<body" in self.html.lower():
-            body = self.soup.body
-            if body and body.get_text(strip=True):
-                return 1
-            return 0
-
-        # 2. If HTML has no <body> tag but has meaningful visible elements
-        meaningful_tags = ["p", "h1", "h2", "h3", "div", "section", "article"]
-        for tag in meaningful_tags:
-            if self.soup.find(tag):
-                return 1
-
-        # 3. If HTML is empty or head-only → empty body content
-        return 0
-
     # -----------------------------------------------------
     # Main extraction
     # -----------------------------------------------------
@@ -140,7 +149,7 @@ class DFClassifier:
             if host and self.domain not in host:
                 external_links += 1
 
-        # NEW: body content detector
+        # NEW: robust body detector
         has_body_content = self.detect_body_content()
 
         # NEW unified flag
@@ -161,19 +170,21 @@ class DFClassifier:
         stylesheet_count = len(self.soup.find_all("link", rel="stylesheet"))
 
         return {
-            self.feature_cols[0]: self.count_internal_links(),
-            self.feature_cols[1]: entropy,
-            self.feature_cols[2]: text_density,
-            self.feature_cols[3]: heading_count,
-            self.feature_cols[4]: external_links,
-            self.feature_cols[5]: int(text_len < 50),
-            self.feature_cols[6]: img_count,
-            self.feature_cols[7]: script_count,
-            self.feature_cols[8]: nav_present,
-            self.feature_cols[9]: meta_count,
-            self.feature_cols[10]: stylesheet_count,
-            self.feature_cols[11]: has_body_content,
-            self.feature_cols[12]: scarked_flag,
+            self.feature_cols[0]: entropy,
+            self.feature_cols[1]: text_density,
+            # self.feature_cols[2]: self.count_internal_links(),
+            # self.feature_cols[3]: heading_count,
+            # self.feature_cols[4]: external_links,
+            # self.feature_cols[5]: int(text_len < 50),
+            # self.feature_cols[6]: img_count,
+            # self.feature_cols[7]: script_count,
+            # self.feature_cols[8]: nav_present,
+            # self.feature_cols[9]: meta_count,
+            # self.feature_cols[10]: stylesheet_count,
+            # self.feature_cols[11]: has_body_content,
+            # self.feature_cols[12]: scarked_flag,
+            self.feature_cols[2]: has_body_content,
+            self.feature_cols[3]: scarked_flag,
         }
 
     @staticmethod

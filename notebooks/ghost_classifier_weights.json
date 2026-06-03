@@ -1,32 +1,14 @@
 {
-  "bias": 2.182707356357458,
+  "bias": 0.7987334020799015,
   "weights": {
-    "num_internal_links": -0.03957042256162647,
-    "entropy": -0.32912812936836033,
-    "text_density": -0.4525869072840527,
-    "heading_count": -0.8773476180151365,
-    "external_links": 0.0,
-    "is_empty_html": 0.009847097545307052,
-    "img_count": -0.013755843108000008,
-    "script_count": 0.0,
-    "nav_present": 0.0,
-    "meta_count": -0.4582482193489723,
-    "stylesheet_count": 0.0,
-    "has_body_content": -0.8773476180151365,
-    "scarked_flag": 0.7625361107533782
+    "entropy": -0.8096062548799849,
+    "text_density": -0.45800081415908067,
+    "has_body_content": -0.04283108792132491,
+    "scarked_flag": -0.039872673683678514
   },
   "feature_order": [
-    "num_internal_links",
     "entropy",
     "text_density",
-    "heading_count",
-    "external_links",
-    "is_empty_html",
-    "img_count",
-    "script_count",
-    "nav_present",
-    "meta_count",
-    "stylesheet_count",
     "has_body_content",
     "scarked_flag"
   ]

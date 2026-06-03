@@ -18,6 +18,46 @@ feature_cols = [
 
 
 class TestDFClassifierMinimal:
+
+    # -----------------------------
+    # detect_body_content() tests
+    # -----------------------------
+
+    def test_detect_body_empty_html(self):
+        clf = DFClassifier("example.com", "", feature_cols)
+        assert clf.detect_body_content() == 0
+
+    def test_detect_body_js_redirect(self):
+        html = "<html><head><script>window.onload=function(){}</script></head></html>"
+        clf = DFClassifier("ghost.com", html, feature_cols)
+        assert clf.detect_body_content() == 0
+
+    def test_detect_body_head_only(self):
+        html = "<head><meta name='description' content='Test'></head>"
+        clf = DFClassifier("ghost.com", html, feature_cols)
+        assert clf.detect_body_content() == 0
+
+    def test_detect_body_meaningless_tags(self):
+        # <h1></h1> with NO text should NOT count as body content
+        html = "<title></title><h1></h1>"
+        clf = DFClassifier("ghost.com", html, feature_cols)
+        assert clf.detect_body_content() == 0
+
+    def test_detect_body_meaningful_tags(self):
+        # <h1>Hello</h1> SHOULD count as body content
+        html = "<h1>Hello</h1>"
+        clf = DFClassifier("mysite.com", html, feature_cols)
+        assert clf.detect_body_content() == 1
+
+    def test_detect_body_real_body(self):
+        html = "<body><p>Hello world</p></body>"
+        clf = DFClassifier("mysite.com", html, feature_cols)
+        assert clf.detect_body_content() == 1
+
+    # -----------------------------
+    # extract_features() tests
+    # -----------------------------
+
     def test_empty_html(self):
         clf = DFClassifier("example.com", "", feature_cols)
         feats = clf.extract_features()
@@ -33,22 +73,18 @@ class TestDFClassifierMinimal:
         assert feats["scarked_flag"] == 1
 
     def test_head_only(self):
-        html = """
-        <head>
-            <meta name="description" content="Test">
-            <title>Buy this domain</title>
-        </head>
-        """
+        html = "<head><meta name='description' content='Test'></head>"
         clf = DFClassifier("ghost.com", html, feature_cols)
         feats = clf.extract_features()
         assert feats["has_body_content"] == 0
         assert feats["scarked_flag"] == 1
 
-    def test_registrar_ignored(self):
-        html = "<title>Buy this domain</title>"
-        clf = DFClassifier("sedo.com", html, feature_cols)
+    def test_meaningless_tags(self):
+        html = "<title></title><h1></h1>"
+        clf = DFClassifier("ghost.com", html, feature_cols)
         feats = clf.extract_features()
-        assert feats["scarked_flag"] == 0
+        assert feats["has_body_content"] == 0
+        assert feats["scarked_flag"] == 1
 
     def test_real_body(self):
         html = "<body><h1>Hello</h1><p>World</p></body>"
@@ -57,12 +93,10 @@ class TestDFClassifierMinimal:
         assert feats["has_body_content"] == 1
         assert feats["scarked_flag"] == 0
 
-    def test_real_body_without_body_tag(self):
-        # meaningful tags but no <body> tag
-        html = "<div>Hello</div><h1>World</h1>"
-        clf = DFClassifier("mysite.com", html, feature_cols)
+    def test_registrar_ignored(self):
+        html = "<title>Buy this domain</title>"
+        clf = DFClassifier("sedo.com", html, feature_cols)
         feats = clf.extract_features()
-        assert feats["has_body_content"] == 1
         assert feats["scarked_flag"] == 0
 
     def test_build_feature_row(self):
