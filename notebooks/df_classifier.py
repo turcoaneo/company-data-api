@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 PARKED_KEYWORDS = [
     "buy this domain", "domain for sale", "parked", "aftermarket",
-    "godaddy", "sedo", "afternic", "parkingcrew", "bodis",
+    "godaddy", "sedo", "afternic", "parkingcrew", "bodis", "buydomains",
     "this domain is available", "get this domain",
 ]
 
@@ -18,7 +18,7 @@ SCAM_KEYWORDS = [
 ]
 
 REGISTRAR_DOMAINS = [
-    "sedo.com", "godaddy.com", "afternic.com",
+    "sedo.com", "godaddy.com", "afternic.com", "buydomains.com"
     "parkingcrew.com", "bodis.com", "namecheap.com"
 ]
 
